@@ -5,7 +5,7 @@ Colherada - Sistema de Controle de Vendas na Nuvem
 Servidor Backend com sincronização em tempo real
 """
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, session, redirect, url_for
 from flask_cors import CORS
 import sqlite3
 import json
@@ -13,9 +13,12 @@ import os
 from datetime import datetime, timedelta
 import threading
 import time
+import hashlib
+import secrets
 
 app = Flask(__name__)
-CORS(app)
+app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
+CORS(app, supports_credentials=True)
 
 # Configuração do banco de dados
 DATABASE = 'colherada.db'
@@ -23,10 +26,38 @@ DATABASE = 'colherada.db'
 def get_db():
     """Conecta ao banco de dados SQLite"""
     conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    criar_hash_senha(senha):
+    """Cria hash SHA256 da senha"""
+    return hashlib.sha256(senha.encode()).hexdigest()
 
 def init_db():
+    """Inicializa o banco de dados"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Tabela de usuários
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario TEXT UNIQUE NOT NULL,
+            senha_hash TEXT NOT NULL,
+            nome TEXT,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # Criar usuário admin padrão (senha: admin123)
+    # IMPORTANTE: Altere a senha após o primeiro login!
+    try:
+        senha_padrao = criar_hash_senha('admin123')
+        cursor.execute('''
+            INSERT INTO usuarios (usuario, senha_hash, nome)
+            VALUES ('admin', ?, 'Administrador')
+        ''', (senha_padrao,))
+        print("👤 Usuário admin criado - Login: admin | Senha: admin123")
+        print("⚠️  IMPORTANTE: Altere a senha após o primeiro login!")
+    except sqlite3.IntegrityError:
+        pass  # Usuário já existe
     """Inicializa o banco de dados"""
     conn = get_db()
     cursor = conn.cursor()
@@ -67,12 +98,119 @@ def init_db():
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-    
-    conn.commit()
-    conn.close()
-    print("✅ Banco de dados inicializado!")
+    AUTENTICAÇÃO ==========
 
-def limpar_dados_antigos():
+def verificar_autenticacao():
+    """Verifica se o usuário está autenticado"""
+    return session.get('autenticado', False)
+
+# ========== ROTAS DA API ==========
+
+@app.route('/')
+def index():
+    """Serve o arquivo HTML principal"""
+    return send_from_directory('.', 'index.html')
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    if not verificar_autenticacao():
+        return jsonify({'error': 'Não autenticado'}), 401
+    
+    """Rota de login"""
+    try:
+        dados = request.json
+        usuario = dados.get('usuario', '').strip()
+        senha = dados.get('senha', '')
+        
+        if not usuario or not senha:
+            return jsonify({'success': False, 'message': 'Usuário e senha são obrigatórios'}), 400
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Buscar usuário
+        senha_hash = criar_hash_senha(senha)
+        cursor.execute('SELECT * FROM usuarios WHERE usuario = ? AND senha_hash = ?', (usuario, senha_hash))
+        user = cursor.fetchone()
+        conn.close()
+        
+        if user:
+            session['autenticado'] = True
+            session['usuario'] = usuario
+            session['nome'] = user['nome']
+            return jsonify({
+                'success': True,
+                'message': 'Login realizado com sucesso!',
+                'nome': user['nome']
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Usuário ou senha incorretos'}), 401
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    """Rota de logout"""
+    session.clear()
+    return jsonify({'success': True, 'message': 'Logout realizado com sucesso!'})
+
+@app.route('/api/verificar-sessao', methods=['GET'])
+def verificar_sessao():
+    """Verifica se há uma sessão ativa"""
+    if verificar_autenticacao():
+        return jsonify({
+            'autenticado': True,
+            'usuario': session.get('usuario'),
+            'nome': session.get('nome')
+        })
+    else:
+        return jsonify({'autenticado': False}), 401
+
+@app.route('/api/alterar-senha', methods=['POST'])
+def alterar_senha():
+    """Altera a senha do usuário"""
+    if not verificar_autenticacao():
+        return jsonify({'success': False, 'message': 'Não autenticado'}), 401
+    
+    try:
+        dados = request.json
+        senha_atual = dados.get('senha_atual')
+        senha_nova = dados.get('senha_nova')
+        
+        if not senha_atual or not senha_nova:
+            return jsonify({'success': False, 'message': 'Preencha todos os campos'}), 400
+        
+        if len(senha_nova) < 6:
+    if not verificar_autenticacao():
+        return jsonify({'error': 'Não autenticado'}), 401
+    
+            return jsonify({'success': False, 'message': 'A nova senha deve ter no mínimo 6 caracteres'}), 400
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        usuario = session.get('usuario')
+        senha_atual_hash = criar_hash_senha(senha_atual)
+        
+        # Verificar senha atual
+        cursor.execute('SELECT * FROM usuarios WHERE usuario = ? AND senha_hash = ?', (usuario, senha_atual_hash))
+        user = cursor.fetchone()
+        
+        if not user:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Senha atual incorreta'}), 401
+        
+        # Atualizar senha
+        senha_nova_hash = criar_hash_senha(senha_nova)
+        cursor.execute('UPDATE usuarios SET senha_hash = ? WHERE usuario = ?', (senha_nova_hash, usuario))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Senha alterada com sucesso!'})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
     """Remove dados de dias anteriores (mantém últimos 30 dias)"""
     try:
         conn = get_db()
@@ -110,6 +248,9 @@ def offline():
 @app.route('/api/dados', methods=['GET'])
 def obter_dados():
     """Retorna todos os dados do dia atual"""
+    if not verificar_autenticacao():
+        return jsonify({'error': 'Não autenticado'}), 401
+    
     try:
         data_hoje = datetime.now().strftime('%d/%m/%Y')
         conn = get_db()
@@ -126,6 +267,9 @@ def obter_dados():
                 VALUES (?, 25, 0, 0)
             ''', (data_hoje,))
             conn.commit()
+    if not verificar_autenticacao():
+        return jsonify({'error': 'Não autenticado'}), 401
+    
             
             dados_dia = {
                 'estoque': 25,

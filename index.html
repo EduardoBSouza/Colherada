@@ -414,6 +414,169 @@
         .badge-cartao { background: var(--cor-cartao); }
         .badge-encomenda { background: #E63946; }
 
+        /* ========== TELA DE LOGIN ========== */
+        #tela-login {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #tela-login.hidden {
+            display: none;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card h2 {
+            color: var(--cor-principal);
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .login-card p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .form-group-login {
+            margin-bottom: 20px;
+        }
+
+        .form-group-login label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--cor-texto);
+            font-weight: 600;
+        }
+
+        .form-group-login input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group-login input:focus {
+            outline: none;
+            border-color: var(--cor-principal);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .erro-login {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .erro-login.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Botão de logout no header */
+        .btn-logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: var(--cor-principal);
+        }
+
+        .usuario-info {
+            position: absolute;
+            top: 25px;
+            left: 20px;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        #app-content {
+            display: none;
+        }
+
+        #app-content.show {
+            display: block;
+        }
+
         /* ========== ALERTA FLUTUANTE ========== */
         .alerta-flutuante {
             position: fixed;
@@ -547,10 +710,44 @@
     </style>
 </head>
 <body>
+    <!-- ========== TELA DE LOGIN ========== -->
+    <div id="tela-login">
+        <div class="login-card">
+            <h2>🍮 Colherada</h2>
+            <p>Sistema de Controle de Vendas</p>
+            
+            <div id="erro-login" class="erro-login"></div>
+            
+            <form id="form-login" onsubmit="fazerLogin(event)">
+                <div class="form-group-login">
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="usuario" name="usuario" required autocomplete="username">
+                </div>
+                
+                <div class="form-group-login">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn-login" id="btn-entrar">
+                    🔓 Entrar
+                </button>
+            </form>
+            
+            <p style="margin-top: 20px; font-size: 0.85rem; color: #999; text-align: center;">
+                Usuário padrão: <strong>admin</strong> | Senha: <strong>admin123</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- ========== CONTEÚDO PRINCIPAL ========== -->
+    <div id="app-content">
     <!-- ========== CABEÇALHO ========== -->
     <header>
+        <span class="usuario-info" id="usuario-info"></span>
         <h1>🍮 Colherada</h1>
         <p>Sistema de Controle de Vendas | Pudim perfeito no Vidro 150ml</p>
+        <button class="btn-logout" onclick="fazerLogout()">🚪 Sair</button>
     </header>
 
     <!-- ========== CONTAINER PRINCIPAL ========== -->
@@ -688,8 +885,109 @@
         </div>
     </div>
 
+    </div>
+    <!-- FIM DO APP-CONTENT -->
+
     <!-- ========== JAVASCRIPT ========== -->
     <script>
+        // ========== AUTENTICAÇÃO ==========
+        let usuarioLogado = null;
+
+        async function verificarSessao() {
+            try {
+                const response = await fetch(`${API_URL}/api/verificar-sessao`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const dados = await response.json();
+                    if (dados.autenticado) {
+                        usuarioLogado = dados.usuario;
+                        document.getElementById('usuario-info').textContent = `👤 ${dados.nome || dados.usuario}`;
+                        mostrarApp();
+                        await carregarDadosServidor();
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.log('Sessão não encontrada');
+            }
+            
+            mostrarLogin();
+            return false;
+        }
+
+        async function fazerLogin(event) {
+            event.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const btnEntrar = document.getElementById('btn-entrar');
+            const erroDiv = document.getElementById('erro-login');
+            
+            btnEntrar.disabled = true;
+            btnEntrar.textContent = '⏳ Entrando...';
+            erroDiv.classList.remove('show');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ usuario, senha })
+                });
+                
+                const dados = await response.json();
+                
+                if (dados.success) {
+                    usuarioLogado = usuario;
+                    document.getElementById('usuario-info').textContent = `👤 ${dados.nome || usuario}`;
+                    mostrarApp();
+                    await carregarDadosServidor();
+                    
+                    // Limpar formulário
+                    document.getElementById('form-login').reset();
+                } else {
+                    erroDiv.textContent = dados.message || 'Erro ao fazer login';
+                    erroDiv.classList.add('show');
+                }
+            } catch (error) {
+                erroDiv.textContent = 'Erro de conexão com o servidor';
+                erroDiv.classList.add('show');
+            } finally {
+                btnEntrar.disabled = false;
+                btnEntrar.textContent = '🔓 Entrar';
+            }
+        }
+
+        async function fazerLogout() {
+            if (confirm('Deseja realmente sair?')) {
+                try {
+                    await fetch(`${API_URL}/api/logout`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                } catch (error) {
+                    console.log('Erro ao fazer logout');
+                }
+                
+                usuarioLogado = null;
+                mostrarLogin();
+            }
+        }
+
+        function mostrarLogin() {
+            document.getElementById('tela-login').classList.remove('hidden');
+            document.getElementById('app-content').classList.remove('show');
+        }
+
+        function mostrarApp() {
+            document.getElementById('tela-login').classList.add('hidden');
+            document.getElementById('app-content').classList.add('show');
+        }
+
         // ========== CONSTANTES DO NEGÓCIO ==========
         const PRECO_VENDA = 16.00;      // Preço de venda por unidade
         const CUSTO_TOTAL = 7.00;       // Custo total por unidade
@@ -706,12 +1004,16 @@
 
         // ========== INICIALIZAÇÃO ==========
         document.addEventListener('DOMContentLoaded', async function() {
-            await carregarDadosServidor();
-            atualizarInterface();
             definirDataAtual();
             
-            // Sincronizar a cada 5 segundos
-            setInterval(sincronizarComServidor, 5000);
+            // Verificar se há sessão ativa
+            const sessaoAtiva = await verificarSessao();
+            
+            if (sessaoAtiva) {
+                atualizarInterface();
+                // Sincronizar a cada 5 segundos
+                setInterval(sincronizarComServidor, 5000);
+            }
         });
 
         // ========== FUNÇÃO: DEFINIR DATA ATUAL ==========
@@ -1115,11 +1417,16 @@
             });SINCRONIZAÇÃO COM SERVIDOR ==========
         async function carregarDadosServidor() {
             try {
-                const response = await fetch(`${API_URL}/api/dados`);
+                const response = await fetch(`${API_URL}/api/dados`, {
+                    credentials: 'include'
+                });
                 if (response.ok) {
                     const dados = await response.json();
                     aplicarDados(dados);
                     console.log('✅ Dados carregados do servidor!');
+                } else if (response.status === 401) {
+                    // Não autenticado, redirecionar para login
+                    mostrarLogin();
                 } else {
                     console.log('⚠️ Usando dados locais');
                     carregarDadosLocal();
@@ -1146,11 +1453,14 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify(dados)
                 });
 
                 if (response.ok) {
                     console.log('✅ Dados sincronizados com servidor!');
+                } else if (response.status === 401) {
+                    mostrarLogin();
                 }
             } catch (error) {
                 console.log('⚠️ Não foi possível sincronizar com servidor');
@@ -1162,7 +1472,9 @@
 
         async function sincronizarComServidor() {
             try {
-                const response = await fetch(`${API_URL}/api/dados`);
+                const response = await fetch(`${API_URL}/api/dados`, {
+                    credentials: 'include'
+                });
                 if (response.ok) {
                     const dadosServidor = await response.json();
                     
@@ -1171,6 +1483,8 @@
                         aplicarDados(dadosServidor);
                         console.log('🔄 Dados atualizados do servidor');
                     }
+                } else if (response.status === 401) {
+                    mostrarLogin();
                 }
             } catch (error) {
                 // Servidor offline, continuar usando dados locais

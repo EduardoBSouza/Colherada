@@ -1,6 +1,16 @@
 # 🍮 Colherada - Sistema de Vendas na Nuvem
 
-Sistema completo de controle de vendas de pudim artesanal com sincronização em tempo real entre múltiplos dispositivos.
+Sistema completo de controle de vendas de pudim artesanal com sincronização em tempo real entre múltiplos dispositivos e **autenticação segura**.
+
+## 🔐 Acesso Seguro
+
+O sistema possui **tela de login obrigatória** para proteger suas informações de vendas.
+
+**Credenciais Padrão:**
+- **Usuário:** `admin`
+- **Senha:** `admin123`
+
+⚠️ **IMPORTANTE:** Altere a senha após o primeiro login! Veja [AUTENTICACAO.md](AUTENTICACAO.md) para detalhes.
 
 ## ☁️ Deploy no Render.com (GRATUITO)
 
@@ -78,6 +88,7 @@ https://colherada.onrender.com
 
 ## ✨ Recursos
 
+- 🔐 **Autenticação segura** com login e senha
 - ✅ Sincronização em tempo real entre dispositivos
 - ✅ Acesso de qualquer lugar
 - ✅ Dados salvos na nuvem
@@ -86,6 +97,7 @@ https://colherada.onrender.com
 - ✅ Gerenciamento de encomendas
 - ✅ Relatórios diários
 - ✅ 100% responsivo (mobile + desktop)
+- 🔒 **Privacidade total** - só você acessa seus dados
 
 ## 🔧 Tecnologias
 
