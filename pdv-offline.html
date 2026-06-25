@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#8B4513">
+    <title>Colherada - Offline</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUERWIFB1ZGltIiwic2hvcnRfbmFtZSI6IlBEViIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjOEI0NTEzIn0=">
+    <style>
+        /* Mesmo CSS do arquivo original */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cor-principal: #8B4513;
+            --cor-secundaria: #D2691E;
+            --cor-dourado: #DAA520;
+            --cor-fundo: #F5F5F0;
+            --cor-card: #FFFFFF;
+            --cor-pix: #00C853;
+            --cor-dinheiro: #2196F3;
+            --cor-cartao: #9C27B0;
+            --cor-alerta: #FFC107;
+            --cor-texto: #333333;
+            --sombra: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --sombra-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--cor-fundo) 0%, #E8E8D8 100%);
+            color: var(--cor-texto);
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            border-radius: 15px;
+            box-shadow: var(--sombra);
+            color: white;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 0.85rem;
+            opacity: 0.95;
+        }
+
+        .status-offline {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--cor-card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--sombra);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid var(--cor-dourado);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .card.alerta {
+            background: #FFF9C4;
+            border-left-color: var(--cor-alerta);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .card-titulo {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card-valor {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--cor-principal);
+            margin-bottom: 5px;
+        }
+
+        .card-alerta {
+            color: #F57C00;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .card.alerta .card-alerta {
+            display: block;
+        }
+
+        .secao {
+            background: var(--cor-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--sombra);
+        }
+
+        .secao-titulo {
+            font-size: 1.1rem;
+            color: var(--cor-principal);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--cor-dourado);
+            font-weight: 600;
+        }
+
+        .venda-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quantidade-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quantidade-group label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--cor-texto);
+        }
+
+        .quantidade-input {
+            width: 100px;
+            padding: 10px;
+            font-size: 1.1rem;
+            border: 2px solid var(--cor-secundaria);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            transition: border-color 0.3s ease;
+        }
+
+        .quantidade-input:focus {
+            outline: none;
+            border-color: var(--cor-principal);
+        }
+
+        .botoes-pagamento {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--sombra);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-pix {
+            background: linear-gradient(135deg, var(--cor-pix) 0%, #00A344 100%);
+        }
+
+        .btn-dinheiro {
+            background: linear-gradient(135deg, var(--cor-dinheiro) 0%, #1976D2 100%);
+        }
+
+        .btn-cartao {
+            background: linear-gradient(135deg, var(--cor-cartao) 0%, #7B1FA2 100%);
+        }
+
+        .btn-abastecer {
+            background: linear-gradient(135deg, var(--cor-dourado) 0%, #B8860B 100%);
+        }
+
+        .btn-fechar {
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            font-size: 1.1rem;
+            padding: 18px;
+        }
+
+        .btn-encomenda {
+            background: linear-gradient(135deg, #FF6B6B 0%, #E63946 100%);
+        }
+
+        .estoque-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .encomenda-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--cor-texto);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            padding: 10px;
+            font-size: 0.95rem;
+            border: 2px solid var(--cor-secundaria);
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cor-principal);
+        }
+
+        .encomendas-lista {
+            margin-top: 20px;
+        }
+
+        .encomenda-item {
+            background: #FFF5F5;
+            border-left: 4px solid #E63946;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .encomenda-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .encomenda-data {
+            font-weight: bold;
+            color: #E63946;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .encomenda-detalhes {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .encomenda-acoes {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-concluir, .btn-remover {
+            padding: 8px 12px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-concluir {
+            background: #00C853;
+        }
+
+        .btn-concluir:hover {
+            background: #00A344;
+        }
+
+        .btn-remover {
+            background: #F44336;
+        }
+
+        .btn-remover:hover {
+            background: #D32F2F;
+        }
+
+        .encomendas-vazio {
+            text-align: center;
+            color: #999;
+            padding: 25px;
+            font-style: italic;
+        }
+
+        .historico-wrapper {
+            overflow-x: auto;
+        }
+
+        .historico-tabela {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .historico-tabela thead {
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            color: white;
+        }
+
+        .historico-tabela th,
+        .historico-tabela td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .historico-tabela th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .historico-tabela tbody tr:hover {
+            background: #F5F5F5;
+        }
+
+        .historico-tabela td {
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            color: white;
+        }
+
+        .badge-pix { background: var(--cor-pix); }
+        .badge-dinheiro { background: var(--cor-dinheiro); }
+        .badge-cartao { background: var(--cor-cartao); }
+        .badge-encomenda { background: #E63946; }
+
+        .alerta-flutuante {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            background: #F44336;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+            margin: 0 auto;
+            font-weight: 600;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 20px auto;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--cor-dourado);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            color: var(--cor-principal);
+            font-size: 1.5rem;
+        }
+
+        .modal-body {
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .modal-body p {
+            margin-bottom: 8px;
+        }
+
+        .modal-body strong {
+            color: var(--cor-principal);
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-fechar-modal {
+            background: var(--cor-principal);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .btn-fechar-modal:hover {
+            background: var(--cor-secundaria);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            .card-valor {
+                font-size: 1.8rem;
+            }
+
+            .secao-titulo {
+                font-size: 1rem;
+            }
+
+            .btn {
+                font-size: 0.9rem;
+                padding: 12px 15px;
+            }
+
+            .botoes-pagamento {
+                grid-template-columns: 1fr;
+            }
+
+            .encomenda-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .encomenda-acoes {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🍮 Colherada</h1>
+        <p>Sistema de Controle de Vendas | Pudim perfeito no Vidro 150ml</p>
+        <span class="status-offline">✓ Modo Independente</span>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="card" id="card-estoque">
+                <div class="card-titulo">📦 Estoque Atual</div>
+                <div class="card-valor" id="estoque-valor">25</div>
+                <div class="card-alerta">⚠️ Estoque Crítico!</div>
+            </div>
+
+            <div class="card">
+                <div class="card-titulo">💰 Faturamento Bruto</div>
+                <div class="card-valor" id="faturamento-valor">R$ 0,00</div>
+            </div>
+
+            <div class="card">
+                <div class="card-titulo">📈 Lucro Líquido</div>
+                <div class="card-valor" id="lucro-valor">R$ 0,00</div>
+            </div>
+        </div>
+
+        <section class="secao">
+            <h2 class="secao-titulo">💳 Registrar Venda</h2>
+            <div class="venda-controls">
+                <div class="quantidade-group">
+                    <label for="quantidade-venda">Quantidade:</label>
+                    <input type="number" id="quantidade-venda" class="quantidade-input" value="1" min="1">
+                </div>
+
+                <div class="botoes-pagamento">
+                    <button class="btn btn-pix" onclick="registrarVenda('PIX')">
+                        ⚡ PIX
+                    </button>
+                    <button class="btn btn-dinheiro" onclick="registrarVenda('DINHEIRO')">
+                        💵 DINHEIRO
+                    </button>
+                    <button class="btn btn-cartao" onclick="registrarVenda('CARTÃO')">
+                        💳 CARTÃO
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2 class="secao-titulo">📦 Gerenciar Estoque</h2>
+            <div class="estoque-controls">
+                <label for="quantidade-abastecer">Adicionar:</label>
+                <input type="number" id="quantidade-abastecer" class="quantidade-input" value="10" min="1">
+                <button class="btn btn-abastecer" onclick="abastecerEstoque()">
+                    ➕ Abastecer
+                </button>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2 class="secao-titulo">📝 Registrar Encomenda</h2>
+            <div class="encomenda-controls">
+                <div class="form-group">
+                    <label for="data-encomenda">Data:</label>
+                    <input type="date" id="data-encomenda" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="quantidade-encomenda">Quantidade:</label>
+                    <input type="number" id="quantidade-encomenda" class="form-input" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="cliente-encomenda">Cliente:</label>
+                    <input type="text" id="cliente-encomenda" class="form-input" placeholder="Nome">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-encomenda" onclick="registrarEncomenda()">
+                        📝 Registrar
+                    </button>
+                </div>
+            </div>
+
+            <div class="encomendas-lista">
+                <h3 style="color: var(--cor-principal); margin-bottom: 12px; font-size: 1rem;">📋 Encomendas Pendentes</h3>
+                <div id="lista-encomendas">
+                    <div class="encomendas-vazio">
+                        Nenhuma encomenda registrada
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2 class="secao-titulo">📋 Histórico de Vendas</h2>
+            <div class="historico-wrapper">
+                <table class="historico-tabela">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Qtd</th>
+                            <th>Total</th>
+                            <th>Forma</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historico-tbody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #999;">
+                                Nenhuma venda registrada
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn btn-fechar" onclick="fecharDia()">
+                📊 Fechar Dia
+            </button>
+        </section>
+
+    </div>
+
+    <div id="modal-relatorio" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Relatório do Dia</h2>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn-fechar-modal" onclick="fecharModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PRECO_VENDA = 16.00;
+        const CUSTO_TOTAL = 7.00;
+        const LUCRO_UNITARIO = 9.00;
+        const ESTOQUE_CRITICO = 5;
+
+        let estoque = 25;
+        let faturamentoBruto = 0;
+        let lucroLiquido = 0;
+        let vendas = [];
+        let encomendas = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarDados();
+            atualizarInterface();
+            definirDataAtual();
+        });
+
+        function definirDataAtual() {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('data-encomenda').value = hoje;
+        }
+
+        function registrarVenda(formaPagamento) {
+            const quantidadeInput = document.getElementById('quantidade-venda');
+            const quantidade = parseInt(quantidadeInput.value);
+
+            if (isNaN(quantidade) || quantidade <= 0) {
+                mostrarAlerta('Quantidade inválida!');
+                return;
+            }
+
+            if (quantidade > estoque) {
+                mostrarAlerta('❌ Estoque insuficiente! (' + estoque + ' disponíveis)');
+                return;
+            }
+
+            const totalVenda = quantidade * PRECO_VENDA;
+            const lucroVenda = quantidade * LUCRO_UNITARIO;
+
+            estoque -= quantidade;
+            faturamentoBruto += totalVenda;
+            lucroLiquido += lucroVenda;
+
+            const venda = {
+                hora: obterHoraAtual(),
+                quantidade: quantidade,
+                total: totalVenda,
+                formaPagamento: formaPagamento
+            };
+            vendas.push(venda);
+
+            atualizarInterface();
+            adicionarLinhaHistorico(venda);
+            salvarDados();
+            quantidadeInput.value = 1;
+        }
+
+        function abastecerEstoque() {
+            const quantidadeInput = document.getElementById('quantidade-abastecer');
+            const quantidade = parseInt(quantidadeInput.value);
+
+            if (isNaN(quantidade) || quantidade <= 0) {
+                mostrarAlerta('Quantidade inválida!');
+                return;
+            }
+
+            estoque += quantidade;
+            atualizarInterface();
+            salvarDados();
+            quantidadeInput.value = 10;
+        }
+
+        function registrarEncomenda() {
+            const dataInput = document.getElementById('data-encomenda');
+            const quantidadeInput = document.getElementById('quantidade-encomenda');
+            const clienteInput = document.getElementById('cliente-encomenda');
+
+            const data = dataInput.value;
+            const quantidade = parseInt(quantidadeInput.value);
+            const cliente = clienteInput.value.trim();
+
+            if (!data) {
+                mostrarAlerta('Selecione a data!');
+                return;
+            }
+
+            if (isNaN(quantidade) || quantidade <= 0) {
+                mostrarAlerta('Quantidade inválida!');
+                return;
+            }
+
+            if (!cliente) {
+                mostrarAlerta('Informe o nome do cliente!');
+                return;
+            }
+
+            const encomenda = {
+                id: Date.now(),
+                data: data,
+                quantidade: quantidade,
+                cliente: cliente
+            };
+
+            encomendas.push(encomenda);
+            atualizarListaEncomendas();
+            salvarDados();
+
+            quantidadeInput.value = 1;
+            clienteInput.value = '';
+            definirDataAtual();
+        }
+
+        function atualizarListaEncomendas() {
+            const listaDiv = document.getElementById('lista-encomendas');
+
+            if (encomendas.length === 0) {
+                listaDiv.innerHTML = '<div class="encomendas-vazio">Nenhuma encomenda registrada</div>';
+                return;
+            }
+
+            const encomendasOrdenadas = [...encomendas].sort((a, b) => new Date(a.data) - new Date(b.data));
+
+            listaDiv.innerHTML = encomendasOrdenadas.map(encomenda => {
+                const dataFormatada = new Date(encomenda.data + 'T00:00:00').toLocaleDateString('pt-BR');
+
+                return `
+                    <div class="encomenda-item">
+                        <div class="encomenda-info">
+                            <div class="encomenda-data">📅 ${dataFormatada}</div>
+                            <div class="encomenda-detalhes">
+                                <strong>${encomenda.cliente}</strong> • ${encomenda.quantidade} pudim(s)
+                            </div>
+                        </div>
+                        <div class="encomenda-acoes">
+                            <button class="btn-concluir" onclick="concluirEncomenda(${encomenda.id})">
+                                ✓ Concluir
+                            </button>
+                            <button class="btn-remover" onclick="removerEncomenda(${encomenda.id})">
+                                ✕ Remover
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function concluirEncomenda(id) {
+            const encomenda = encomendas.find(e => e.id === id);
+            
+            if (!encomenda) return;
+
+            if (encomenda.quantidade > estoque) {
+                if (!confirm(`Estoque insuficiente! (${estoque} disponíveis)\n\nContinuar mesmo assim?`)) {
+                    return;
+                }
+            }
+
+            if (confirm(`Concluir encomenda de ${encomenda.cliente}?\n${encomenda.quantidade} pudim(s)`)) {
+                const totalVenda = encomenda.quantidade * PRECO_VENDA;
+                const lucroVenda = encomenda.quantidade * LUCRO_UNITARIO;
+
+                if (encomenda.quantidade <= estoque) {
+                    estoque -= encomenda.quantidade;
+                }
+                
+                faturamentoBruto += totalVenda;
+                lucroLiquido += lucroVenda;
+
+                const venda = {
+                    hora: obterHoraAtual(),
+                    quantidade: encomenda.quantidade,
+                    total: totalVenda,
+                    formaPagamento: 'ENCOMENDA'
+                };
+                vendas.push(venda);
+                adicionarLinhaHistorico(venda);
+
+                encomendas = encomendas.filter(e => e.id !== id);
+
+                atualizarInterface();
+                atualizarListaEncomendas();
+                salvarDados();
+            }
+        }
+
+        function removerEncomenda(id) {
+            const encomenda = encomendas.find(e => e.id === id);
+            
+            if (encomenda && confirm(`Remover encomenda de ${encomenda.cliente}?`)) {
+                encomendas = encomendas.filter(e => e.id !== id);
+                atualizarListaEncomendas();
+                salvarDados();
+            }
+        }
+
+        function atualizarInterface() {
+            const estoqueValor = document.getElementById('estoque-valor');
+            const cardEstoque = document.getElementById('card-estoque');
+            estoqueValor.textContent = estoque;
+
+            if (estoque < ESTOQUE_CRITICO) {
+                cardEstoque.classList.add('alerta');
+            } else {
+                cardEstoque.classList.remove('alerta');
+            }
+
+            document.getElementById('faturamento-valor').textContent = formatarMoeda(faturamentoBruto);
+            document.getElementById('lucro-valor').textContent = formatarMoeda(lucroLiquido);
+
+            atualizarBotoesVenda();
+        }
+
+        function atualizarBotoesVenda() {
+            const quantidade = parseInt(document.getElementById('quantidade-venda').value) || 0;
+            const botoes = document.querySelectorAll('.btn-pix, .btn-dinheiro, .btn-cartao');
+
+            botoes.forEach(botao => {
+                botao.disabled = (quantidade > estoque || quantidade <= 0);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantidadeVenda = document.getElementById('quantidade-venda');
+            if (quantidadeVenda) {
+                quantidadeVenda.addEventListener('input', atualizarBotoesVenda);
+            }
+        });
+
+        function adicionarLinhaHistorico(venda) {
+            const tbody = document.getElementById('historico-tbody');
+
+            if (vendas.length === 1) {
+                tbody.innerHTML = '';
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${venda.hora}</td>
+                <td>${venda.quantidade}</td>
+                <td>${formatarMoeda(venda.total)}</td>
+                <td><span class="badge badge-${venda.formaPagamento.toLowerCase().replace('ã', 'a')}">${venda.formaPagamento}</span></td>
+            `;
+
+            tbody.insertBefore(tr, tbody.firstChild);
+        }
+
+        function fecharDia() {
+            if (vendas.length === 0) {
+                mostrarAlerta('Nenhuma venda registrada!');
+                return;
+            }
+
+            const totalPudinsVendidos = vendas.reduce((sum, v) => sum + v.quantidade, 0);
+            const custoTotal = totalPudinsVendidos * CUSTO_TOTAL;
+
+            const vendasPix = vendas.filter(v => v.formaPagamento === 'PIX');
+            const vendasDinheiro = vendas.filter(v => v.formaPagamento === 'DINHEIRO');
+            const vendasCartao = vendas.filter(v => v.formaPagamento === 'CARTÃO');
+            const vendasEncomenda = vendas.filter(v => v.formaPagamento === 'ENCOMENDA');
+
+            const totalPix = vendasPix.reduce((sum, v) => sum + v.total, 0);
+            const totalDinheiro = vendasDinheiro.reduce((sum, v) => sum + v.total, 0);
+            const totalCartao = vendasCartao.reduce((sum, v) => sum + v.total, 0);
+            const totalEncomenda = vendasEncomenda.reduce((sum, v) => sum + v.total, 0);
+
+            const relatorioHTML = `
+                <p><strong>Total Vendido:</strong> ${totalPudinsVendidos} unidades</p>
+                <p><strong>Faturamento:</strong> ${formatarMoeda(faturamentoBruto)}</p>
+                <p><strong>Custos:</strong> ${formatarMoeda(custoTotal)}</p>
+                <p style="font-size: 1.2rem; color: var(--cor-principal); margin-top: 12px;">
+                    <strong>💰 Lucro:</strong> ${formatarMoeda(lucroLiquido)}
+                </p>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #E0E0E0;">
+                <p><strong>Por Forma de Pagamento:</strong></p>
+                <p>🔹 PIX: ${vendasPix.length} - ${formatarMoeda(totalPix)}</p>
+                <p>🔹 DINHEIRO: ${vendasDinheiro.length} - ${formatarMoeda(totalDinheiro)}</p>
+                <p>🔹 CARTÃO: ${vendasCartao.length} - ${formatarMoeda(totalCartao)}</p>
+                <p>🔹 ENCOMENDAS: ${vendasEncomenda.length} - ${formatarMoeda(totalEncomenda)}</p>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #E0E0E0;">
+                <p><strong>Estoque:</strong> ${estoque} unidades</p>
+                <p style="color: #E63946; font-weight: 600;"><strong>Encomendas Pendentes:</strong> ${encomendas.length}</p>
+            `;
+
+            document.getElementById('modal-body').innerHTML = relatorioHTML;
+            document.getElementById('modal-relatorio').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-relatorio').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-relatorio');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function mostrarAlerta(mensagem) {
+            const alerta = document.createElement('div');
+            alerta.className = 'alerta-flutuante';
+            alerta.textContent = mensagem;
+            document.body.appendChild(alerta);
+
+            setTimeout(() => {
+                alerta.remove();
+            }, 3000);
+        }
+
+        function obterHoraAtual() {
+            const agora = new Date();
+            const horas = String(agora.getHours()).padStart(2, '0');
+            const minutos = String(agora.getMinutes()).padStart(2, '0');
+            return `${horas}:${minutos}`;
+        }
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+        }
+
+        function salvarDados() {
+            const dados = {
+                estoque: estoque,
+                faturamentoBruto: faturamentoBruto,
+                lucroLiquido: lucroLiquido,
+                vendas: vendas,
+                encomendas: encomendas,
+                data: new Date().toLocaleDateString('pt-BR')
+            };
+            localStorage.setItem('pdv-pudim-offline', JSON.stringify(dados));
+        }
+
+        function carregarDados() {
+            const dadosSalvos = localStorage.getItem('pdv-pudim-offline');
+            if (dadosSalvos) {
+                const dados = JSON.parse(dadosSalvos);
+                
+                const dataAtual = new Date().toLocaleDateString('pt-BR');
+                if (dados.data === dataAtual) {
+                    estoque = dados.estoque;
+                    faturamentoBruto = dados.faturamentoBruto;
+                    lucroLiquido = dados.lucroLiquido;
+                    vendas = dados.vendas;
+                    encomendas = dados.encomendas || [];
+
+                    vendas.forEach(venda => adicionarLinhaHistorico(venda));
+                    atualizarListaEncomendas();
+                    atualizarInterface();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
