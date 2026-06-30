@@ -59,22 +59,32 @@ function atualizarAlertas() {
     
     if (!dadosEstoque) return;
     
-    const estoque = dadosEstoque.estoque || 0;
+    // Calcular total corretamente independente do formato
+    let estoqueTotal = 0;
+    if (typeof dadosEstoque.estoque_total === 'number') {
+        estoqueTotal = dadosEstoque.estoque_total;
+    } else if (dadosEstoque.estoque && typeof dadosEstoque.estoque === 'object') {
+        estoqueTotal = (parseInt(dadosEstoque.estoque['80g']) || 0) +
+                       (parseInt(dadosEstoque.estoque['150g']) || 0) +
+                       (parseInt(dadosEstoque.estoque['500g']) || 0);
+    } else {
+        estoqueTotal = parseInt(dadosEstoque.estoque) || 0;
+    }
     
-    if (estoque <= 5) {
+    if (estoqueTotal <= 5) {
         const alerta = document.createElement('div');
         alerta.className = 'alerta alerta-danger';
-        alerta.innerHTML = '🚨 <strong>ESTOQUE CRÍTICO!</strong> Apenas ' + estoque + ' pudins disponíveis. Produza mais urgentemente!';
+        alerta.innerHTML = '🚨 <strong>ESTOQUE CRÍTICO!</strong> Apenas ' + estoqueTotal + ' pudins disponíveis. Produza mais urgentemente!';
         container.appendChild(alerta);
-    } else if (estoque <= 10) {
+    } else if (estoqueTotal <= 10) {
         const alerta = document.createElement('div');
         alerta.className = 'alerta alerta-warning';
-        alerta.innerHTML = '⚠️ <strong>Estoque baixo!</strong> Você tem ' + estoque + ' pudins. Considere produzir mais.';
+        alerta.innerHTML = '⚠️ <strong>Estoque baixo!</strong> Você tem ' + estoqueTotal + ' pudins. Considere produzir mais.';
         container.appendChild(alerta);
-    } else if (estoque >= 50) {
+    } else if (estoqueTotal >= 50) {
         const alerta = document.createElement('div');
         alerta.className = 'alerta alerta-info';
-        alerta.innerHTML = '✅ Estoque saudável! Você tem ' + estoque + ' pudins disponíveis.';
+        alerta.innerHTML = '✅ Estoque saudável! Você tem ' + estoqueTotal + ' pudins disponíveis.';
         container.appendChild(alerta);
     }
 }
@@ -224,8 +234,17 @@ function atualizarPrevisao() {
     
     // Calcular sugestão de produção
     // (média diária * 2 dias) + encomendas - estoque atual
-    const estoqueAtual = dadosEstoque.estoque || 0;
-    const sugestao = Math.max(0, (mediaVendas * 2) + totalEncomendas - estoqueAtual);
+    let estoqueAtualNum = 0;
+    if (typeof dadosEstoque.estoque_total === 'number') {
+        estoqueAtualNum = dadosEstoque.estoque_total;
+    } else if (dadosEstoque.estoque && typeof dadosEstoque.estoque === 'object') {
+        estoqueAtualNum = (parseInt(dadosEstoque.estoque['80g']) || 0) +
+                          (parseInt(dadosEstoque.estoque['150g']) || 0) +
+                          (parseInt(dadosEstoque.estoque['500g']) || 0);
+    } else {
+        estoqueAtualNum = parseInt(dadosEstoque.estoque) || 0;
+    }
+    const sugestao = Math.max(0, (mediaVendas * 2) + totalEncomendas - estoqueAtualNum);
     
     document.getElementById('sugestao-producao').textContent = sugestao;
     

@@ -281,5 +281,84 @@
     <script src="scripts/api.js?v=20260630"></script>
     <script src="scripts/sidebar.js?v=20260630"></script>
     <script src="scripts/estoque.js?v=20260630"></script>
+    <script>
+    // Fix: garante que carregarDados funciona com estoque como dict ou número
+    carregarDados = async function() {
+        var dados = null;
+        try { dados = await carregarDadosPDV(); } catch(e) {
+            dados = {estoque: {'80g':0,'150g':0,'500g':0}, vendas:[], encomendas:[], faturamento_bruto:0, lucro_liquido:0};
+        }
+        dadosEstoque = dados;
+
+        // Calcular total seguro
+        var estoqueTotal = 0;
+        if (typeof dados.estoque_total === 'number') {
+            estoqueTotal = dados.estoque_total;
+        } else if (dados.estoque && typeof dados.estoque === 'object') {
+            estoqueTotal = (parseInt(dados.estoque['80g']) || 0) +
+                           (parseInt(dados.estoque['150g']) || 0) +
+                           (parseInt(dados.estoque['500g']) || 0);
+        } else {
+            estoqueTotal = parseInt(dados.estoque) || 0;
+        }
+        var isDict = dados.estoque && typeof dados.estoque === 'object';
+
+        function el(id) { return document.getElementById(id); }
+
+        // Cards de estoque
+        if (el('estoque-80g')) el('estoque-80g').textContent = isDict ? (dados.estoque['80g'] || 0) : 0;
+        if (el('estoque-150g')) el('estoque-150g').textContent = isDict ? (dados.estoque['150g'] || 0) : (typeof dados.estoque === 'number' ? dados.estoque : 0);
+        if (el('estoque-500g')) el('estoque-500g').textContent = isDict ? (dados.estoque['500g'] || 0) : 0;
+        if (el('estoque-atual')) el('estoque-atual').textContent = estoqueTotal;
+
+        var vendas = dados.vendas || [];
+        var totalVendido = vendas.reduce(function(t,v){return t+(v.quantidade||0);},0);
+        if (el('vendidos-hoje')) el('vendidos-hoje').textContent = totalVendido;
+
+        // Alertas
+        var container = el('alertas-estoque');
+        if (container) {
+            container.innerHTML = '';
+            if (estoqueTotal <= 5) {
+                container.innerHTML = '<div class="alerta alerta-danger">\uD83D\uDEA8 <strong>ESTOQUE CR\u00CDTICO!</strong> Apenas ' + estoqueTotal + ' pudins dispon\u00EDveis. Produza mais urgentemente!</div>';
+            } else if (estoqueTotal <= 10) {
+                container.innerHTML = '<div class="alerta alerta-warning">\u26A0\uFE0F <strong>Estoque baixo!</strong> Voc\u00EA tem ' + estoqueTotal + ' pudins. Considere produzir mais.</div>';
+            } else if (estoqueTotal >= 50) {
+                container.innerHTML = '<div class="alerta alerta-info">\u2705 Estoque saud\u00E1vel! Voc\u00EA tem ' + estoqueTotal + ' pudins dispon\u00EDveis.</div>';
+            }
+        }
+
+        // Histórico
+        var tbody = el('historico-estoque');
+        if (tbody) {
+            if (vendas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhuma movimenta\u00E7\u00E3o hoje</td></tr>';
+            } else {
+                tbody.innerHTML = '';
+                var ultimas = vendas.slice().reverse().slice(0, 10);
+                ultimas.forEach(function(venda) {
+                    var tr = document.createElement('tr');
+                    var hora = venda.data_hora ? (venda.data_hora.split(' ')[1] || venda.data_hora) : '-';
+                    tr.innerHTML = '<td>' + hora + '</td><td><span class="tipo-saida">\uD83D\uDD3B Venda</span></td><td><strong>-' + venda.quantidade + '</strong></td><td>' + (venda.estoque_apos || '-') + '</td>';
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        // Previsão
+        var media = Math.ceil(totalVendido || 10);
+        if (el('media-vendas')) el('media-vendas').textContent = media;
+        var hoje = new Date(); hoje.setHours(0,0,0,0);
+        var tresDias = new Date(hoje); tresDias.setDate(hoje.getDate()+3);
+        var encs = (dados.encomendas || []).filter(function(en) {
+            if (en.status !== 'pendente') return false;
+            var d = new Date(en.data); return d >= hoje && d <= tresDias;
+        });
+        var totalEncs = encs.reduce(function(t,en){return t+(en.quantidade||0);},0);
+        if (el('encomendas-previstas')) el('encomendas-previstas').textContent = totalEncs;
+        var sugestao = Math.max(0, (media * 2) + totalEncs - estoqueTotal);
+        if (el('sugestao-producao')) el('sugestao-producao').textContent = sugestao;
+    };
+    </script>
 </body>
 </html>

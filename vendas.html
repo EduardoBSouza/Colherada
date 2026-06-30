@@ -215,5 +215,55 @@
     <script src="scripts/api.js?v=20260630"></script>
     <script src="scripts/sidebar.js?v=20260630"></script>
     <script src="scripts/vendas.js?v=20260630"></script>
+    <script>
+    // Fix: garante que carregarDados funciona com estoque como dict
+    carregarDados = async function() {
+        var dados = null;
+        try { dados = await carregarDadosPDV(); } catch(e) {
+            dados = {estoque: {'80g':0,'150g':0,'500g':0}, vendas:[], faturamento_bruto:0, lucro_liquido:0};
+        }
+        dadosVendas = dados;
+
+        function el(id) { return document.getElementById(id); }
+        var isDict = dados.estoque && typeof dados.estoque === 'object';
+
+        // Cards de estoque
+        if (el('estoque-80g')) el('estoque-80g').textContent = isDict ? (dados.estoque['80g'] || 0) : 0;
+        if (el('estoque-150g')) el('estoque-150g').textContent = isDict ? (dados.estoque['150g'] || 0) : (typeof dados.estoque === 'number' ? dados.estoque : 0);
+        if (el('estoque-500g')) el('estoque-500g').textContent = isDict ? (dados.estoque['500g'] || 0) : 0;
+
+        var vendas = dados.vendas || [];
+        if (el('vendas-hoje')) el('vendas-hoje').textContent = vendas.length;
+        if (el('faturamento-hoje')) el('faturamento-hoje').textContent = typeof formatarMoeda === 'function' ? formatarMoeda(dados.faturamento_bruto || 0) : 'R$ 0,00';
+
+        // Histórico
+        var tbody = el('historico-vendas');
+        if (tbody) {
+            if (vendas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma venda registrada hoje</td></tr>';
+                if (el('total-vendas-dia')) el('total-vendas-dia').textContent = 0;
+                if (el('quantidade-total-dia')) el('quantidade-total-dia').textContent = 0;
+                if (el('faturamento-total-dia')) el('faturamento-total-dia').textContent = typeof formatarMoeda === 'function' ? formatarMoeda(0) : 'R$ 0,00';
+            } else {
+                tbody.innerHTML = '';
+                var ordenadas = vendas.slice().reverse();
+                var totalV = 0, qtdTotal = 0, fatTotal = 0;
+                var emojiPag = {'pix':'\uD83D\uDCB3 PIX','dinheiro':'\uD83D\uDCB5 Dinheiro','cartao':'\uD83D\uDCB3 Cart\u00E3o'};
+                var tamEmoji = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g'};
+                ordenadas.forEach(function(venda) {
+                    totalV++; qtdTotal += (venda.quantidade||0); fatTotal += (venda.valor_total||0);
+                    var tr = document.createElement('tr');
+                    var hora = venda.data_hora ? (venda.data_hora.split(' ')[1] || venda.data_hora) : '-';
+                    var fmt = typeof formatarMoeda === 'function' ? formatarMoeda : function(v){ return 'R$ '+v; };
+                    tr.innerHTML = '<td>' + hora + '</td><td>' + (tamEmoji[venda.tamanho] || venda.tamanho || '\uD83C\uDF6E 150g') + '</td><td><strong>' + (venda.quantidade||0) + '</strong></td><td>' + fmt(venda.valor_unitario||10) + '</td><td>' + (emojiPag[venda.pagamento] || venda.pagamento || '-') + '</td><td><strong>' + fmt(venda.valor_total||0) + '</strong></td>';
+                    tbody.appendChild(tr);
+                });
+                if (el('total-vendas-dia')) el('total-vendas-dia').textContent = totalV;
+                if (el('quantidade-total-dia')) el('quantidade-total-dia').textContent = qtdTotal;
+                if (el('faturamento-total-dia')) el('faturamento-total-dia').textContent = typeof formatarMoeda === 'function' ? formatarMoeda(fatTotal) : 'R$ '+fatTotal;
+            }
+        }
+    };
+    </script>
 </body>
 </html>

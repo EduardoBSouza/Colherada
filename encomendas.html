@@ -208,5 +208,71 @@
     <script src="scripts/api.js?v=20260630"></script>
     <script src="scripts/sidebar.js?v=20260630"></script>
     <script src="scripts/encomendas.js?v=20260630"></script>
+    <script>
+    // Fix: garante que carregarDados funciona corretamente
+    carregarDados = async function() {
+        var dados = null;
+        try { dados = await carregarDadosPDV(); } catch(e) {
+            dados = {estoque: {'80g':0,'150g':0,'500g':0}, vendas:[], encomendas:[]};
+        }
+        dadosEncomendas = dados;
+
+        function el(id) { return document.getElementById(id); }
+        var encomendas = dados.encomendas || [];
+        var pendentes = encomendas.filter(function(en) { return en.status === 'pendente'; });
+        if (el('total-pendentes')) el('total-pendentes').textContent = pendentes.length;
+
+        var hoje = new Date(); hoje.setHours(0,0,0,0);
+        var mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
+        var concluidas = encomendas.filter(function(en) {
+            if (en.status !== 'concluida') return false;
+            var d = new Date(en.concluido_em || en.data_conclusao || en.data);
+            return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+        });
+        if (el('concluidas-mes')) el('concluidas-mes').textContent = concluidas.length;
+
+        // Lista de encomendas pendentes
+        var listaTodas = el('lista-todas');
+        if (listaTodas) {
+            if (pendentes.length === 0) {
+                listaTodas.innerHTML = '<p class="mensagem-vazio">Nenhuma encomenda pendente no momento \uD83C\uDF89</p>';
+            } else {
+                listaTodas.innerHTML = '';
+                var ordenadas = pendentes.slice().sort(function(a,b){ return new Date(a.data)-new Date(b.data); });
+                var tamEmoji = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g'};
+                var fmt = typeof formatarData === 'function' ? formatarData : function(d){ return d; };
+                ordenadas.forEach(function(enc) {
+                    var div = document.createElement('div');
+                    div.className = 'encomenda-card';
+                    var tam = enc.tamanho ? (tamEmoji[enc.tamanho] || enc.tamanho) : '\uD83C\uDF6E 150g';
+                    div.innerHTML = '<div class="encomenda-info"><div class="encomenda-header"><span class="encomenda-cliente">' + enc.cliente + '</span></div><div class="encomenda-detalhes"><span>\uD83D\uDCC5 <strong>' + fmt(enc.data) + '</strong></span><span>' + tam + '</span><span>\uD83D\uDCE6 <strong>' + enc.quantidade + '</strong> ' + (enc.quantidade===1?'pudim':'pudins') + '</span>' + (enc.telefone ? '<span>\uD83D\uDCDE ' + enc.telefone + '</span>' : '') + '</div>' + (enc.observacoes ? '<div class="encomenda-observacoes">\uD83D\uDCAC ' + enc.observacoes + '</div>' : '') + '</div><div class="encomenda-acoes"><button class="btn-concluir" onclick="concluir(' + enc.id + ')">\u2705 Concluir</button><button class="btn-cancelar" onclick="cancelar(' + enc.id + ')">\u274C Cancelar</button></div>';
+                    listaTodas.appendChild(div);
+                });
+            }
+        }
+
+        // Histórico de concluídas
+        var tbody = el('historico-concluidas');
+        if (tbody) {
+            var concluidasOrdenadas = concluidas.slice().sort(function(a,b){
+                return new Date(b.concluido_em||b.data_conclusao||b.data) - new Date(a.concluido_em||a.data_conclusao||a.data);
+            }).slice(0,10);
+            if (concluidasOrdenadas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma encomenda conclु\u00EDda ainda</td></tr>';
+            } else {
+                tbody.innerHTML = '';
+                var tamEmoji2 = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g'};
+                var fmt2 = typeof formatarData === 'function' ? formatarData : function(d){ return d; };
+                concluidasOrdenadas.forEach(function(enc) {
+                    var tr = document.createElement('tr');
+                    var tam = enc.tamanho ? (tamEmoji2[enc.tamanho] || enc.tamanho) : '\uD83C\uDF6E 150g';
+                    var dataConclusao = enc.concluido_em || enc.data_conclusao || enc.data;
+                    tr.innerHTML = '<td><strong>' + enc.cliente + '</strong></td><td>' + tam + '</td><td>' + enc.quantidade + ' ' + (enc.quantidade===1?'pudim':'pudins') + '</td><td>' + fmt2(enc.data) + '</td><td>' + (dataConclusao ? fmt2(dataConclusao) : '-') + '</td>';
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+    };
+    </script>
 </body>
 </html>
