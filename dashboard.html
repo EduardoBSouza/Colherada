@@ -182,5 +182,55 @@
     <script src="scripts/api.js?v=20260630"></script>
     <script src="scripts/sidebar.js?v=20260630"></script>
     <script src="scripts/dashboard.js?v=20260630"></script>
+    <script>
+    // OVERRIDE DEFINITIVO: Substitui atualizarCards do dashboard.js externo
+    // Este script está embutido no HTML e sempre tem a versão mais recente
+    atualizarCards = function() {
+        if (!dadosAtuais) return;
+
+        const estoqueEl = document.getElementById('estoque-valor');
+        const cardEstoque = document.getElementById('card-estoque');
+        const alertaEstoque = cardEstoque ? cardEstoque.querySelector('.card-alert') : null;
+
+        // Calcular estoque total - trata todos os casos possíveis
+        let estoqueTotal = 0;
+        if (typeof dadosAtuais.estoque_total === 'number') {
+            // Campo já calculado pelo backend (versão nova do app.py)
+            estoqueTotal = dadosAtuais.estoque_total;
+        } else if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object') {
+            // Objeto com 3 tamanhos - calcular soma
+            estoqueTotal = (parseInt(dadosAtuais.estoque['80g']) || 0) +
+                           (parseInt(dadosAtuais.estoque['150g']) || 0) +
+                           (parseInt(dadosAtuais.estoque['500g']) || 0);
+        } else if (typeof dadosAtuais.estoque === 'number') {
+            estoqueTotal = dadosAtuais.estoque;
+        }
+
+        if (estoqueEl) estoqueEl.textContent = estoqueTotal;
+
+        if (alertaEstoque && cardEstoque) {
+            if (estoqueTotal <= 10) {
+                alertaEstoque.style.display = 'flex';
+                cardEstoque.style.borderLeftColor = 'var(--cor-danger)';
+            } else {
+                alertaEstoque.style.display = 'none';
+                cardEstoque.style.borderLeftColor = 'var(--cor-principal)';
+            }
+        }
+
+        var fatEl = document.getElementById('faturamento-valor');
+        var lucroEl = document.getElementById('lucro-valor');
+        var encEl = document.getElementById('encomendas-pendentes');
+
+        if (fatEl) fatEl.textContent = formatarMoeda(dadosAtuais.faturamento_bruto || 0);
+        if (lucroEl) lucroEl.textContent = formatarMoeda(dadosAtuais.lucro_liquido || 0);
+
+        if (encEl) {
+            var encomendas = dadosAtuais.encomendas || [];
+            var pendentes = encomendas.filter(function(e) { return e.status === 'pendente'; }).length;
+            encEl.textContent = pendentes;
+        }
+    };
+    </script>
 </body>
 </html>
