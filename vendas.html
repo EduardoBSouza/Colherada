@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendas - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/vendas.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li>
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li>
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>💳 Registrar Venda</h1>
+            <p class="page-subtitle">Registre suas vendas de forma rápida e eficiente</p>
+        </header>
+
+        <!-- Cards de Resumo Rápido -->
+        <section class="resumo-rapido">
+            <div class="card-mini">
+                <span class="card-mini-label">Estoque Disponível</span>
+                <span class="card-mini-valor" id="estoque-disponivel">0</span>
+            </div>
+            <div class="card-mini">
+                <span class="card-mini-label">Vendas Hoje</span>
+                <span class="card-mini-valor" id="vendas-hoje">0</span>
+            </div>
+            <div class="card-mini">
+                <span class="card-mini-label">Faturamento Hoje</span>
+                <span class="card-mini-valor" id="faturamento-hoje">R$ 0,00</span>
+            </div>
+        </section>
+
+        <!-- Formulário de Nova Venda -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>➕ Nova Venda</h2>
+            </div>
+            
+            <div class="form-venda">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantidade-venda">Quantidade de Pudins</label>
+                        <input type="number" 
+                               id="quantidade-venda" 
+                               class="form-input input-quantidade" 
+                               min="1" 
+                               value="1"
+                               placeholder="Digite a quantidade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="valor-unitario">Valor Unitário (R$)</label>
+                        <input type="number" 
+                               id="valor-unitario" 
+                               class="form-input" 
+                               min="0.01" 
+                               step="0.01"
+                               value="10.00"
+                               placeholder="10.00">
+                    </div>
+                </div>
+                
+                <div class="total-venda">
+                    <span class="total-label">Valor Total:</span>
+                    <span class="total-valor" id="total-venda">R$ 10,00</span>
+                </div>
+                
+                <div class="botoes-pagamento-grid">
+                    <button class="btn-pagamento btn-pix" onclick="registrarVendaRapida('pix')">
+                        <span class="btn-icon">💳</span>
+                        <span class="btn-text">PIX</span>
+                    </button>
+                    <button class="btn-pagamento btn-dinheiro" onclick="registrarVendaRapida('dinheiro')">
+                        <span class="btn-icon">💵</span>
+                        <span class="btn-text">Dinheiro</span>
+                    </button>
+                    <button class="btn-pagamento btn-cartao" onclick="registrarVendaRapida('cartao')">
+                        <span class="btn-icon">💳</span>
+                        <span class="btn-text">Cartão</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Histórico de Vendas -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📋 Histórico de Vendas do Dia</h2>
+                <div class="header-acoes">
+                    <button class="btn btn-info btn-sm" onclick="atualizarHistorico()">
+                        🔄 Atualizar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tabela-wrapper">
+                <table class="tabela-vendas">
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unit.</th>
+                            <th>Pagamento</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historico-vendas">
+                        <tr>
+                            <td colspan="5" class="text-center">Carregando vendas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="resumo-historico">
+                <div class="resumo-item">
+                    <span class="resumo-label">Total de Vendas:</span>
+                    <span class="resumo-valor" id="total-vendas-dia">0</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="resumo-label">Quantidade Total:</span>
+                    <span class="resumo-valor" id="quantidade-total-dia">0</span>
+                </div>
+                <div class="resumo-item destaque">
+                    <span class="resumo-label">Faturamento Total:</span>
+                    <span class="resumo-valor" id="faturamento-total-dia">R$ 0,00</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/sidebar.js"></script>
+    <script src="scripts/vendas.js"></script>
+</body>
+</html>

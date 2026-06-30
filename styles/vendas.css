@@ -1,0 +1,224 @@
+/* ============================================
+   ESTILOS DA PÁGINA DE VENDAS
+============================================ */
+
+/* Resumo rápido */
+.resumo-rapido {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.card-mini {
+    background: var(--cor-card);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--sombra-card);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: var(--transicao);
+}
+
+.card-mini:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-2px);
+}
+
+.card-mini-label {
+    font-size: 0.85rem;
+    color: var(--cor-texto-claro);
+    font-weight: 600;
+}
+
+.card-mini-valor {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+}
+
+/* Formulário de venda */
+.form-venda {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.input-quantidade {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--cor-principal);
+}
+
+/* Total da venda */
+.total-venda {
+    padding: 20px;
+    background: linear-gradient(135deg, var(--cor-fundo) 0%, #E8E8D8 100%);
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--cor-dourado);
+}
+
+.total-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--cor-texto);
+}
+
+.total-valor {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-success);
+}
+
+/* Botões de pagamento */
+.botoes-pagamento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.btn-pagamento {
+    padding: 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transicao);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--sombra);
+}
+
+.btn-pagamento:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-hover);
+}
+
+.btn-pagamento:active {
+    transform: translateY(0);
+}
+
+.btn-pagamento .btn-icon {
+    font-size: 2.5rem;
+}
+
+.btn-pagamento .btn-text {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-pix {
+    background: linear-gradient(135deg, var(--cor-pix) 0%, #00A344 100%);
+}
+
+.btn-dinheiro {
+    background: linear-gradient(135deg, var(--cor-dinheiro) 0%, #1976D2 100%);
+}
+
+.btn-cartao {
+    background: linear-gradient(135deg, var(--cor-cartao) 0%, #7B1FA2 100%);
+}
+
+/* Histórico */
+.header-acoes {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.tabela-vendas {
+    font-size: 0.95rem;
+}
+
+.tabela-vendas th {
+    font-size: 0.9rem;
+}
+
+.tabela-vendas td {
+    font-size: 0.95rem;
+}
+
+/* Resumo do histórico */
+.resumo-historico {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid var(--cor-borda);
+}
+
+.resumo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: var(--cor-fundo);
+    border-radius: 8px;
+}
+
+.resumo-item.destaque {
+    background: linear-gradient(135deg, var(--cor-dourado) 0%, #B8860B 100%);
+    color: white;
+}
+
+.resumo-item.destaque .resumo-label,
+.resumo-item.destaque .resumo-valor {
+    color: white;
+}
+
+.resumo-item .resumo-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.resumo-item .resumo-valor {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--cor-principal);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .resumo-rapido {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .botoes-pagamento-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .total-venda {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .resumo-historico {
+        grid-template-columns: 1fr;
+    }
+}

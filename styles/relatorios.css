@@ -1,0 +1,333 @@
+/* ============================================
+   ESTILOS DA PÁGINA DE RELATÓRIOS
+============================================ */
+
+/* Seleção de Período */
+.periodo-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.periodo-rapido {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-periodo {
+    flex: 1;
+    min-width: 150px;
+    padding: 15px 20px;
+    background: var(--cor-card);
+    border: 2px solid var(--cor-borda);
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--cor-texto);
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.btn-periodo:hover {
+    background: var(--cor-fundo);
+    border-color: var(--cor-principal);
+}
+
+.btn-periodo.active {
+    background: var(--cor-principal);
+    color: white;
+    border-color: var(--cor-principal);
+}
+
+.periodo-custom {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.periodo-custom .form-group {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+}
+
+.periodo-atual {
+    padding: 8px 16px;
+    background: var(--cor-dourado);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Resumo Geral */
+.resumo-geral {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.resumo-card {
+    background: linear-gradient(135deg, var(--cor-fundo) 0%, var(--cor-card) 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--sombra-card);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: var(--transicao);
+    border-left: 4px solid var(--cor-dourado);
+}
+
+.resumo-card:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-3px);
+}
+
+.resumo-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.resumo-info {
+    flex: 1;
+}
+
+.resumo-info h3 {
+    font-size: 0.85rem;
+    color: var(--cor-texto-claro);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.resumo-valor {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    line-height: 1;
+}
+
+/* Gráfico Placeholder */
+.grafico-placeholder {
+    background: linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    border: 2px dashed var(--cor-info);
+}
+
+.grafico-mensagem {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    margin-bottom: 10px;
+}
+
+.grafico-info {
+    color: var(--cor-texto-claro);
+    margin-bottom: 30px;
+}
+
+.grafico-barras {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 200px;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.barra-grafico {
+    flex: 1;
+    background: linear-gradient(180deg, var(--cor-dourado) 0%, var(--cor-principal) 100%);
+    border-radius: 8px 8px 0 0;
+    transition: var(--transicao);
+    position: relative;
+    min-height: 20px;
+}
+
+.barra-grafico:hover {
+    opacity: 0.8;
+}
+
+.barra-grafico-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: var(--cor-texto-claro);
+    white-space: nowrap;
+}
+
+/* Distribuição de Pagamento */
+.pagamento-distribuicao {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pagamento-barra {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.barra-label {
+    min-width: 100px;
+    font-weight: 600;
+    color: var(--cor-texto);
+}
+
+.barra-container {
+    flex: 1;
+    height: 40px;
+    background: var(--cor-fundo);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.barra {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 15px;
+}
+
+.barra-pix {
+    background: linear-gradient(90deg, var(--cor-pix) 0%, #00A344 100%);
+}
+
+.barra-dinheiro {
+    background: linear-gradient(90deg, var(--cor-dinheiro) 0%, #1976D2 100%);
+}
+
+.barra-cartao {
+    background: linear-gradient(90deg, var(--cor-cartao) 0%, #7B1FA2 100%);
+}
+
+.barra-valor {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Melhor Dia */
+.melhor-dia {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    border: 3px solid var(--cor-dourado);
+    box-shadow: var(--sombra);
+}
+
+.melhor-dia-icon {
+    font-size: 4rem;
+}
+
+.melhor-dia-info {
+    flex: 1;
+}
+
+.melhor-dia-info h3 {
+    font-size: 1.8rem;
+    color: var(--cor-principal);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.melhor-dia-stats {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    font-size: 1.1rem;
+    color: var(--cor-texto);
+}
+
+.melhor-dia-stats .destaque {
+    color: var(--cor-dourado);
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+/* Tabela de Relatório */
+.tabela-relatorio {
+    font-size: 0.95rem;
+}
+
+.tabela-relatorio td {
+    padding: 12px;
+}
+
+/* Ações de Exportação */
+.exportar-acoes {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.exportar-acoes .btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 18px 25px;
+    font-size: 1.1rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .periodo-rapido {
+        flex-direction: column;
+    }
+    
+    .btn-periodo {
+        min-width: 100%;
+    }
+    
+    .periodo-custom {
+        flex-direction: column;
+    }
+    
+    .periodo-custom .form-group {
+        min-width: 100%;
+    }
+    
+    .resumo-geral {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .melhor-dia {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .exportar-acoes {
+        flex-direction: column;
+    }
+    
+    .exportar-acoes .btn {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .resumo-geral {
+        grid-template-columns: 1fr;
+    }
+    
+    .barra-label {
+        min-width: 80px;
+        font-size: 0.9rem;
+    }
+}

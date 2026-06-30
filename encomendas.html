@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encomendas - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/encomendas.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li>
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>📝 Gestão de Encomendas</h1>
+            <p class="page-subtitle">Agende e gerencie pedidos futuros de clientes</p>
+        </header>
+
+        <!-- Resumo Rápido -->
+        <section class="resumo-encomendas">
+            <div class="card-resumo card-urgente">
+                <div class="card-icone">🔴</div>
+                <div class="card-info">
+                    <h3>Urgentes (Hoje)</h3>
+                    <p class="card-numero" id="urgentes-hoje">0</p>
+                </div>
+            </div>
+            <div class="card-resumo card-proximas">
+                <div class="card-icone">🟡</div>
+                <div class="card-info">
+                    <h3>Próximos 3 Dias</h3>
+                    <p class="card-numero" id="proximas-3dias">0</p>
+                </div>
+            </div>
+            <div class="card-resumo card-total">
+                <div class="card-icone">📝</div>
+                <div class="card-info">
+                    <h3>Total Pendentes</h3>
+                    <p class="card-numero" id="total-pendentes">0</p>
+                </div>
+            </div>
+            <div class="card-resumo card-concluidas">
+                <div class="card-icone">✅</div>
+                <div class="card-info">
+                    <h3>Concluídas (Mês)</h3>
+                    <p class="card-numero" id="concluidas-mes">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Nova Encomenda -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>➕ Registrar Nova Encomenda</h2>
+            </div>
+            
+            <div class="form-encomenda">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cliente-nome">Nome do Cliente *</label>
+                        <input type="text" 
+                               id="cliente-nome" 
+                               class="form-input" 
+                               placeholder="Digite o nome do cliente"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cliente-telefone">Telefone</label>
+                        <input type="tel" 
+                               id="cliente-telefone" 
+                               class="form-input" 
+                               placeholder="(11) 98765-4321">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="encomenda-quantidade">Quantidade de Pudins *</label>
+                        <input type="number" 
+                               id="encomenda-quantidade" 
+                               class="form-input" 
+                               min="1" 
+                               value="5"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="encomenda-data">Data de Entrega *</label>
+                        <input type="date" 
+                               id="encomenda-data" 
+                               class="form-input"
+                               required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="encomenda-observacoes">Observações</label>
+                    <textarea id="encomenda-observacoes" 
+                              class="form-textarea" 
+                              rows="3"
+                              placeholder="Anotações adicionais sobre a encomenda..."></textarea>
+                </div>
+                
+                <button class="btn btn-success btn-grande" onclick="cadastrarEncomenda()">
+                    ✅ Cadastrar Encomenda
+                </button>
+            </div>
+        </section>
+
+        <!-- Encomendas Urgentes -->
+        <section class="secao-card" id="secao-urgentes" style="display: none;">
+            <div class="secao-header">
+                <h2>🔴 Encomendas Urgentes (Hoje)</h2>
+            </div>
+            <div id="lista-urgentes" class="lista-encomendas"></div>
+        </section>
+
+        <!-- Encomendas Próximas -->
+        <section class="secao-card" id="secao-proximas" style="display: none;">
+            <div class="secao-header">
+                <h2>🟡 Próximos 3 Dias</h2>
+            </div>
+            <div id="lista-proximas" class="lista-encomendas"></div>
+        </section>
+
+        <!-- Todas as Encomendas Pendentes -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📋 Todas as Encomendas Pendentes</h2>
+                <button class="btn btn-info btn-sm" onclick="atualizarEncomendas()">
+                    🔄 Atualizar
+                </button>
+            </div>
+            <div id="lista-todas" class="lista-encomendas">
+                <p class="mensagem-vazio">Carregando encomendas...</p>
+            </div>
+        </section>
+
+        <!-- Histórico de Encomendas Concluídas -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>✅ Encomendas Concluídas Recentes</h2>
+            </div>
+            <div class="tabela-wrapper">
+                <table class="tabela-encomendas">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Quantidade</th>
+                            <th>Data Entrega</th>
+                            <th>Concluída Em</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historico-concluidas">
+                        <tr>
+                            <td colspan="4" class="text-center">Carregando...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/sidebar.js"></script>
+    <script src="scripts/encomendas.js"></script>
+</body>
+</html>

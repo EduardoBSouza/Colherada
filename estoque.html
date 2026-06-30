@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/estoque.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li>
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li>
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>📦 Gestão de Estoque</h1>
+            <p class="page-subtitle">Controle de produtos prontos e ingredientes</p>
+        </header>
+
+        <!-- Status do Estoque -->
+        <section class="estoque-status">
+            <div class="status-card status-destaque">
+                <div class="status-icon">📦</div>
+                <div class="status-content">
+                    <h3 class="status-titulo">Estoque Atual</h3>
+                    <p class="status-valor" id="estoque-atual">0</p>
+                    <p class="status-subtitulo">pudins prontos</p>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon">📈</div>
+                <div class="status-content">
+                    <h3 class="status-titulo">Vendidos Hoje</h3>
+                    <p class="status-valor" id="vendidos-hoje">0</p>
+                    <p class="status-subtitulo">pudins</p>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon">➕</div>
+                <div class="status-content">
+                    <h3 class="status-titulo">Produzidos Hoje</h3>
+                    <p class="status-valor" id="produzidos-hoje">0</p>
+                    <p class="status-subtitulo">pudins</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alertas -->
+        <div id="alertas-estoque"></div>
+
+        <!-- Abastecer Estoque -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>➕ Abastecer Estoque</h2>
+                <p class="secao-descricao">Adicione pudins recém-produzidos ao estoque</p>
+            </div>
+            
+            <div class="form-estoque">
+                <div class="form-group">
+                    <label for="quantidade-abastecer">Quantidade de Pudins Produzidos</label>
+                    <input type="number" 
+                           id="quantidade-abastecer" 
+                           class="form-input input-grande" 
+                           min="1" 
+                           value="10"
+                           placeholder="Digite a quantidade">
+                </div>
+                
+                <button class="btn btn-success btn-grande" onclick="abastecer()">
+                    ✅ Adicionar ao Estoque
+                </button>
+            </div>
+        </section>
+
+        <!-- Remover do Estoque -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>➖ Remover do Estoque</h2>
+                <p class="secao-descricao">Baixa manual por perda, doação ou consumo próprio</p>
+            </div>
+            
+            <div class="form-estoque">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantidade-remover">Quantidade</label>
+                        <input type="number" 
+                               id="quantidade-remover" 
+                               class="form-input" 
+                               min="1" 
+                               value="1"
+                               placeholder="Quantidade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="motivo-remocao">Motivo</label>
+                        <select id="motivo-remocao" class="form-select">
+                            <option value="perda">Perda / Quebra</option>
+                            <option value="doacao">Doação</option>
+                            <option value="consumo">Consumo Próprio</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn btn-danger btn-grande" onclick="remover()">
+                    ❌ Remover do Estoque
+                </button>
+            </div>
+        </section>
+
+        <!-- Histórico de Movimentações -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📊 Histórico de Movimentações</h2>
+                <div class="header-acoes">
+                    <button class="btn btn-info btn-sm" onclick="atualizarHistorico()">
+                        🔄 Atualizar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tabela-wrapper">
+                <table class="tabela-estoque">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Tipo</th>
+                            <th>Quantidade</th>
+                            <th>Estoque Após</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historico-estoque">
+                        <tr>
+                            <td colspan="4" class="text-center">Carregando histórico...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Previsão de Produção -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>💡 Previsão de Produção</h2>
+                <p class="secao-descricao">Cálculo baseado nas vendas e encomendas</p>
+            </div>
+            
+            <div class="previsao-container">
+                <div class="previsao-card">
+                    <div class="previsao-icone">📊</div>
+                    <div class="previsao-conteudo">
+                        <h4>Média Diária de Vendas</h4>
+                        <p class="previsao-valor" id="media-vendas">0</p>
+                        <small>pudins/dia (últimos 7 dias)</small>
+                    </div>
+                </div>
+                
+                <div class="previsao-card">
+                    <div class="previsao-icone">📝</div>
+                    <div class="previsao-conteudo">
+                        <h4>Encomendas Próximos 3 Dias</h4>
+                        <p class="previsao-valor" id="encomendas-previstas">0</p>
+                        <small>pudins comprometidos</small>
+                    </div>
+                </div>
+                
+                <div class="previsao-card previsao-destaque">
+                    <div class="previsao-icone">🎯</div>
+                    <div class="previsao-conteudo">
+                        <h4>Sugestão de Produção</h4>
+                        <p class="previsao-valor" id="sugestao-producao">0</p>
+                        <small>pudins para os próximos 2 dias</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/sidebar.js"></script>
+    <script src="scripts/estoque.js"></script>
+</body>
+</html>

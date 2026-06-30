@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/relatorios.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li>
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li>
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>📈 Relatórios e Análises</h1>
+            <p class="page-subtitle">Visão completa do desempenho do seu negócio</p>
+        </header>
+
+        <!-- Seleção de Período -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📅 Selecionar Período</h2>
+            </div>
+            
+            <div class="periodo-selector">
+                <div class="periodo-rapido">
+                    <button class="btn-periodo" onclick="selecionarPeriodo('hoje')">Hoje</button>
+                    <button class="btn-periodo" onclick="selecionarPeriodo('semana')">Esta Semana</button>
+                    <button class="btn-periodo active" onclick="selecionarPeriodo('mes')">Este Mês</button>
+                    <button class="btn-periodo" onclick="selecionarPeriodo('ano')">Este Ano</button>
+                </div>
+                
+                <div class="periodo-custom">
+                    <div class="form-group">
+                        <label for="data-inicio">Data Início</label>
+                        <input type="date" id="data-inicio" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-fim">Data Fim</label>
+                        <input type="date" id="data-fim" class="form-input">
+                    </div>
+                    <button class="btn btn-success" onclick="gerarRelatorioCustom()">
+                        📊 Gerar Relatório
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resumo Geral -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📊 Resumo Geral do Período</h2>
+                <span class="periodo-atual" id="periodo-texto">Este Mês</span>
+            </div>
+            
+            <div class="resumo-geral">
+                <div class="resumo-card">
+                    <div class="resumo-icon">💰</div>
+                    <div class="resumo-info">
+                        <h3>Faturamento Total</h3>
+                        <p class="resumo-valor" id="resumo-faturamento">R$ 0,00</p>
+                    </div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-icon">📈</div>
+                    <div class="resumo-info">
+                        <h3>Lucro Total</h3>
+                        <p class="resumo-valor" id="resumo-lucro">R$ 0,00</p>
+                    </div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-icon">📦</div>
+                    <div class="resumo-info">
+                        <h3>Pudins Vendidos</h3>
+                        <p class="resumo-valor" id="resumo-quantidade">0</p>
+                    </div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-icon">🧾</div>
+                    <div class="resumo-info">
+                        <h3>Total de Vendas</h3>
+                        <p class="resumo-valor" id="resumo-vendas">0</p>
+                    </div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-icon">💵</div>
+                    <div class="resumo-info">
+                        <h3>Ticket Médio</h3>
+                        <p class="resumo-valor" id="resumo-ticket">R$ 0,00</p>
+                    </div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-icon">📊</div>
+                    <div class="resumo-info">
+                        <h3>Margem de Lucro</h3>
+                        <p class="resumo-valor" id="resumo-margem">0%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gráfico de Desempenho -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📈 Crescimento no Período</h2>
+            </div>
+            
+            <div class="grafico-placeholder">
+                <p class="grafico-mensagem">📊 Gráfico de evolução diária</p>
+                <p class="grafico-info">Visualize o crescimento das vendas ao longo do período selecionado</p>
+                <div class="grafico-barras" id="grafico-vendas">
+                    <!-- Gráfico simples com barras CSS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Formas de Pagamento -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>💳 Distribuição por Forma de Pagamento</h2>
+            </div>
+            
+            <div class="pagamento-distribuicao">
+                <div class="pagamento-barra">
+                    <div class="barra-label">PIX</div>
+                    <div class="barra-container">
+                        <div class="barra barra-pix" id="barra-pix" style="width: 0%"></div>
+                        <span class="barra-valor" id="valor-barra-pix">0%</span>
+                    </div>
+                </div>
+                
+                <div class="pagamento-barra">
+                    <div class="barra-label">Dinheiro</div>
+                    <div class="barra-container">
+                        <div class="barra barra-dinheiro" id="barra-dinheiro" style="width: 0%"></div>
+                        <span class="barra-valor" id="valor-barra-dinheiro">0%</span>
+                    </div>
+                </div>
+                
+                <div class="pagamento-barra">
+                    <div class="barra-label">Cartão</div>
+                    <div class="barra-container">
+                        <div class="barra barra-cartao" id="barra-cartao" style="width: 0%"></div>
+                        <span class="barra-valor" id="valor-barra-cartao">0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Melhor Dia -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>🏆 Melhor Dia do Período</h2>
+            </div>
+            
+            <div class="melhor-dia" id="melhor-dia">
+                <div class="melhor-dia-icon">🎉</div>
+                <div class="melhor-dia-info">
+                    <h3 id="melhor-dia-data">--/--/----</h3>
+                    <div class="melhor-dia-stats">
+                        <span id="melhor-dia-vendas">0 vendas</span>
+                        <span>•</span>
+                        <span id="melhor-dia-quantidade">0 pudins</span>
+                        <span>•</span>
+                        <span id="melhor-dia-faturamento" class="destaque">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detalhamento de Vendas -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📋 Detalhamento de Todas as Vendas</h2>
+            </div>
+            
+            <div class="tabela-wrapper">
+                <table class="tabela-relatorio">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unit.</th>
+                            <th>Pagamento</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detalhamento-vendas">
+                        <tr>
+                            <td colspan="6" class="text-center">Carregando vendas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Ações de Exportação -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📥 Exportar Relatório</h2>
+            </div>
+            
+            <div class="exportar-acoes">
+                <button class="btn btn-danger" onclick="exportarPDF()">
+                    📄 Exportar PDF
+                </button>
+                <button class="btn btn-success" onclick="exportarExcel()">
+                    📊 Exportar Excel
+                </button>
+                <button class="btn btn-info" onclick="imprimirRelatorio()">
+                    🖨️ Imprimir
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/sidebar.js"></script>
+    <script src="scripts/relatorios.js"></script>
+</body>
+</html>

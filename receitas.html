@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receitas - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/receitas.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li>
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>📖 Minhas Receitas</h1>
+            <p class="page-subtitle">Anote suas receitas, ingredientes e dicas de preparo</p>
+        </header>
+
+        <!-- Editor de Receita -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>✍️ Anotar Receita</h2>
+                <button class="btn btn-success btn-sm" onclick="salvarReceita()">
+                    💾 Salvar Receita
+                </button>
+            </div>
+            
+            <div class="editor-receita">
+                <div class="form-group">
+                    <label for="titulo-receita">📝 Título da Receita</label>
+                    <input type="text" 
+                           id="titulo-receita" 
+                           class="form-input input-titulo" 
+                           placeholder="Ex: Pudim de Leite Condensado Tradicional">
+                </div>
+                
+                <div class="form-group">
+                    <label for="conteudo-receita">📄 Anotações (Ingredientes e Modo de Preparo)</label>
+                    <textarea id="conteudo-receita" 
+                              class="form-textarea textarea-receita" 
+                              placeholder="📋 INGREDIENTES:
+• 1 lata de leite condensado
+• 2 latas de leite (use a lata vazia do leite condensado)
+• 3 ovos
+• 1 xícara de açúcar (para a calda)
+
+🍳 MODO DE PREPARO:
+
+Calda:
+1. Em uma forma de pudim, coloque o açúcar
+2. Leve ao fogo médio até caramelizar
+3. Espalhe a calda por toda a forma
+
+Pudim:
+1. No liquidificador, bata todos os ingredientes por 3 minutos
+2. Despeje sobre a calda na forma
+3. Cubra com papel alumínio
+4. Asse em banho-maria em forno preaquecido a 180°C
+5. Deixe por aproximadamente 60-70 minutos
+6. Espere esfriar e leve à geladeira por pelo menos 4 horas
+
+💡 DICAS:
+• Temperatura ideal: 180°C
+• Tempo de forno: 60-70 minutos
+• O pudim está pronto quando ao inserir um palito, ele sair limpo
+• Para desenformar, passe uma faca nas bordas e vire rapidamente
+
+📦 RENDIMENTO: 8-10 porções"></textarea>
+                </div>
+                
+                <div class="acoes-receita">
+                    <button class="btn btn-success btn-grande" onclick="salvarReceita()">
+                        💾 Salvar Receita
+                    </button>
+                    <button class="btn btn-info btn-grande" onclick="limparReceita()">
+                        🗑️ Limpar Tudo
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculadora de Proporções -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>🧮 Calculadora de Proporções</h2>
+                <p class="secao-descricao">Calcule os ingredientes necessários para a quantidade desejada</p>
+            </div>
+            
+            <div class="calculadora">
+                <div class="calc-header">
+                    <div class="receita-base">
+                        <h3>📋 Receita Base (1 pudim)</h3>
+                        <ul class="ingredientes-base">
+                            <li>🥫 1 lata de leite condensado</li>
+                            <li>🥛 2 latas de leite</li>
+                            <li>🥚 3 ovos</li>
+                            <li>🍬 1 xícara de açúcar (calda)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="calc-input">
+                        <label for="quantidade-pudins">Quantos pudins você quer fazer?</label>
+                        <input type="number" 
+                               id="quantidade-pudins" 
+                               class="form-input input-calc" 
+                               min="1" 
+                               value="10"
+                               oninput="calcularIngredientes()">
+                    </div>
+                </div>
+                
+                <div class="calc-resultado" id="calc-resultado">
+                    <h3>🎯 Ingredientes Necessários</h3>
+                    <div class="resultado-lista">
+                        <div class="resultado-item">
+                            <span class="ingrediente-icon">🥫</span>
+                            <span class="ingrediente-nome">Leite Condensado:</span>
+                            <span class="ingrediente-qtd" id="qtd-leite-condensado">10 latas</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="ingrediente-icon">🥛</span>
+                            <span class="ingrediente-nome">Leite:</span>
+                            <span class="ingrediente-qtd" id="qtd-leite">20 latas</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="ingrediente-icon">🥚</span>
+                            <span class="ingrediente-nome">Ovos:</span>
+                            <span class="ingrediente-qtd" id="qtd-ovos">30 unidades</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="ingrediente-icon">🍬</span>
+                            <span class="ingrediente-nome">Açúcar (calda):</span>
+                            <span class="ingrediente-qtd" id="qtd-acucar">10 xícaras</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dicas Rápidas -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>💡 Dicas de Produção</h2>
+            </div>
+            
+            <div class="dicas-grid">
+                <div class="dica-card">
+                    <div class="dica-icon">🌡️</div>
+                    <h3>Temperatura</h3>
+                    <p>Forno a 180°C pré-aquecido. Evite abrir o forno durante o cozimento.</p>
+                </div>
+                
+                <div class="dica-card">
+                    <div class="dica-icon">⏱️</div>
+                    <h3>Tempo</h3>
+                    <p>60-70 minutos em banho-maria. Teste com palito antes de retirar.</p>
+                </div>
+                
+                <div class="dica-card">
+                    <div class="dica-icon">❄️</div>
+                    <h3>Resfriamento</h3>
+                    <p>Deixe esfriar completamente antes de refrigerar por pelo menos 4 horas.</p>
+                </div>
+                
+                <div class="dica-card">
+                    <div class="dica-icon">📦</div>
+                    <h3>Armazenamento</h3>
+                    <p>Mantenha refrigerado. Validade de 3-5 dias na geladeira.</p>
+                </div>
+                
+                <div class="dica-card">
+                    <div class="dica-icon">🔪</div>
+                    <h3>Desenformar</h3>
+                    <p>Passe faca nas bordas e vire rapidamente sobre o prato.</p>
+                </div>
+                
+                <div class="dica-card">
+                    <div class="dica-icon">✨</div>
+                    <h3>Qualidade</h3>
+                    <p>Use ingredientes frescos e de qualidade para melhor sabor.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/sidebar.js"></script>
+    <script src="scripts/receitas.js"></script>
+</body>
+</html>

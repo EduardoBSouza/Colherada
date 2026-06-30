@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/financeiro.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li>
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li>
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>💰 Análise Financeira</h1>
+            <p class="page-subtitle">Faturamento, custos e lucros detalhados</p>
+        </header>
+
+        <!-- Resumo Financeiro do Dia -->
+        <section class="resumo-financeiro">
+            <div class="card-financeiro card-faturamento">
+                <div class="card-icon">💰</div>
+                <div class="card-content">
+                    <h3>Faturamento Bruto</h3>
+                    <p class="valor-principal" id="faturamento-dia">R$ 0,00</p>
+                    <small>vendas de hoje</small>
+                </div>
+            </div>
+            
+            <div class="card-financeiro card-custos">
+                <div class="card-icon">💸</div>
+                <div class="card-content">
+                    <h3>Custos Totais</h3>
+                    <p class="valor-principal" id="custos-dia">R$ 0,00</p>
+                    <small>custo dos produtos</small>
+                </div>
+            </div>
+            
+            <div class="card-financeiro card-lucro">
+                <div class="card-icon">📈</div>
+                <div class="card-content">
+                    <h3>Lucro Líquido</h3>
+                    <p class="valor-principal" id="lucro-dia">R$ 0,00</p>
+                    <small>lucro de hoje</small>
+                </div>
+            </div>
+            
+            <div class="card-financeiro card-margem">
+                <div class="card-icon">📊</div>
+                <div class="card-content">
+                    <h3>Margem de Lucro</h3>
+                    <p class="valor-principal" id="margem-dia">0%</p>
+                    <small>percentual</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vendas por Forma de Pagamento -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>💳 Vendas por Forma de Pagamento</h2>
+            </div>
+            
+            <div class="formas-pagamento">
+                <div class="pagamento-card pix-card">
+                    <div class="pagamento-header">
+                        <span class="pagamento-icon">💳</span>
+                        <span class="pagamento-nome">PIX</span>
+                    </div>
+                    <div class="pagamento-valor" id="valor-pix">R$ 0,00</div>
+                    <div class="pagamento-info">
+                        <span class="pagamento-quantidade" id="qtd-pix">0 vendas</span>
+                        <span class="pagamento-percentual" id="perc-pix">0%</span>
+                    </div>
+                </div>
+                
+                <div class="pagamento-card dinheiro-card">
+                    <div class="pagamento-header">
+                        <span class="pagamento-icon">💵</span>
+                        <span class="pagamento-nome">Dinheiro</span>
+                    </div>
+                    <div class="pagamento-valor" id="valor-dinheiro">R$ 0,00</div>
+                    <div class="pagamento-info">
+                        <span class="pagamento-quantidade" id="qtd-dinheiro">0 vendas</span>
+                        <span class="pagamento-percentual" id="perc-dinheiro">0%</span>
+                    </div>
+                </div>
+                
+                <div class="pagamento-card cartao-card">
+                    <div class="pagamento-header">
+                        <span class="pagamento-icon">💳</span>
+                        <span class="pagamento-nome">Cartão</span>
+                    </div>
+                    <div class="pagamento-valor" id="valor-cartao">R$ 0,00</div>
+                    <div class="pagamento-info">
+                        <span class="pagamento-quantidade" id="qtd-cartao">0 vendas</span>
+                        <span class="pagamento-percentual" id="perc-cartao">0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configurações Financeiras -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>⚙️ Configurações Financeiras</h2>
+                <p class="secao-descricao">Configure os valores utilizados nos cálculos</p>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-item">
+                    <label for="valor-venda">💰 Valor de Venda Unitário</label>
+                    <div class="input-group">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" 
+                               id="valor-venda" 
+                               class="form-input" 
+                               min="0.01" 
+                               step="0.01"
+                               value="10.00">
+                    </div>
+                    <small>Valor padrão de venda por pudim</small>
+                </div>
+                
+                <div class="config-item">
+                    <label for="custo-unitario">💸 Custo Unitário</label>
+                    <div class="input-group">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" 
+                               id="custo-unitario" 
+                               class="form-input" 
+                               min="0.01" 
+                               step="0.01"
+                               value="4.00">
+                    </div>
+                    <small>Custo de produção por pudim</small>
+                </div>
+                
+                <div class="config-item config-destaque">
+                    <label>📊 Margem de Lucro Padrão</label>
+                    <div class="margem-display" id="margem-padrao">60%</div>
+                    <small>Calculado automaticamente</small>
+                </div>
+            </div>
+            
+            <button class="btn btn-success" onclick="salvarConfiguracoes()">
+                💾 Salvar Configurações
+            </button>
+        </section>
+
+        <!-- Resumo Mensal -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📅 Resumo do Mês</h2>
+                <button class="btn btn-info btn-sm" onclick="atualizarResumoMensal()">
+                    🔄 Atualizar
+                </button>
+            </div>
+            
+            <div class="resumo-mensal">
+                <div class="resumo-item">
+                    <div class="resumo-label">💰 Faturamento Total</div>
+                    <div class="resumo-valor destaque" id="faturamento-mes">R$ 0,00</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-label">💸 Custos Totais</div>
+                    <div class="resumo-valor" id="custos-mes">R$ 0,00</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-label">📈 Lucro Total</div>
+                    <div class="resumo-valor destaque-lucro" id="lucro-mes">R$ 0,00</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-label">📦 Pudins Vendidos</div>
+                    <div class="resumo-valor" id="quantidade-mes">0</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-label">🧾 Total de Vendas</div>
+                    <div class="resumo-valor" id="vendas-mes">0</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-label">💵 Ticket Médio</div>
+                    <div class="resumo-valor" id="ticket-medio">R$ 0,00</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análise Diária -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📊 Desempenho dos Últimos 7 Dias</h2>
+            </div>
+            
+            <div class="tabela-wrapper">
+                <table class="tabela-desempenho">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Vendas</th>
+                            <th>Quantidade</th>
+                            <th>Faturamento</th>
+                            <th>Lucro</th>
+                        </tr>
+                    </thead>
+                    <tbody id="desempenho-7dias">
+                        <tr>
+                            <td colspan="5" class="text-center">Carregando dados...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/sidebar.js"></script>
+    <script src="scripts/financeiro.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li class="active">
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li>
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li>
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>📊 Dashboard</h1>
+            <p class="page-subtitle">Visão geral do dia</p>
+        </header>
+
+        <!-- Cards de Resumo -->
+        <section class="dashboard-cards">
+            <div class="card card-primary" id="card-estoque">
+                <div class="card-icon">📦</div>
+                <div class="card-content">
+                    <h3 class="card-title">Estoque Atual</h3>
+                    <p class="card-value" id="estoque-valor">25</p>
+                    <p class="card-subtitle">pudins prontos</p>
+                    <div class="card-alert" style="display: none;">⚠️ Estoque Crítico!</div>
+                </div>
+            </div>
+
+            <div class="card card-success">
+                <div class="card-icon">💰</div>
+                <div class="card-content">
+                    <h3 class="card-title">Faturamento Bruto</h3>
+                    <p class="card-value" id="faturamento-valor">R$ 0,00</p>
+                    <p class="card-subtitle">vendas de hoje</p>
+                </div>
+            </div>
+
+            <div class="card card-info">
+                <div class="card-icon">📈</div>
+                <div class="card-content">
+                    <h3 class="card-title">Lucro Líquido</h3>
+                    <p class="card-value" id="lucro-valor">R$ 0,00</p>
+                    <p class="card-subtitle">lucro de hoje</p>
+                </div>
+            </div>
+
+            <div class="card card-warning">
+                <div class="card-icon">📝</div>
+                <div class="card-content">
+                    <h3 class="card-title">Encomendas</h3>
+                    <p class="card-value" id="encomendas-pendentes">0</p>
+                    <p class="card-subtitle">pedidos pendentes</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alertas Importantes -->
+        <section class="alertas-section" id="alertas-container">
+            <!-- Alertas dinâmicos serão inseridos aqui -->
+        </section>
+
+        <!-- Últimas Vendas -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>💳 Últimas Vendas</h2>
+                <a href="vendas.html" class="btn-link">Ver todas →</a>
+            </div>
+            <div class="tabela-wrapper">
+                <table class="tabela-vendas" id="ultimas-vendas">
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Quantidade</th>
+                            <th>Pagamento</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Vendas serão carregadas aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Encomendas Urgentes -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>⏰ Encomendas Urgentes</h2>
+                <a href="encomendas.html" class="btn-link">Ver todas →</a>
+            </div>
+            <div id="encomendas-urgentes-lista">
+                <!-- Encomendas urgentes serão carregadas aqui -->
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/sidebar.js"></script>
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>

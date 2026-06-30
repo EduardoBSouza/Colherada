@@ -1,0 +1,335 @@
+/* ============================================
+   ESTILOS DA PÁGINA FINANCEIRA
+============================================ */
+
+/* Resumo Financeiro */
+.resumo-financeiro {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card-financeiro {
+    background: var(--cor-card);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--sombra-card);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: var(--transicao);
+    border-left: 5px solid var(--cor-principal);
+}
+
+.card-financeiro:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-3px);
+}
+
+.card-faturamento {
+    border-left-color: var(--cor-success);
+    background: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+}
+
+.card-custos {
+    border-left-color: var(--cor-danger);
+    background: linear-gradient(135deg, #FFEBEE 0%, #FFFFFF 100%);
+}
+
+.card-lucro {
+    border-left-color: var(--cor-dourado);
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+}
+
+.card-margem {
+    border-left-color: var(--cor-info);
+    background: linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%);
+}
+
+.card-financeiro .card-icon {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.card-financeiro .card-content {
+    flex: 1;
+}
+
+.card-financeiro h3 {
+    font-size: 0.9rem;
+    color: var(--cor-texto-claro);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.valor-principal {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.card-faturamento .valor-principal {
+    color: var(--cor-success);
+}
+
+.card-custos .valor-principal {
+    color: var(--cor-danger);
+}
+
+.card-lucro .valor-principal {
+    color: var(--cor-dourado);
+}
+
+.card-margem .valor-principal {
+    color: var(--cor-info);
+}
+
+.card-financeiro small {
+    font-size: 0.8rem;
+    color: var(--cor-texto-claro);
+}
+
+/* Formas de Pagamento */
+.formas-pagamento {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.pagamento-card {
+    background: var(--cor-card);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--sombra-card);
+    transition: var(--transicao);
+    border-top: 5px solid;
+}
+
+.pagamento-card:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-3px);
+}
+
+.pix-card {
+    border-top-color: var(--cor-pix);
+    background: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+}
+
+.dinheiro-card {
+    border-top-color: var(--cor-dinheiro);
+    background: linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%);
+}
+
+.cartao-card {
+    border-top-color: var(--cor-cartao);
+    background: linear-gradient(135deg, #F3E5F5 0%, #FFFFFF 100%);
+}
+
+.pagamento-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.pagamento-icon {
+    font-size: 2rem;
+}
+
+.pagamento-nome {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cor-texto);
+    text-transform: uppercase;
+}
+
+.pagamento-valor {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    margin-bottom: 10px;
+}
+
+.pix-card .pagamento-valor {
+    color: var(--cor-pix);
+}
+
+.dinheiro-card .pagamento-valor {
+    color: var(--cor-dinheiro);
+}
+
+.cartao-card .pagamento-valor {
+    color: var(--cor-cartao);
+}
+
+.pagamento-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--cor-borda);
+}
+
+.pagamento-quantidade {
+    font-size: 0.9rem;
+    color: var(--cor-texto-claro);
+}
+
+.pagamento-percentual {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+}
+
+/* Configurações Financeiras */
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.config-item label {
+    display: block;
+    font-weight: 600;
+    color: var(--cor-texto);
+    margin-bottom: 10px;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-prefix {
+    position: absolute;
+    left: 15px;
+    font-weight: 700;
+    color: var(--cor-texto-claro);
+    pointer-events: none;
+}
+
+.input-group .form-input {
+    padding-left: 45px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+}
+
+.config-item small {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--cor-texto-claro);
+}
+
+.config-destaque {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--cor-dourado);
+}
+
+.margem-display {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--cor-dourado);
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Resumo Mensal */
+.resumo-mensal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.resumo-item {
+    background: var(--cor-fundo);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: var(--transicao);
+}
+
+.resumo-item:hover {
+    box-shadow: var(--sombra);
+    transform: translateY(-2px);
+}
+
+.resumo-label {
+    font-size: 0.9rem;
+    color: var(--cor-texto-claro);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.resumo-valor {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+}
+
+.resumo-valor.destaque {
+    color: var(--cor-success);
+    font-size: 2rem;
+}
+
+.resumo-valor.destaque-lucro {
+    color: var(--cor-dourado);
+    font-size: 2rem;
+}
+
+/* Tabela de Desempenho */
+.tabela-desempenho {
+    font-size: 0.95rem;
+}
+
+.tabela-desempenho td {
+    padding: 12px;
+}
+
+.tabela-desempenho .lucro-positivo {
+    color: var(--cor-success);
+    font-weight: 600;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .resumo-financeiro {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .valor-principal {
+        font-size: 1.5rem;
+    }
+    
+    .formas-pagamento {
+        grid-template-columns: 1fr;
+    }
+    
+    .config-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .resumo-mensal {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .resumo-financeiro {
+        grid-template-columns: 1fr;
+    }
+    
+    .resumo-mensal {
+        grid-template-columns: 1fr;
+    }
+}

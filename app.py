@@ -154,11 +154,6 @@ def index():
     """Serve o arquivo HTML principal"""
     return send_from_directory('.', 'index.html')
 
-@app.route('/pdv-offline.html')
-def offline():
-    """Serve a versão offline"""
-    return send_from_directory('.', 'pdv-offline.html')
-
 @app.route('/api/login', methods=['POST'])
 def login():
     """Rota de login"""
@@ -524,6 +519,27 @@ def gerar_relatorio():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# ========== ROTA GENÉRICA PARA ARQUIVOS ESTÁTICOS ==========
+# Esta rota deve estar APÓS todas as rotas da API para não capturá-las
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    """Serve arquivos estáticos (HTML, CSS, JS)"""
+    try:
+        # Páginas HTML
+        if filename.endswith('.html'):
+            return send_from_directory('.', filename)
+        # CSS
+        elif filename.startswith('styles/') and filename.endswith('.css'):
+            return send_from_directory('.', filename)
+        # JavaScript
+        elif filename.startswith('scripts/') and filename.endswith('.js'):
+            return send_from_directory('.', filename)
+        else:
+            return "Not Found", 404
+    except FileNotFoundError:
+        return "Not Found", 404
 
 if __name__ == '__main__':
     print("=" * 60)
