@@ -19,6 +19,9 @@ CORS(app, supports_credentials=True)
 # Arquivo para armazenar os dados
 DADOS_FILE = 'dados_pdv.json'
 
+# Custo de produção por unidade
+CUSTO_UNITARIO = 7.00
+
 # Credenciais (simplificado - sem banco de dados)
 USUARIO_PADRAO = 'NNK'
 SENHA_PADRAO = 'pudimcolherada'
@@ -37,8 +40,8 @@ def inicializar_dados():
     """Inicializa estrutura de dados padrão"""
     return {
         'estoque': 25,
-        'faturamentoBruto': 0,
-        'lucroLiquido': 0,
+        'faturamento_bruto': 0,
+        'lucro_liquido': 0,
         'vendas': [],
         'encomendas': [],
         'data': datetime.now().strftime('%d/%m/%Y')
@@ -122,19 +125,35 @@ def registrar_venda():
         venda = request.json
         dados = carregar_dados()
         
-        # Adicionar timestamp
-        venda['timestamp'] = datetime.now().isoformat()
+        # Obter valores da venda
+        quantidade = venda.get('quantidade', 0)
+        valor_unitario = venda.get('valor_unitario', 0)
+        valor_total = venda.get('valor_total', quantidade * valor_unitario)
+        pagamento = venda.get('pagamento', '')
         
-        # Adicionar venda
-        dados['vendas'].append(venda)
+        # Criar objeto de venda completo
+        venda_completa = {
+            'quantidade': quantidade,
+            'valor_unitario': valor_unitario,
+            'valor_total': valor_total,
+            'pagamento': pagamento,
+            'data_hora': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        # Adicionar venda ao histórico
+        dados['vendas'].append(venda_completa)
         
         # Atualizar estoque
-        quantidade = venda.get('quantidade', 0)
         dados['estoque'] -= quantidade
         
         # Atualizar financeiro
-        total = venda.get('total', 0)
-        dados['faturamentoBruto'] += total
+        dados['faturamento_bruto'] += valor_total
+        
+        # Calcular e atualizar lucro líquido
+        custo_total = quantidade * CUSTO_UNITARIO
+        lucro_venda = valor_total - custo_total
+        dados['lucro_liquido'] += lucro_venda
         
         salvar_dados(dados)
         return jsonify({'success': True, 'dados': dados})
