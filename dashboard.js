@@ -27,34 +27,47 @@ async function atualizarDashboard() {
     }
 }
 
+// Expor globalmente para uso no HTML
+window.atualizarDashboard = atualizarDashboard;
+
 // Atualizar cards de resumo
 function atualizarCards() {
     if (!dadosAtuais) {
         return;
     }
     
-    // Estoque - sempre calcular como número total
+    // Estoque - SOLUÇÃO DEFINITIVA
     const estoqueValor = document.getElementById('estoque-valor');
     const cardEstoque = document.getElementById('card-estoque');
     const alertaEstoque = cardEstoque.querySelector('.card-alert');
     
     let estoqueTotal = 0;
     
-    // Verificar se estoque é objeto (3 tamanhos) ou número único
-    if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object' && !Array.isArray(dadosAtuais.estoque)) {
-        // Somar os 3 tamanhos
-        const est80 = parseInt(dadosAtuais.estoque['80g']) || 0;
-        const est150 = parseInt(dadosAtuais.estoque['150g']) || 0;
-        const est500 = parseInt(dadosAtuais.estoque['500g']) || 0;
+    try {
+        // Verificar se estoque é objeto (3 tamanhos) ou número único
+        if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object' && !Array.isArray(dadosAtuais.estoque)) {
+            // Somar os 3 tamanhos
+            const est80 = parseInt(dadosAtuais.estoque['80g']) || 0;
+            const est150 = parseInt(dadosAtuais.estoque['150g']) || 0;
+            const est500 = parseInt(dadosAtuais.estoque['500g']) || 0;
+            
+            estoqueTotal = est80 + est150 + est500;
+        } else if (typeof dadosAtuais.estoque === 'number') {
+            // Estoque como número único
+            estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
+        } else {
+            // Fallback: tentar converter para número
+            estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
+        }
         
-        estoqueTotal = est80 + est150 + est500;
-    } else {
-        // Estoque como número único (compatibilidade com versão antiga)
-        estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
+        // GARANTIR que é string numérica
+        estoqueValor.textContent = String(estoqueTotal);
+        estoqueValor.innerHTML = String(estoqueTotal); // Dupla garantia
+        
+    } catch (error) {
+        console.error('Erro ao calcular estoque:', error);
+        estoqueValor.textContent = '0';
     }
-    
-    // Garantir que sempre mostra um número
-    estoqueValor.textContent = String(estoqueTotal);
     
     // Alertas de estoque
     if (estoqueTotal <= 10) {

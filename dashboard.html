@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Dashboard - Colherada</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/main.css?v=20260630">
+    <link rel="stylesheet" href="styles/dashboard.css?v=20260630">
+    <script>
+        // SOLUÇÃO DEFINITIVA: Força correção do estoque ANTES de qualquer coisa
+        window.addEventListener('DOMContentLoaded', function() {
+            // Aguardar 500ms para garantir que tudo carregou
+            setTimeout(function() {
+                const estoqueElement = document.getElementById('estoque-valor');
+                if (estoqueElement && estoqueElement.textContent.includes('object')) {
+                    console.error('⚠️ DETECTADO: [object Object] no estoque! Forçando correção...');
+                    estoqueElement.textContent = '0';
+                    // Recarregar dados
+                    if (window.atualizarDashboard) {
+                        window.atualizarDashboard();
+                    }
+                }
+            }, 500);
+        });
+    </script>
 </head>
 <body>
     <!-- Sidebar de Navegação -->
@@ -84,7 +104,7 @@
                 <div class="card-icon">📦</div>
                 <div class="card-content">
                     <h3 class="card-title">Estoque Atual</h3>
-                    <p class="card-value" id="estoque-valor">25</p>
+                    <p class="card-value" id="estoque-valor">0</p>
                     <p class="card-subtitle">pudins prontos</p>
                     <div class="card-alert" style="display: none;">⚠️ Estoque Crítico!</div>
                 </div>
