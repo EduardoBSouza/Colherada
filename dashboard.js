@@ -32,44 +32,29 @@ window.atualizarDashboard = atualizarDashboard;
 
 // Atualizar cards de resumo
 function atualizarCards() {
-    if (!dadosAtuais) {
-        return;
-    }
+    if (!dadosAtuais) return;
     
-    // Estoque - SOLUÇÃO DEFINITIVA
     const estoqueValor = document.getElementById('estoque-valor');
     const cardEstoque = document.getElementById('card-estoque');
     const alertaEstoque = cardEstoque.querySelector('.card-alert');
     
-    let estoqueTotal = 0;
+    // Usar estoque_total calculado pelo backend (sempre é número)
+    let estoqueTotal = dadosAtuais.estoque_total;
     
-    try {
-        // Verificar se estoque é objeto (3 tamanhos) ou número único
-        if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object' && !Array.isArray(dadosAtuais.estoque)) {
-            // Somar os 3 tamanhos
-            const est80 = parseInt(dadosAtuais.estoque['80g']) || 0;
-            const est150 = parseInt(dadosAtuais.estoque['150g']) || 0;
-            const est500 = parseInt(dadosAtuais.estoque['500g']) || 0;
-            
-            estoqueTotal = est80 + est150 + est500;
-        } else if (typeof dadosAtuais.estoque === 'number') {
-            // Estoque como número único
-            estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
+    // Fallback: calcular no frontend se necessário
+    if (estoqueTotal === undefined || estoqueTotal === null) {
+        const estoque = dadosAtuais.estoque;
+        if (estoque && typeof estoque === 'object') {
+            estoqueTotal = (parseInt(estoque['80g']) || 0) +
+                           (parseInt(estoque['150g']) || 0) +
+                           (parseInt(estoque['500g']) || 0);
         } else {
-            // Fallback: tentar converter para número
-            estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
+            estoqueTotal = parseInt(estoque) || 0;
         }
-        
-        // GARANTIR que é string numérica
-        estoqueValor.textContent = String(estoqueTotal);
-        estoqueValor.innerHTML = String(estoqueTotal); // Dupla garantia
-        
-    } catch (error) {
-        console.error('Erro ao calcular estoque:', error);
-        estoqueValor.textContent = '0';
     }
     
-    // Alertas de estoque
+    estoqueValor.textContent = estoqueTotal;
+    
     if (estoqueTotal <= 10) {
         alertaEstoque.style.display = 'flex';
         cardEstoque.style.borderLeftColor = 'var(--cor-danger)';
@@ -78,15 +63,12 @@ function atualizarCards() {
         cardEstoque.style.borderLeftColor = 'var(--cor-principal)';
     }
     
-    // Faturamento
     document.getElementById('faturamento-valor').textContent = 
         formatarMoeda(dadosAtuais.faturamento_bruto || 0);
     
-    // Lucro
     document.getElementById('lucro-valor').textContent = 
         formatarMoeda(dadosAtuais.lucro_liquido || 0);
     
-    // Encomendas pendentes
     const encomendas = dadosAtuais.encomendas || [];
     const encomendasPendentes = encomendas.filter(e => e.status === 'pendente').length;
     document.getElementById('encomendas-pendentes').textContent = encomendasPendentes;

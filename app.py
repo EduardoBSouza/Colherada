@@ -78,8 +78,18 @@ def logout():
 
 @app.route('/api/dados', methods=['GET'])
 def obter_dados():
-    """Retorna todos os dados"""
-    return jsonify(carregar_dados())
+    """Retorna todos os dados com estoque_total já calculado"""
+    dados = carregar_dados()
+    
+    # Calcular estoque_total no backend para garantir que chegue como número
+    estoque = dados.get('estoque', {})
+    if isinstance(estoque, dict):
+        estoque_total = int(estoque.get('80g', 0)) + int(estoque.get('150g', 0)) + int(estoque.get('500g', 0))
+    else:
+        estoque_total = int(estoque) if estoque else 0
+    
+    dados['estoque_total'] = estoque_total
+    return jsonify(dados)
 
 @app.route('/api/dados', methods=['POST'])
 def salvar_dados_api():
