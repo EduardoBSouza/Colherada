@@ -1,0 +1,72 @@
+📋 LISTA COMPLETA DE ARQUIVOS PARA FAZER UPLOAD NO GITHUB
+================================================================
+
+🎯 ARRASTE TODOS ESTES ARQUIVOS PARA O GITHUB:
+
+📄 ARQUIVOS PRINCIPAIS (RAIZ):
+✅ app.py
+✅ database.py
+✅ requirements.txt
+✅ render.yaml
+✅ README.md
+✅ .gitignore
+
+📱 ARQUIVOS HTML (RAIZ):
+✅ index.html
+✅ dashboard.html
+✅ vendas.html
+✅ estoque.html
+✅ encomendas.html
+✅ financeiro.html
+✅ receitas.html
+✅ relatorios.html
+✅ pdv-offline.html
+
+📁 PASTA scripts/ (8 arquivos):
+✅ scripts/api.js
+✅ scripts/auth.js
+✅ scripts/dashboard.js
+✅ scripts/encomendas.js
+✅ scripts/estoque.js
+✅ scripts/financeiro.js
+✅ scripts/receitas.js
+✅ scripts/relatorios.js
+✅ scripts/sidebar.js
+✅ scripts/vendas.js
+
+📁 PASTA styles/ (8 arquivos):
+✅ styles/dashboard.css
+✅ styles/encomendas.css
+✅ styles/estoque.css
+✅ styles/financeiro.css
+✅ styles/main.css
+✅ styles/receitas.css
+✅ styles/relatorios.css
+✅ styles/vendas.css
+
+================================================================
+TOTAL: 33 ARQUIVOS
+================================================================
+
+❌ NÃO ENVIE ESTES ARQUIVOS:
+- dados_pdv.json (dados locais)
+- Arquivos .md de documentação (opcional)
+- Arquivos de teste (teste_*.py)
+- __pycache__ ou .pyc
+
+================================================================
+
+🚀 PRÓXIMOS PASSOS:
+
+1. Vá em: https://github.com/seu-usuario/colherada
+2. Clique em "Add file" → "Upload files"
+3. ARRASTE TODOS os 33 arquivos listados acima
+4. Escreva: "Deploy completo v1.0"
+5. Clique em "Commit changes"
+6. Aguarde o upload terminar
+7. Vá em: https://dashboard.render.com
+8. Clique em "Manual Deploy" → "Clear build cache & deploy"
+9. Aguarde 5-10 minutos
+10. ✅ Pronto!
+
+================================================================

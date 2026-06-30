@@ -70,7 +70,7 @@ async function carregarDadosPDV() {
 }
 
 // Registrar venda
-async function registrarVenda(quantidade, pagamento, valorUnitario) {
+async function registrarVenda(quantidade, pagamento, valorUnitario, tamanho) {
     try {
         const qtd = parseInt(quantidade);
         const valorUnit = parseFloat(valorUnitario);
@@ -81,7 +81,8 @@ async function registrarVenda(quantidade, pagamento, valorUnitario) {
             pagamento: pagamento,
             valor_unitario: valorUnit,
             valor_total: total,
-            total: total
+            total: total,
+            tamanho: tamanho || '150g'
         });
         return resultado;
     } catch (error) {
@@ -91,10 +92,11 @@ async function registrarVenda(quantidade, pagamento, valorUnitario) {
 }
 
 // Abastecer estoque
-async function abastecerEstoque(quantidade) {
+async function abastecerEstoque(quantidade, tamanho) {
     try {
         const resultado = await apiPost('/api/abastecer', {
-            quantidade: parseInt(quantidade)
+            quantidade: parseInt(quantidade),
+            tamanho: tamanho || '150g'
         });
         return resultado;
     } catch (error) {
@@ -104,10 +106,11 @@ async function abastecerEstoque(quantidade) {
 }
 
 // Remover do estoque
-async function removerEstoque(quantidade) {
+async function removerEstoque(quantidade, tamanho) {
     try {
         const resultado = await apiPost('/api/remover_estoque', {
-            quantidade: parseInt(quantidade)
+            quantidade: parseInt(quantidade),
+            tamanho: tamanho || '150g'
         });
         return resultado;
     } catch (error) {
@@ -117,13 +120,15 @@ async function removerEstoque(quantidade) {
 }
 
 // Registrar encomenda
-async function registrarEncomenda(cliente, quantidade, data, telefone) {
+async function registrarEncomenda(cliente, quantidade, data, telefone, tamanho, observacoes) {
     try {
         const resultado = await apiPost('/api/encomenda', {
             cliente: cliente,
             quantidade: parseInt(quantidade),
             data: data,
-            telefone: telefone
+            telefone: telefone || '',
+            tamanho: tamanho || '150g',
+            observacoes: observacoes || ''
         });
         return resultado;
     } catch (error) {
@@ -218,6 +223,18 @@ function formatarMoeda(valor) {
 
 // Formatar data
 function formatarData(dataString) {
+    // Se a data estiver no formato YYYY-MM-DD (sem hora), criar como data local
+    if (dataString && dataString.includes('-') && !dataString.includes('T') && !dataString.includes(' ')) {
+        const [ano, mes, dia] = dataString.split('-');
+        const data = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+        return new Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).format(data);
+    }
+    
+    // Para datas com hora (timestamps)
     const data = new Date(dataString);
     return new Intl.DateTimeFormat('pt-BR', {
         day: '2-digit',

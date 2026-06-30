@@ -1,0 +1,186 @@
+/* ============================================
+   ESTILOS DO DASHBOARD
+============================================ */
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.dashboard-cards .card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    border-left-width: 5px;
+}
+
+.card-icon {
+    font-size: 3rem;
+    line-height: 1;
+    opacity: 0.9;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--cor-texto-claro);
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-texto);
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: var(--cor-texto-claro);
+}
+
+.card-alert {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 193, 7, 0.2);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #F57C00;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Variações de cor dos cards */
+.card-primary {
+    border-left-color: var(--cor-principal);
+}
+
+.card-primary .card-value {
+    color: var(--cor-principal);
+}
+
+.card-success {
+    border-left-color: var(--cor-success);
+}
+
+.card-success .card-value {
+    color: var(--cor-success);
+}
+
+.card-info {
+    border-left-color: var(--cor-info);
+}
+
+.card-info .card-value {
+    color: var(--cor-info);
+}
+
+.card-warning {
+    border-left-color: var(--cor-warning);
+}
+
+.card-warning .card-value {
+    color: var(--cor-warning);
+}
+
+/* Seção de alertas */
+.alertas-section {
+    margin-bottom: 30px;
+}
+
+/* Tabela de últimas vendas */
+.tabela-vendas {
+    font-size: 0.95rem;
+}
+
+.tabela-vendas tbody tr {
+    transition: var(--transicao);
+}
+
+.tabela-vendas tbody tr:hover {
+    background: var(--cor-fundo);
+}
+
+/* Encomendas urgentes */
+#encomendas-urgentes-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.encomenda-urgente {
+    padding: 15px;
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    border-radius: 8px;
+    border-left: 4px solid var(--cor-warning);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transicao);
+}
+
+.encomenda-urgente:hover {
+    box-shadow: var(--sombra);
+    transform: translateX(3px);
+}
+
+.encomenda-urgente-info {
+    flex: 1;
+}
+
+.encomenda-urgente-data {
+    font-size: 0.85rem;
+    color: var(--cor-texto-claro);
+    margin-bottom: 5px;
+}
+
+.encomenda-urgente-detalhes {
+    font-weight: 600;
+    color: var(--cor-texto);
+}
+
+.badge-urgente {
+    padding: 5px 12px;
+    background: var(--cor-danger);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Mensagem vazia */
+.mensagem-vazio {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--cor-texto-claro);
+    font-size: 1rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .card-value {
+        font-size: 1.8rem;
+    }
+    
+    .card-icon {
+        font-size: 2.5rem;
+    }
+}

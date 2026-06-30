@@ -1,0 +1,318 @@
+/* ============================================
+   ESTILOS DA PÁGINA DE RECEITAS
+============================================ */
+
+/* Seletor de receitas */
+#select-receita {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cor-principal);
+    border: 2px solid var(--cor-dourado);
+    border-radius: 8px;
+    background: var(--cor-card);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#select-receita:hover {
+    border-color: var(--cor-hover);
+    box-shadow: 0 2px 8px rgba(251, 192, 45, 0.2);
+}
+
+#select-receita:focus {
+    outline: none;
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.2);
+}
+
+/* Editor de Receita */
+.editor-receita {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.input-titulo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+}
+
+.textarea-receita {
+    min-height: 400px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.acoes-receita {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.acoes-receita .btn {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Calculadora */
+.calculadora {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+    border-radius: 12px;
+    padding: 30px;
+    border: 2px solid var(--cor-dourado);
+}
+
+.calc-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid var(--cor-dourado);
+}
+
+.receita-base h3 {
+    color: var(--cor-principal);
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.ingredientes-base {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ingredientes-base li {
+    padding: 10px;
+    background: var(--cor-card);
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.calc-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.calc-input label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cor-texto);
+    text-align: center;
+}
+
+.input-calc {
+    width: 150px;
+    padding: 20px;
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--cor-principal);
+    border: 3px solid var(--cor-dourado);
+}
+
+.calc-resultado {
+    background: var(--cor-card);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: var(--sombra);
+}
+
+.calc-resultado h3 {
+    color: var(--cor-principal);
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+.resultado-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.resultado-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: var(--cor-fundo);
+    border-radius: 8px;
+    transition: var(--transicao);
+}
+
+.resultado-item:hover {
+    box-shadow: var(--sombra);
+    transform: translateX(5px);
+}
+
+.ingrediente-icon {
+    font-size: 2rem;
+}
+
+.ingrediente-nome {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cor-texto);
+}
+
+.ingrediente-qtd {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+}
+
+/* Dicas */
+.dicas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.dica-card {
+    background: linear-gradient(135deg, var(--cor-fundo) 0%, var(--cor-card) 100%);
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: var(--sombra-card);
+    transition: var(--transicao);
+    border-top: 4px solid var(--cor-dourado);
+}
+
+.dica-card:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-5px);
+}
+
+.dica-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.dica-card h3 {
+    color: var(--cor-principal);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.dica-card p {
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .calc-header {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .input-calc {
+        font-size: 2.5rem;
+        padding: 15px;
+    }
+    
+    .acoes-receita {
+        flex-direction: column;
+    }
+    
+    .acoes-receita .btn {
+        min-width: 100%;
+    }
+    
+    .dicas-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .textarea-receita {
+        min-height: 300px;
+        font-size: 0.85rem;
+    }
+    
+    .calculadora {
+        padding: 20px;
+    }
+}
+
+/* Campos editáveis da receita base */
+.input-base-readonly {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    text-align: center;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.input-base-readonly:focus {
+    outline: none;
+    border-color: var(--cor-dourado);
+    background: var(--cor-fundo);
+}
+
+.input-base-editable {
+    width: 60px;
+    padding: 5px;
+    border: 2px solid var(--cor-dourado);
+    background: #FFF8E1;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    text-align: center;
+    border-radius: 4px;
+    animation: pulse 0.5s ease;
+}
+
+.input-base-editable:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.2);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Campos editáveis das dicas */
+.dica-texto-readonly {
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.dica-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 2px solid var(--cor-dourado);
+    background: #FFF8E1;
+    color: var(--cor-texto);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.dica-textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.2);
+}

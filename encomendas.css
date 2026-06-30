@@ -1,0 +1,274 @@
+/* ============================================
+   ESTILOS DA PÁGINA DE ENCOMENDAS
+============================================ */
+
+/* Resumo de Encomendas */
+.resumo-encomendas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card-resumo {
+    background: var(--cor-card);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--sombra-card);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: var(--transicao);
+    border-left: 4px solid var(--cor-info);
+}
+
+.card-resumo:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-3px);
+}
+
+.card-urgente {
+    border-left-color: var(--cor-danger);
+    background: linear-gradient(135deg, #FFEBEE 0%, #FFFFFF 100%);
+}
+
+.card-proximas {
+    border-left-color: var(--cor-warning);
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+}
+
+.card-total {
+    border-left-color: var(--cor-info);
+}
+
+.card-concluidas {
+    border-left-color: var(--cor-success);
+    background: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+}
+
+.card-icone {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.card-info h3 {
+    font-size: 0.85rem;
+    color: var(--cor-texto-claro);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.card-numero {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    line-height: 1;
+}
+
+.card-urgente .card-numero {
+    color: var(--cor-danger);
+}
+
+.card-proximas .card-numero {
+    color: var(--cor-warning);
+}
+
+.card-concluidas .card-numero {
+    color: var(--cor-success);
+}
+
+/* Formulário de Encomenda */
+.form-encomenda {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Lista de Encomendas */
+.lista-encomendas {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.encomenda-card {
+    background: var(--cor-card);
+    border-radius: 10px;
+    padding: 20px;
+    border-left: 4px solid var(--cor-info);
+    box-shadow: var(--sombra-card);
+    transition: var(--transicao);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.encomenda-card:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateX(3px);
+}
+
+.encomenda-card.urgente {
+    border-left-color: var(--cor-danger);
+    background: linear-gradient(135deg, #FFEBEE 0%, #FFFFFF 100%);
+}
+
+.encomenda-card.proxima {
+    border-left-color: var(--cor-warning);
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+}
+
+.encomenda-info {
+    flex: 1;
+}
+
+.encomenda-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.encomenda-cliente {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+}
+
+.badge-urgente {
+    padding: 4px 10px;
+    background: var(--cor-danger);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-proxima {
+    padding: 4px 10px;
+    background: var(--cor-warning);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.encomenda-detalhes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--cor-texto);
+}
+
+.encomenda-detalhes span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.encomenda-detalhes strong {
+    font-weight: 600;
+}
+
+.encomenda-observacoes {
+    margin-top: 8px;
+    padding: 10px;
+    background: var(--cor-fundo);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--cor-texto-claro);
+    font-style: italic;
+}
+
+.encomenda-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-concluir {
+    background: linear-gradient(135deg, var(--cor-success) 0%, #388E3C 100%);
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transicao);
+    white-space: nowrap;
+}
+
+.btn-concluir:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra);
+}
+
+.btn-cancelar {
+    background: linear-gradient(135deg, var(--cor-danger) 0%, #D32F2F 100%);
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transicao);
+    white-space: nowrap;
+}
+
+.btn-cancelar:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra);
+}
+
+/* Tabela de Histórico */
+.tabela-encomendas {
+    font-size: 0.95rem;
+}
+
+.tabela-encomendas td {
+    padding: 12px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .resumo-encomendas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .card-numero {
+        font-size: 1.8rem;
+    }
+    
+    .encomenda-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .encomenda-acoes {
+        flex-direction: row;
+    }
+    
+    .btn-concluir,
+    .btn-cancelar {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .resumo-encomendas {
+        grid-template-columns: 1fr;
+    }
+    
+    .encomenda-detalhes {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
