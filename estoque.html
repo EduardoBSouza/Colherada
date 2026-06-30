@@ -81,11 +81,38 @@
         <!-- Status do Estoque -->
         <section class="estoque-status">
             <div class="status-card status-destaque">
+                <div class="status-icon">🍮</div>
+                <div class="status-content">
+                    <h3 class="status-titulo">80g (Pequeno)</h3>
+                    <p class="status-valor" id="estoque-80g">0</p>
+                    <p class="status-subtitulo">pudins</p>
+                </div>
+            </div>
+            
+            <div class="status-card status-destaque">
+                <div class="status-icon">🍮</div>
+                <div class="status-content">
+                    <h3 class="status-titulo">150g (Médio)</h3>
+                    <p class="status-valor" id="estoque-150g">0</p>
+                    <p class="status-subtitulo">pudins</p>
+                </div>
+            </div>
+            
+            <div class="status-card status-destaque">
+                <div class="status-icon">🍮</div>
+                <div class="status-content">
+                    <h3 class="status-titulo">500g (Grande)</h3>
+                    <p class="status-valor" id="estoque-500g">0</p>
+                    <p class="status-subtitulo">pudins</p>
+                </div>
+            </div>
+            
+            <div class="status-card">
                 <div class="status-icon">📦</div>
                 <div class="status-content">
-                    <h3 class="status-titulo">Estoque Atual</h3>
+                    <h3 class="status-titulo">Estoque Total</h3>
                     <p class="status-valor" id="estoque-atual">0</p>
-                    <p class="status-subtitulo">pudins prontos</p>
+                    <p class="status-subtitulo">pudins</p>
                 </div>
             </div>
             
@@ -94,15 +121,6 @@
                 <div class="status-content">
                     <h3 class="status-titulo">Vendidos Hoje</h3>
                     <p class="status-valor" id="vendidos-hoje">0</p>
-                    <p class="status-subtitulo">pudins</p>
-                </div>
-            </div>
-            
-            <div class="status-card">
-                <div class="status-icon">➕</div>
-                <div class="status-content">
-                    <h3 class="status-titulo">Produzidos Hoje</h3>
-                    <p class="status-valor" id="produzidos-hoje">0</p>
                     <p class="status-subtitulo">pudins</p>
                 </div>
             </div>
@@ -119,14 +137,25 @@
             </div>
             
             <div class="form-estoque">
-                <div class="form-group">
-                    <label for="quantidade-abastecer">Quantidade de Pudins Produzidos</label>
-                    <input type="number" 
-                           id="quantidade-abastecer" 
-                           class="form-input input-grande" 
-                           min="1" 
-                           value="10"
-                           placeholder="Digite a quantidade">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tamanho-abastecer">Tamanho</label>
+                        <select id="tamanho-abastecer" class="form-input">
+                            <option value="80g">🍮 Pequeno (80g)</option>
+                            <option value="150g" selected>🍮 Médio (150g)</option>
+                            <option value="500g">🍮 Grande (500g)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantidade-abastecer">Quantidade de Pudins Produzidos</label>
+                        <input type="number" 
+                               id="quantidade-abastecer" 
+                               class="form-input" 
+                               min="1" 
+                               value="10"
+                               placeholder="Digite a quantidade">
+                    </div>
                 </div>
                 
                 <button class="btn btn-success btn-grande" onclick="abastecer()">
@@ -144,6 +173,15 @@
             
             <div class="form-estoque">
                 <div class="form-row">
+                    <div class="form-group">
+                        <label for="tamanho-remover">Tamanho</label>
+                        <select id="tamanho-remover" class="form-input">
+                            <option value="80g">🍮 Pequeno (80g)</option>
+                            <option value="150g" selected>🍮 Médio (150g)</option>
+                            <option value="500g">🍮 Grande (500g)</option>
+                        </select>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="quantidade-remover">Quantidade</label>
                         <input type="number" 

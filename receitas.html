@@ -81,10 +81,21 @@
         <!-- Editor de Receita -->
         <section class="secao-card">
             <div class="secao-header">
-                <h2>✍️ Anotar Receita</h2>
-                <button class="btn btn-success btn-sm" onclick="salvarReceita()">
-                    💾 Salvar Receita
-                </button>
+                <h2>✍️ Minhas Receitas</h2>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <select id="select-receita" class="form-input" style="min-width: 250px;" onchange="carregarReceitaSelecionada()">
+                        <option value="">📝 Nova Receita</option>
+                    </select>
+                    <button class="btn btn-success btn-sm" onclick="salvarReceita()">
+                        💾 Salvar Receita
+                    </button>
+                    <button class="btn btn-info btn-sm" onclick="novaReceita()">
+                        ➕ Nova Receita
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="excluirReceita()" id="btn-excluir" style="display: none;">
+                        🗑️ Excluir
+                    </button>
+                </div>
             </div>
             
             <div class="editor-receita">
@@ -145,18 +156,25 @@ Pudim:
         <section class="secao-card">
             <div class="secao-header">
                 <h2>🧮 Calculadora de Proporções</h2>
-                <p class="secao-descricao">Calcule os ingredientes necessários para a quantidade desejada</p>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn btn-info btn-sm" onclick="editarReceitaBase()">
+                        ✏️ Editar Receita Base
+                    </button>
+                    <button class="btn btn-success btn-sm" onclick="salvarReceitaBase()" style="display: none;" id="btn-salvar-base">
+                        💾 Salvar Alterações
+                    </button>
+                </div>
             </div>
             
             <div class="calculadora">
                 <div class="calc-header">
                     <div class="receita-base">
                         <h3>📋 Receita Base (1 pudim)</h3>
-                        <ul class="ingredientes-base">
-                            <li>🥫 1 lata de leite condensado</li>
-                            <li>🥛 2 latas de leite</li>
-                            <li>🥚 3 ovos</li>
-                            <li>🍬 1 xícara de açúcar (calda)</li>
+                        <ul class="ingredientes-base" id="lista-base">
+                            <li>🥫 <input type="number" id="base-leite-condensado" class="input-base-readonly" value="1" step="0.5" min="0.5" readonly> lata(s) de leite condensado</li>
+                            <li>🥛 <input type="number" id="base-leite" class="input-base-readonly" value="790" step="50" min="50" readonly> ml de leite</li>
+                            <li>🥚 <input type="number" id="base-ovos" class="input-base-readonly" value="3" step="0.5" min="0.5" readonly> ovo(s)</li>
+                            <li>🍬 <input type="number" id="base-acucar" class="input-base-readonly" value="1" step="0.5" min="0.5" readonly> xícara(s) de açúcar (calda)</li>
                         </ul>
                     </div>
                     
@@ -203,43 +221,57 @@ Pudim:
         <section class="secao-card">
             <div class="secao-header">
                 <h2>💡 Dicas de Produção</h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn btn-info btn-sm" onclick="editarDicas()">
+                        ✏️ Editar Dicas
+                    </button>
+                    <button class="btn btn-success btn-sm" onclick="salvarDicas()" style="display: none;" id="btn-salvar-dicas">
+                        💾 Salvar Alterações
+                    </button>
+                </div>
             </div>
             
             <div class="dicas-grid">
                 <div class="dica-card">
                     <div class="dica-icon">🌡️</div>
                     <h3>Temperatura</h3>
-                    <p>Forno a 180°C pré-aquecido. Evite abrir o forno durante o cozimento.</p>
+                    <p class="dica-texto-readonly" id="dica-temperatura">Forno a 180°C pré-aquecido. Evite abrir o forno durante o cozimento.</p>
+                    <textarea class="dica-textarea" id="edit-temperatura" style="display: none;">Forno a 180°C pré-aquecido. Evite abrir o forno durante o cozimento.</textarea>
                 </div>
                 
                 <div class="dica-card">
                     <div class="dica-icon">⏱️</div>
                     <h3>Tempo</h3>
-                    <p>60-70 minutos em banho-maria. Teste com palito antes de retirar.</p>
+                    <p class="dica-texto-readonly" id="dica-tempo">60-70 minutos em banho-maria. Teste com palito antes de retirar.</p>
+                    <textarea class="dica-textarea" id="edit-tempo" style="display: none;">60-70 minutos em banho-maria. Teste com palito antes de retirar.</textarea>
                 </div>
                 
                 <div class="dica-card">
                     <div class="dica-icon">❄️</div>
                     <h3>Resfriamento</h3>
-                    <p>Deixe esfriar completamente antes de refrigerar por pelo menos 4 horas.</p>
+                    <p class="dica-texto-readonly" id="dica-resfriamento">Deixe esfriar completamente antes de refrigerar por pelo menos 4 horas.</p>
+                    <textarea class="dica-textarea" id="edit-resfriamento" style="display: none;">Deixe esfriar completamente antes de refrigerar por pelo menos 4 horas.</textarea>
                 </div>
                 
                 <div class="dica-card">
                     <div class="dica-icon">📦</div>
                     <h3>Armazenamento</h3>
-                    <p>Mantenha refrigerado. Validade de 3-5 dias na geladeira.</p>
+                    <p class="dica-texto-readonly" id="dica-armazenamento">Mantenha refrigerado. Validade de 3-5 dias na geladeira.</p>
+                    <textarea class="dica-textarea" id="edit-armazenamento" style="display: none;">Mantenha refrigerado. Validade de 3-5 dias na geladeira.</textarea>
                 </div>
                 
                 <div class="dica-card">
                     <div class="dica-icon">🔪</div>
                     <h3>Desenformar</h3>
-                    <p>Passe faca nas bordas e vire rapidamente sobre o prato.</p>
+                    <p class="dica-texto-readonly" id="dica-desenformar">Passe faca nas bordas e vire rapidamente sobre o prato.</p>
+                    <textarea class="dica-textarea" id="edit-desenformar" style="display: none;">Passe faca nas bordas e vire rapidamente sobre o prato.</textarea>
                 </div>
                 
                 <div class="dica-card">
                     <div class="dica-icon">✨</div>
                     <h3>Qualidade</h3>
-                    <p>Use ingredientes frescos e de qualidade para melhor sabor.</p>
+                    <p class="dica-texto-readonly" id="dica-qualidade">Use ingredientes frescos e de qualidade para melhor sabor.</p>
+                    <textarea class="dica-textarea" id="edit-qualidade" style="display: none;">Use ingredientes frescos e de qualidade para melhor sabor.</textarea>
                 </div>
             </div>
         </section>

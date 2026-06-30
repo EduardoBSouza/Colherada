@@ -1,0 +1,112 @@
+{
+  "estoque": {
+    "80g": 0,
+    "150g": 24,
+    "500g": 1
+  },
+  "faturamento_bruto": 16,
+  "lucro_liquido": 9,
+  "vendas": [
+    {
+      "quantidade": 1,
+      "tamanho": "150g",
+      "valor_unitario": 16,
+      "valor_total": 16,
+      "pagamento": "pix",
+      "data_hora": "2026-06-30 15:58:46",
+      "timestamp": "2026-06-30T15:58:46.924356"
+    }
+  ],
+  "encomendas": [
+    {
+      "cliente": "Sheila",
+      "quantidade": 1,
+      "data": "2026-07-01",
+      "telefone": "11999999999",
+      "tamanho": "500g",
+      "observacoes": "",
+      "id": 1,
+      "status": "cancelada",
+      "criado_em": "2026-06-30T17:18:11.945147",
+      "cancelado_em": "2026-06-30T17:18:22.534845"
+    },
+    {
+      "cliente": "Sheila",
+      "quantidade": 1,
+      "data": "2026-07-01",
+      "telefone": "11999999999",
+      "tamanho": "500g",
+      "observacoes": "",
+      "id": 2,
+      "status": "cancelada",
+      "criado_em": "2026-06-30T17:27:34.469328",
+      "cancelado_em": "2026-06-30T17:31:30.458121"
+    },
+    {
+      "cliente": "Sheila",
+      "quantidade": 1,
+      "data": "2026-07-01",
+      "telefone": "11999999999",
+      "tamanho": "500g",
+      "observacoes": "",
+      "id": 3,
+      "status": "cancelada",
+      "criado_em": "2026-06-30T17:31:21.317409",
+      "cancelado_em": "2026-06-30T17:31:33.704252"
+    },
+    {
+      "cliente": "Sheila",
+      "quantidade": 1,
+      "data": "2026-07-01",
+      "telefone": "11999999999",
+      "tamanho": "500g",
+      "observacoes": "",
+      "id": 4,
+      "status": "cancelada",
+      "criado_em": "2026-06-30T17:31:46.043797",
+      "cancelado_em": "2026-06-30T17:32:42.570706"
+    },
+    {
+      "cliente": "Nathalia",
+      "quantidade": 1,
+      "data": "2026-07-01",
+      "telefone": "11998339551",
+      "tamanho": "500g",
+      "observacoes": "",
+      "id": 5,
+      "status": "cancelada",
+      "criado_em": "2026-06-30T17:32:03.801059",
+      "cancelado_em": "2026-06-30T17:32:44.769541"
+    },
+    {
+      "cliente": "Eduardo",
+      "quantidade": 1,
+      "data": "2026-07-01",
+      "telefone": "11953702815",
+      "tamanho": "500g",
+      "observacoes": "",
+      "id": 6,
+      "status": "cancelada",
+      "criado_em": "2026-06-30T17:32:34.002006",
+      "cancelado_em": "2026-06-30T17:32:47.609562"
+    },
+    {
+      "cliente": "Nathalia",
+      "quantidade": 1,
+      "data": "2026-07-01",
+      "telefone": "11998339551",
+      "tamanho": "500g",
+      "observacoes": "",
+      "id": 7,
+      "status": "cancelada",
+      "criado_em": "2026-06-30T17:36:28.560151",
+      "cancelado_em": "2026-06-30T17:36:37.817180"
+    }
+  ],
+  "data": "25/06/2026",
+  "receita": {
+    "titulo": "Pudim de Leite Condensado",
+    "conteudo": "Ingredientes:\n- 1 leite condensado\n- 2 latas de leite\n- 3 ovos",
+    "atualizado_em": "2026-06-30T01:32:58.351698"
+  }
+}

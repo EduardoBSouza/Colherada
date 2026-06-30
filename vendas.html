@@ -81,8 +81,16 @@
         <!-- Cards de Resumo Rápido -->
         <section class="resumo-rapido">
             <div class="card-mini">
-                <span class="card-mini-label">Estoque Disponível</span>
-                <span class="card-mini-valor" id="estoque-disponivel">0</span>
+                <span class="card-mini-label">Estoque 80g</span>
+                <span class="card-mini-valor" id="estoque-80g">0</span>
+            </div>
+            <div class="card-mini">
+                <span class="card-mini-label">Estoque 150g</span>
+                <span class="card-mini-valor" id="estoque-150g">0</span>
+            </div>
+            <div class="card-mini">
+                <span class="card-mini-label">Estoque 500g</span>
+                <span class="card-mini-valor" id="estoque-500g">0</span>
             </div>
             <div class="card-mini">
                 <span class="card-mini-label">Vendas Hoje</span>
@@ -103,7 +111,16 @@
             <div class="form-venda">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="quantidade-venda">Quantidade de Pudins</label>
+                        <label for="tamanho-pudim">Tamanho do Pudim</label>
+                        <select id="tamanho-pudim" class="form-input">
+                            <option value="80g">🍮 Pequeno (80g)</option>
+                            <option value="150g" selected>🍮 Médio (150g)</option>
+                            <option value="500g">🍮 Grande (500g)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantidade-venda">Quantidade</label>
                         <input type="number" 
                                id="quantidade-venda" 
                                class="form-input input-quantidade" 
@@ -162,6 +179,7 @@
                     <thead>
                         <tr>
                             <th>Horário</th>
+                            <th>Tamanho</th>
                             <th>Quantidade</th>
                             <th>Valor Unit.</th>
                             <th>Pagamento</th>
@@ -170,7 +188,7 @@
                     </thead>
                     <tbody id="historico-vendas">
                         <tr>
-                            <td colspan="5" class="text-center">Carregando vendas...</td>
+                            <td colspan="6" class="text-center">Carregando vendas...</td>
                         </tr>
                     </tbody>
                 </table>

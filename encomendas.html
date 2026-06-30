@@ -80,22 +80,8 @@
 
         <!-- Resumo Rápido -->
         <section class="resumo-encomendas">
-            <div class="card-resumo card-urgente">
-                <div class="card-icone">🔴</div>
-                <div class="card-info">
-                    <h3>Urgentes (Hoje)</h3>
-                    <p class="card-numero" id="urgentes-hoje">0</p>
-                </div>
-            </div>
-            <div class="card-resumo card-proximas">
-                <div class="card-icone">🟡</div>
-                <div class="card-info">
-                    <h3>Próximos 3 Dias</h3>
-                    <p class="card-numero" id="proximas-3dias">0</p>
-                </div>
-            </div>
             <div class="card-resumo card-total">
-                <div class="card-icone">📝</div>
+                <div class="card-icone">📋</div>
                 <div class="card-info">
                     <h3>Total Pendentes</h3>
                     <p class="card-numero" id="total-pendentes">0</p>
@@ -138,6 +124,15 @@
                 
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="encomenda-tamanho">Tamanho *</label>
+                        <select id="encomenda-tamanho" class="form-input" required>
+                            <option value="80g">🍮 Pequeno (80g)</option>
+                            <option value="150g" selected>🍮 Médio (150g)</option>
+                            <option value="500g">🍮 Grande (500g)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="encomenda-quantidade">Quantidade de Pudins *</label>
                         <input type="number" 
                                id="encomenda-quantidade" 
@@ -170,26 +165,10 @@
             </div>
         </section>
 
-        <!-- Encomendas Urgentes -->
-        <section class="secao-card" id="secao-urgentes" style="display: none;">
-            <div class="secao-header">
-                <h2>🔴 Encomendas Urgentes (Hoje)</h2>
-            </div>
-            <div id="lista-urgentes" class="lista-encomendas"></div>
-        </section>
-
-        <!-- Encomendas Próximas -->
-        <section class="secao-card" id="secao-proximas" style="display: none;">
-            <div class="secao-header">
-                <h2>🟡 Próximos 3 Dias</h2>
-            </div>
-            <div id="lista-proximas" class="lista-encomendas"></div>
-        </section>
-
-        <!-- Todas as Encomendas Pendentes -->
+        <!-- Encomendas Pendentes -->
         <section class="secao-card">
             <div class="secao-header">
-                <h2>📋 Todas as Encomendas Pendentes</h2>
+                <h2>📋 Encomendas Pendentes</h2>
                 <button class="btn btn-info btn-sm" onclick="atualizarEncomendas()">
                     🔄 Atualizar
                 </button>
@@ -209,6 +188,7 @@
                     <thead>
                         <tr>
                             <th>Cliente</th>
+                            <th>Tamanho</th>
                             <th>Quantidade</th>
                             <th>Data Entrega</th>
                             <th>Concluída Em</th>
@@ -216,7 +196,7 @@
                     </thead>
                     <tbody id="historico-concluidas">
                         <tr>
-                            <td colspan="4" class="text-center">Carregando...</td>
+                            <td colspan="5" class="text-center">Carregando...</td>
                         </tr>
                     </tbody>
                 </table>

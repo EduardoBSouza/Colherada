@@ -2,28 +2,52 @@
 # -*- coding: utf-8 -*-
 """
 Colherada - Sistema de Controle de Vendas SIMPLIFICADO
-Servidor com autenticação básica e persistência de dados
+Servidor com autenticação básica
 """
 
 from flask import Flask, jsonify, request, send_from_directory, session
 from flask_cors import CORS
-import secrets
+import json
+import os
 from datetime import datetime
-from database import carregar_dados, salvar_dados, init_database
+import secrets
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 CORS(app, supports_credentials=True)
 
-# Custo de produção por unidade
-CUSTO_UNITARIO = 7.00
+# Arquivo para armazenar os dados
+DADOS_FILE = 'dados_pdv.json'
 
 # Credenciais (simplificado - sem banco de dados)
 USUARIO_PADRAO = 'NNK'
 SENHA_PADRAO = 'pudimcolherada'
 
-# Inicializar banco de dados (se estiver usando PostgreSQL)
-init_database()
+def carregar_dados():
+    """Carrega dados do arquivo JSON"""
+    if os.path.exists(DADOS_FILE):
+        try:
+            with open(DADOS_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return inicializar_dados()
+    return inicializar_dados()
+
+def inicializar_dados():
+    """Inicializa estrutura de dados padrão"""
+    return {
+        'estoque': 25,
+        'faturamentoBruto': 0,
+        'lucroLiquido': 0,
+        'vendas': [],
+        'encomendas': [],
+        'data': datetime.now().strftime('%d/%m/%Y')
+    }
+
+def salvar_dados(dados):
+    """Salva dados no arquivo JSON"""
+    with open(DADOS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(dados, f, ensure_ascii=False, indent=2)
 
 # ========== ROTAS DE PÁGINAS ==========
 
@@ -98,42 +122,19 @@ def registrar_venda():
         venda = request.json
         dados = carregar_dados()
         
-        # Obter valores da venda
+        # Adicionar timestamp
+        venda['timestamp'] = datetime.now().isoformat()
+        
+        # Adicionar venda
+        dados['vendas'].append(venda)
+        
+        # Atualizar estoque
         quantidade = venda.get('quantidade', 0)
-        tamanho = venda.get('tamanho', '150g')
-        valor_unitario = venda.get('valor_unitario', 0)
-        valor_total = venda.get('valor_total', quantidade * valor_unitario)
-        pagamento = venda.get('pagamento', '')
-        
-        # Garantir que estoque é um dict
-        if not isinstance(dados['estoque'], dict):
-            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0}
-        
-        # Criar objeto de venda completo
-        venda_completa = {
-            'quantidade': quantidade,
-            'tamanho': tamanho,
-            'valor_unitario': valor_unitario,
-            'valor_total': valor_total,
-            'pagamento': pagamento,
-            'data_hora': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        # Adicionar venda ao histórico
-        dados['vendas'].append(venda_completa)
-        
-        # Atualizar estoque do tamanho específico
-        if tamanho in dados['estoque']:
-            dados['estoque'][tamanho] -= quantidade
+        dados['estoque'] -= quantidade
         
         # Atualizar financeiro
-        dados['faturamento_bruto'] += valor_total
-        
-        # Calcular e atualizar lucro líquido
-        custo_total = quantidade * CUSTO_UNITARIO
-        lucro_venda = valor_total - custo_total
-        dados['lucro_liquido'] += lucro_venda
+        total = venda.get('total', 0)
+        dados['faturamentoBruto'] += total
         
         salvar_dados(dados)
         return jsonify({'success': True, 'dados': dados})
@@ -146,17 +147,9 @@ def abastecer_estoque():
     try:
         body = request.json
         quantidade = body.get('quantidade', 0)
-        tamanho = body.get('tamanho', '150g')
         
         dados = carregar_dados()
-        
-        # Garantir que estoque é um dict
-        if not isinstance(dados['estoque'], dict):
-            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0}
-        
-        # Abastecer o tamanho específico
-        if tamanho in dados['estoque']:
-            dados['estoque'][tamanho] += quantidade
+        dados['estoque'] += quantidade
         
         salvar_dados(dados)
         return jsonify({'success': True, 'estoque': dados['estoque']})
@@ -169,19 +162,11 @@ def remover_estoque():
     try:
         body = request.json
         quantidade = body.get('quantidade', 0)
-        tamanho = body.get('tamanho', '150g')
         
         dados = carregar_dados()
-        
-        # Garantir que estoque é um dict
-        if not isinstance(dados['estoque'], dict):
-            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0}
-        
-        # Remover do tamanho específico
-        if tamanho in dados['estoque']:
-            dados['estoque'][tamanho] -= quantidade
-            if dados['estoque'][tamanho] < 0:
-                dados['estoque'][tamanho] = 0
+        dados['estoque'] -= quantidade
+        if dados['estoque'] < 0:
+            dados['estoque'] = 0
         
         salvar_dados(dados)
         return jsonify({'success': True, 'estoque': dados['estoque']})
@@ -200,18 +185,11 @@ def registrar_encomenda():
         encomenda['status'] = 'pendente'
         encomenda['criado_em'] = datetime.now().isoformat()
         
-        # Garantir que tamanho existe
-        if 'tamanho' not in encomenda:
-            encomenda['tamanho'] = '150g'
-        
         dados['encomendas'].append(encomenda)
         salvar_dados(dados)
         
         return jsonify({'success': True, 'encomenda': encomenda})
     except Exception as e:
-        print(f'Erro ao registrar encomenda: {e}')
-        import traceback
-        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/concluir_encomenda', methods=['POST'])
