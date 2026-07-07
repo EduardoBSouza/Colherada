@@ -74,6 +74,7 @@ async function registrarVendaRapida(pagamento) {
     const quantidade = parseInt(document.getElementById('quantidade-venda').value);
     const valorUnitario = parseFloat(document.getElementById('valor-unitario').value);
     const tamanho = document.getElementById('tamanho-pudim').value;
+    const sabor = document.getElementById('sabor-pudim').value;
     
     if (!quantidade || quantidade <= 0) {
         mostrarNotificacao('Digite uma quantidade válida', 'warning');
@@ -104,9 +105,9 @@ async function registrarVendaRapida(pagamento) {
         
         // Mostrar loading no histórico
         const tbody = document.getElementById('historico-vendas');
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Registrando venda...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Registrando venda...</td></tr>';
         
-        const resultado = await registrarVenda(quantidade, pagamento, valorUnitario, tamanho);
+        const resultado = await registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sabor);
         
         if (resultado.success) {
             mostrarNotificacao('✅ Venda registrada com sucesso!', 'success');
@@ -178,7 +179,7 @@ function atualizarHistorico() {
     tbody.innerHTML = '';
     
     if (!dadosVendas || !dadosVendas.vendas || dadosVendas.vendas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma venda registrada hoje</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhuma venda registrada hoje</td></tr>';
         atualizarResumoHistorico(0, 0, 0);
         return;
     }
@@ -213,6 +214,7 @@ function atualizarHistorico() {
         tr.innerHTML = `
             <td>${formatarHora(venda.data_hora)}</td>
             <td>${tamanhoEmoji[tamanhoTexto] || tamanhoTexto}</td>
+            <td>${venda.sabor || '-'}</td>
             <td><strong>${venda.quantidade}</strong> ${venda.quantidade === 1 ? 'pudim' : 'pudins'}</td>
             <td>${formatarMoeda(venda.valor_unitario || 10)}</td>
             <td>${emojiPagamento[venda.pagamento] || venda.pagamento}</td>

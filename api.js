@@ -70,7 +70,7 @@ async function carregarDadosPDV() {
 }
 
 // Registrar venda
-async function registrarVenda(quantidade, pagamento, valorUnitario, tamanho) {
+async function registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sabor) {
     try {
         const qtd = parseInt(quantidade);
         const valorUnit = parseFloat(valorUnitario);
@@ -82,7 +82,8 @@ async function registrarVenda(quantidade, pagamento, valorUnitario, tamanho) {
             valor_unitario: valorUnit,
             valor_total: total,
             total: total,
-            tamanho: tamanho || '150g'
+            tamanho: tamanho || '150g',
+            sabor: sabor || 'Leite Condensado'
         });
         return resultado;
     } catch (error) {
@@ -120,7 +121,7 @@ async function removerEstoque(quantidade, tamanho) {
 }
 
 // Registrar encomenda
-async function registrarEncomenda(cliente, quantidade, data, telefone, tamanho, observacoes) {
+async function registrarEncomenda(cliente, quantidade, data, telefone, tamanho, observacoes, sabor) {
     try {
         const resultado = await apiPost('/api/encomenda', {
             cliente: cliente,
@@ -128,7 +129,8 @@ async function registrarEncomenda(cliente, quantidade, data, telefone, tamanho, 
             data: data,
             telefone: telefone || '',
             tamanho: tamanho || '150g',
-            observacoes: observacoes || ''
+            observacoes: observacoes || '',
+            sabor: sabor || 'Leite Condensado'
         });
         return resultado;
     } catch (error) {

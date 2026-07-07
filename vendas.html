@@ -120,6 +120,16 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="sabor-pudim">Sabor</label>
+                        <select id="sabor-pudim" class="form-input">
+                            <option value="Leite Condensado">🍮 Leite Condensado</option>
+                            <option value="Coco">🥥 Coco</option>
+                            <option value="Chocolate">🍫 Chocolate</option>
+                            <option value="Doce de Leite">🥛 Doce de Leite</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="quantidade-venda">Quantidade</label>
                         <input type="number" 
                                id="quantidade-venda" 
@@ -180,6 +190,7 @@
                         <tr>
                             <th>Horário</th>
                             <th>Tamanho</th>
+                            <th>Sabor</th>
                             <th>Quantidade</th>
                             <th>Valor Unit.</th>
                             <th>Pagamento</th>
@@ -240,7 +251,7 @@
         var tbody = el('historico-vendas');
         if (tbody) {
             if (vendas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma venda registrada hoje</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhuma venda registrada hoje</td></tr>';
                 if (el('total-vendas-dia')) el('total-vendas-dia').textContent = 0;
                 if (el('quantidade-total-dia')) el('quantidade-total-dia').textContent = 0;
                 if (el('faturamento-total-dia')) el('faturamento-total-dia').textContent = typeof formatarMoeda === 'function' ? formatarMoeda(0) : 'R$ 0,00';
@@ -255,7 +266,7 @@
                     var tr = document.createElement('tr');
                     var hora = venda.data_hora ? (venda.data_hora.split(' ')[1] || venda.data_hora) : '-';
                     var fmt = typeof formatarMoeda === 'function' ? formatarMoeda : function(v){ return 'R$ '+v; };
-                    tr.innerHTML = '<td>' + hora + '</td><td>' + (tamEmoji[venda.tamanho] || venda.tamanho || '\uD83C\uDF6E 150g') + '</td><td><strong>' + (venda.quantidade||0) + '</strong></td><td>' + fmt(venda.valor_unitario||10) + '</td><td>' + (emojiPag[venda.pagamento] || venda.pagamento || '-') + '</td><td><strong>' + fmt(venda.valor_total||0) + '</strong></td>';
+                    tr.innerHTML = '<td>' + hora + '</td><td>' + (tamEmoji[venda.tamanho] || venda.tamanho || '\uD83C\uDF6E 150g') + '</td><td>' + (venda.sabor || '-') + '</td><td><strong>' + (venda.quantidade||0) + '</strong></td><td>' + fmt(venda.valor_unitario||10) + '</td><td>' + (emojiPag[venda.pagamento] || venda.pagamento || '-') + '</td><td><strong>' + fmt(venda.valor_total||0) + '</strong></td>';
                     tbody.appendChild(tr);
                 });
                 if (el('total-vendas-dia')) el('total-vendas-dia').textContent = totalV;

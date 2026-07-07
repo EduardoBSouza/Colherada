@@ -61,6 +61,7 @@ async function cadastrarEncomenda() {
     const cliente = document.getElementById('cliente-nome').value.trim();
     const telefone = document.getElementById('cliente-telefone').value.trim();
     const tamanho = document.getElementById('encomenda-tamanho').value;
+    const sabor = document.getElementById('sabor-encomenda').value;
     const quantidade = parseInt(document.getElementById('encomenda-quantidade').value);
     const data = document.getElementById('encomenda-data').value;
     const observacoes = document.getElementById('encomenda-observacoes').value.trim();
@@ -83,7 +84,7 @@ async function cadastrarEncomenda() {
     }
     
     try {
-        const resultado = await registrarEncomenda(cliente, quantidade, data, telefone, tamanho, observacoes);
+        const resultado = await registrarEncomenda(cliente, quantidade, data, telefone, tamanho, observacoes, sabor);
         
         if (resultado.success) {
             mostrarNotificacao('✅ Encomenda cadastrada com sucesso!', 'success');
@@ -151,6 +152,7 @@ function criarCardEncomenda(encomenda) {
             <div class="encomenda-detalhes">
                 <span>📅 <strong>${formatarData(encomenda.data)}</strong></span>
                 <span>${tamanhoTexto}</span>
+                ${encomenda.sabor ? `<span>🍮 ${encomenda.sabor}</span>` : ''}
                 <span>📦 <strong>${encomenda.quantidade}</strong> ${encomenda.quantidade === 1 ? 'pudim' : 'pudins'}</span>
                 ${encomenda.telefone ? `<span>📞 ${encomenda.telefone}</span>` : ''}
             </div>
@@ -217,7 +219,7 @@ function atualizarHistorico() {
     tbody.innerHTML = '';
     
     if (!dadosEncomendas || !dadosEncomendas.encomendas) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center">Carregando...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Carregando...</td></tr>';
         return;
     }
     
@@ -232,7 +234,7 @@ function atualizarHistorico() {
         .slice(0, 10); // Últimas 10
     
     if (concluidas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma encomenda concluída ainda</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma encomenda concluída ainda</td></tr>';
         return;
     }
     
@@ -252,6 +254,7 @@ function atualizarHistorico() {
         tr.innerHTML = `
             <td><strong>${encomenda.cliente}</strong></td>
             <td>${tamanhoTexto}</td>
+            <td>${encomenda.sabor || '-'}</td>
             <td>${encomenda.quantidade} ${encomenda.quantidade === 1 ? 'pudim' : 'pudins'}</td>
             <td>${formatarData(encomenda.data)}</td>
             <td>${dataConclusao ? formatarData(dataConclusao) : '-'}</td>

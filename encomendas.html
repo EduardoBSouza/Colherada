@@ -133,6 +133,16 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="sabor-encomenda">Sabor *</label>
+                        <select id="sabor-encomenda" class="form-input" required>
+                            <option value="Leite Condensado">🍮 Leite Condensado</option>
+                            <option value="Coco">🥥 Coco</option>
+                            <option value="Chocolate">🍫 Chocolate</option>
+                            <option value="Doce de Leite">🥛 Doce de Leite</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="encomenda-quantidade">Quantidade de Pudins *</label>
                         <input type="number" 
                                id="encomenda-quantidade" 
@@ -189,6 +199,7 @@
                         <tr>
                             <th>Cliente</th>
                             <th>Tamanho</th>
+                            <th>Sabor</th>
                             <th>Quantidade</th>
                             <th>Data Entrega</th>
                             <th>Concluída Em</th>
@@ -196,7 +207,7 @@
                     </thead>
                     <tbody id="historico-concluidas">
                         <tr>
-                            <td colspan="5" class="text-center">Carregando...</td>
+                            <td colspan="6" class="text-center">Carregando...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -245,7 +256,7 @@
                     var div = document.createElement('div');
                     div.className = 'encomenda-card';
                     var tam = enc.tamanho ? (tamEmoji[enc.tamanho] || enc.tamanho) : '\uD83C\uDF6E 150g';
-                    div.innerHTML = '<div class="encomenda-info"><div class="encomenda-header"><span class="encomenda-cliente">' + enc.cliente + '</span></div><div class="encomenda-detalhes"><span>\uD83D\uDCC5 <strong>' + fmt(enc.data) + '</strong></span><span>' + tam + '</span><span>\uD83D\uDCE6 <strong>' + enc.quantidade + '</strong> ' + (enc.quantidade===1?'pudim':'pudins') + '</span>' + (enc.telefone ? '<span>\uD83D\uDCDE ' + enc.telefone + '</span>' : '') + '</div>' + (enc.observacoes ? '<div class="encomenda-observacoes">\uD83D\uDCAC ' + enc.observacoes + '</div>' : '') + '</div><div class="encomenda-acoes"><button class="btn-concluir" onclick="concluir(' + enc.id + ')">\u2705 Concluir</button><button class="btn-cancelar" onclick="cancelar(' + enc.id + ')">\u274C Cancelar</button></div>';
+                    div.innerHTML = '<div class="encomenda-info"><div class="encomenda-header"><span class="encomenda-cliente">' + enc.cliente + '</span></div><div class="encomenda-detalhes"><span>\uD83D\uDCC5 <strong>' + fmt(enc.data) + '</strong></span><span>' + tam + '</span>' + (enc.sabor ? '<span>\uD83C\uDF6E ' + enc.sabor + '</span>' : '') + '<span>\uD83D\uDCE6 <strong>' + enc.quantidade + '</strong> ' + (enc.quantidade===1?'pudim':'pudins') + '</span>' + (enc.telefone ? '<span>\uD83D\uDCDE ' + enc.telefone + '</span>' : '') + '</div>' + (enc.observacoes ? '<div class="encomenda-observacoes">\uD83D\uDCAC ' + enc.observacoes + '</div>' : '') + '</div><div class="encomenda-acoes"><button class="btn-concluir" onclick="concluir(' + enc.id + ')">\u2705 Concluir</button><button class="btn-cancelar" onclick="cancelar(' + enc.id + ')">\u274C Cancelar</button></div>';
                     listaTodas.appendChild(div);
                 });
             }
@@ -258,7 +269,7 @@
                 return new Date(b.concluido_em||b.data_conclusao||b.data) - new Date(a.concluido_em||a.data_conclusao||a.data);
             }).slice(0,10);
             if (concluidasOrdenadas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma encomenda conclु\u00EDda ainda</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma encomenda concluída ainda</td></tr>';
             } else {
                 tbody.innerHTML = '';
                 var tamEmoji2 = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g'};
@@ -267,7 +278,7 @@
                     var tr = document.createElement('tr');
                     var tam = enc.tamanho ? (tamEmoji2[enc.tamanho] || enc.tamanho) : '\uD83C\uDF6E 150g';
                     var dataConclusao = enc.concluido_em || enc.data_conclusao || enc.data;
-                    tr.innerHTML = '<td><strong>' + enc.cliente + '</strong></td><td>' + tam + '</td><td>' + enc.quantidade + ' ' + (enc.quantidade===1?'pudim':'pudins') + '</td><td>' + fmt2(enc.data) + '</td><td>' + (dataConclusao ? fmt2(dataConclusao) : '-') + '</td>';
+                    tr.innerHTML = '<td><strong>' + enc.cliente + '</strong></td><td>' + tam + '</td><td>' + (enc.sabor || '-') + '</td><td>' + enc.quantidade + ' ' + (enc.quantidade===1?'pudim':'pudins') + '</td><td>' + fmt2(enc.data) + '</td><td>' + (dataConclusao ? fmt2(dataConclusao) : '-') + '</td>';
                     tbody.appendChild(tr);
                 });
             }

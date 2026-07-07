@@ -40,9 +40,9 @@ def serve_file(filename):
            (filename.startswith('styles/') and filename.endswith('.css')) or \
            (filename.startswith('scripts/') and filename.endswith('.js')):
             return send_from_directory('.', filename)
-        return "Not Found", 404
+        return "Não encontrado", 404
     except:
-        return "Not Found", 404
+        return "Não encontrado", 404
 
 # ========== ROTAS DA API ==========
 
@@ -74,7 +74,7 @@ def login():
 def logout():
     """Rota de logout"""
     session.clear()
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'message': 'Logout realizado com sucesso!'})
 
 @app.route('/api/dados', methods=['GET'])
 def obter_dados():
@@ -97,9 +97,9 @@ def salvar_dados_api():
     try:
         dados = request.json
         salvar_dados(dados)
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'message': 'Dados salvos com sucesso!'})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao salvar dados.', 'erro': str(e)}), 500
 
 @app.route('/api/venda', methods=['POST'])
 def registrar_venda():
@@ -111,6 +111,7 @@ def registrar_venda():
         # Obter valores da venda
         quantidade = venda.get('quantidade', 0)
         tamanho = venda.get('tamanho', '150g')
+        sabor = venda.get('sabor', '')
         valor_unitario = venda.get('valor_unitario', 0)
         valor_total = venda.get('valor_total', quantidade * valor_unitario)
         pagamento = venda.get('pagamento', '')
@@ -123,6 +124,7 @@ def registrar_venda():
         venda_completa = {
             'quantidade': quantidade,
             'tamanho': tamanho,
+            'sabor': sabor,
             'valor_unitario': valor_unitario,
             'valor_total': valor_total,
             'pagamento': pagamento,
@@ -146,9 +148,9 @@ def registrar_venda():
         dados['lucro_liquido'] += lucro_venda
         
         salvar_dados(dados)
-        return jsonify({'success': True, 'dados': dados})
+        return jsonify({'success': True, 'message': 'Venda registrada com sucesso!', 'dados': dados})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao registrar venda.', 'erro': str(e)}), 500
 
 @app.route('/api/abastecer', methods=['POST'])
 def abastecer_estoque():
@@ -169,9 +171,9 @@ def abastecer_estoque():
             dados['estoque'][tamanho] += quantidade
         
         salvar_dados(dados)
-        return jsonify({'success': True, 'estoque': dados['estoque']})
+        return jsonify({'success': True, 'message': 'Estoque abastecido com sucesso!', 'estoque': dados['estoque']})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao abastecer estoque.', 'erro': str(e)}), 500
 
 @app.route('/api/remover_estoque', methods=['POST'])
 def remover_estoque():
@@ -194,9 +196,9 @@ def remover_estoque():
                 dados['estoque'][tamanho] = 0
         
         salvar_dados(dados)
-        return jsonify({'success': True, 'estoque': dados['estoque']})
+        return jsonify({'success': True, 'message': 'Estoque atualizado com sucesso!', 'estoque': dados['estoque']})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao remover do estoque.', 'erro': str(e)}), 500
 
 @app.route('/api/encomenda', methods=['POST'])
 def registrar_encomenda():
@@ -217,12 +219,12 @@ def registrar_encomenda():
         dados['encomendas'].append(encomenda)
         salvar_dados(dados)
         
-        return jsonify({'success': True, 'encomenda': encomenda})
+        return jsonify({'success': True, 'message': 'Encomenda registrada com sucesso!', 'encomenda': encomenda})
     except Exception as e:
         print(f'Erro ao registrar encomenda: {e}')
         import traceback
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao registrar encomenda.', 'erro': str(e)}), 500
 
 @app.route('/api/concluir_encomenda', methods=['POST'])
 def concluir_encomenda():
@@ -240,9 +242,9 @@ def concluir_encomenda():
                 break
         
         salvar_dados(dados)
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'message': 'Encomenda concluída com sucesso!'})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao concluir encomenda.', 'erro': str(e)}), 500
 
 @app.route('/api/cancelar_encomenda', methods=['POST'])
 def cancelar_encomenda():
@@ -260,9 +262,9 @@ def cancelar_encomenda():
                 break
         
         salvar_dados(dados)
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'message': 'Encomenda cancelada com sucesso!'})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao cancelar encomenda.', 'erro': str(e)}), 500
 
 @app.route('/api/salvar_receita', methods=['POST'])
 def salvar_receita():
@@ -287,7 +289,7 @@ def salvar_receita():
         salvar_dados(dados)
         return jsonify({'success': True, 'message': 'Receita salva com sucesso!'})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao salvar receita.', 'erro': str(e)}), 500
 
 @app.route('/api/receita', methods=['GET'])
 def obter_receita():
@@ -297,7 +299,7 @@ def obter_receita():
         receita = dados.get('receita', {})
         return jsonify(receita)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Erro ao carregar receita.', 'erro': str(e)}), 500
 
 if __name__ == '__main__':
     print("=" * 60)
