@@ -303,17 +303,19 @@ def obter_receita():
 
 @app.route('/api/resetar_dados', methods=['POST'])
 def resetar_dados():
-    """Apaga todos os dados cadastrados e volta para o estado inicial"""
+    """Zera os dados cadastrais (estoque, vendas, financeiro, encomendas), preservando apenas a receita"""
     try:
         if not session.get('autenticado'):
             return jsonify({'success': False, 'message': 'Não autenticado'}), 401
 
+        dados_atual = carregar_dados()
         dados_limpos = inicializar_dados()
+        dados_limpos['receita'] = dados_atual.get('receita', dados_limpos['receita'])
         salvar_dados(dados_limpos)
 
         return jsonify({
             'success': True,
-            'message': 'Todos os dados foram apagados com sucesso!',
+            'message': 'Dados zerados com sucesso, mantendo a receita.',
             'dados': dados_limpos
         })
     except Exception as e:
