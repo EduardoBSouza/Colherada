@@ -107,6 +107,15 @@
                 </div>
             </div>
             
+            <div class="status-card status-destaque">
+                <div class="status-icon">🍮</div>
+                <div class="status-content">
+                    <h3 class="status-titulo">1kg (Família)</h3>
+                    <p class="status-valor" id="estoque-1kg">0</p>
+                    <p class="status-subtitulo">pudins</p>
+                </div>
+            </div>
+            
             <div class="status-card">
                 <div class="status-icon">📦</div>
                 <div class="status-content">
@@ -144,6 +153,7 @@
                             <option value="80g">🍮 Pequeno (80g)</option>
                             <option value="150g" selected>🍮 Médio (150g)</option>
                             <option value="500g">🍮 Grande (500g)</option>
+                            <option value="1kg">🍮 Família (1kg)</option>
                         </select>
                     </div>
                     
@@ -189,6 +199,7 @@
                             <option value="80g">🍮 Pequeno (80g)</option>
                             <option value="150g" selected>🍮 Médio (150g)</option>
                             <option value="500g">🍮 Grande (500g)</option>
+                            <option value="1kg">🍮 Família (1kg)</option>
                         </select>
                     </div>
                     
@@ -306,7 +317,7 @@
     carregarDados = async function() {
         var dados = null;
         try { dados = await carregarDadosPDV(); } catch(e) {
-            dados = {estoque: {'80g':0,'150g':0,'500g':0}, vendas:[], encomendas:[], faturamento_bruto:0, lucro_liquido:0};
+            dados = {estoque: {'80g':0,'150g':0,'500g':0,'1kg':0}, vendas:[], encomendas:[], faturamento_bruto:0, lucro_liquido:0};
         }
         dadosEstoque = dados;
 
@@ -317,7 +328,8 @@
         } else if (dados.estoque && typeof dados.estoque === 'object') {
             estoqueTotal = (parseInt(dados.estoque['80g']) || 0) +
                            (parseInt(dados.estoque['150g']) || 0) +
-                           (parseInt(dados.estoque['500g']) || 0);
+                           (parseInt(dados.estoque['500g']) || 0) +
+                           (parseInt(dados.estoque['1kg']) || 0);
         } else {
             estoqueTotal = parseInt(dados.estoque) || 0;
         }
@@ -329,6 +341,7 @@
         if (el('estoque-80g')) el('estoque-80g').textContent = isDict ? (dados.estoque['80g'] || 0) : 0;
         if (el('estoque-150g')) el('estoque-150g').textContent = isDict ? (dados.estoque['150g'] || 0) : (typeof dados.estoque === 'number' ? dados.estoque : 0);
         if (el('estoque-500g')) el('estoque-500g').textContent = isDict ? (dados.estoque['500g'] || 0) : 0;
+        if (el('estoque-1kg')) el('estoque-1kg').textContent = isDict ? (dados.estoque['1kg'] || 0) : 0;
         if (el('estoque-atual')) el('estoque-atual').textContent = estoqueTotal;
 
         var vendas = dados.vendas || [];

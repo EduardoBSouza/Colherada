@@ -84,7 +84,7 @@ def obter_dados():
     # Calcular estoque_total no backend para garantir que chegue como número
     estoque = dados.get('estoque', {})
     if isinstance(estoque, dict):
-        estoque_total = int(estoque.get('80g', 0)) + int(estoque.get('150g', 0)) + int(estoque.get('500g', 0))
+        estoque_total = int(estoque.get('80g', 0)) + int(estoque.get('150g', 0)) + int(estoque.get('500g', 0)) + int(estoque.get('1kg', 0))
     else:
         estoque_total = int(estoque) if estoque else 0
     
@@ -118,7 +118,7 @@ def registrar_venda():
         
         # Garantir que estoque é um dict
         if not isinstance(dados['estoque'], dict):
-            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0}
+            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0, '1kg': 0}
         
         # Criar objeto de venda completo
         venda_completa = {
@@ -164,7 +164,7 @@ def abastecer_estoque():
         
         # Garantir que estoque é um dict
         if not isinstance(dados['estoque'], dict):
-            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0}
+            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0, '1kg': 0}
         
         # Abastecer o tamanho específico
         if tamanho in dados['estoque']:
@@ -187,7 +187,7 @@ def remover_estoque():
         
         # Garantir que estoque é um dict
         if not isinstance(dados['estoque'], dict):
-            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0}
+            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0, '1kg': 0}
         
         # Remover do tamanho específico
         if tamanho in dados['estoque']:

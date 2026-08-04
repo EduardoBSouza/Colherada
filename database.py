@@ -28,7 +28,8 @@ def inicializar_dados():
         'estoque': {
             '80g': 0,
             '150g': 0,
-            '500g': 0
+            '500g': 0,
+            '1kg': 0
         },
         'faturamento_bruto': 0,
         'lucro_liquido': 0,

@@ -93,6 +93,10 @@
                 <span class="card-mini-valor" id="estoque-500g">0</span>
             </div>
             <div class="card-mini">
+                <span class="card-mini-label">Estoque 1kg</span>
+                <span class="card-mini-valor" id="estoque-1kg">0</span>
+            </div>
+            <div class="card-mini">
                 <span class="card-mini-label">Vendas Hoje</span>
                 <span class="card-mini-valor" id="vendas-hoje">0</span>
             </div>
@@ -116,6 +120,7 @@
                             <option value="80g">🍮 Pequeno (80g)</option>
                             <option value="150g" selected>🍮 Médio (150g)</option>
                             <option value="500g">🍮 Grande (500g)</option>
+                            <option value="1kg">🍮 Família (1kg)</option>
                         </select>
                     </div>
                     
@@ -231,7 +236,7 @@
     carregarDados = async function() {
         var dados = null;
         try { dados = await carregarDadosPDV(); } catch(e) {
-            dados = {estoque: {'80g':0,'150g':0,'500g':0}, vendas:[], faturamento_bruto:0, lucro_liquido:0};
+            dados = {estoque: {'80g':0,'150g':0,'500g':0,'1kg':0}, vendas:[], faturamento_bruto:0, lucro_liquido:0};
         }
         dadosVendas = dados;
 
@@ -242,6 +247,7 @@
         if (el('estoque-80g')) el('estoque-80g').textContent = isDict ? (dados.estoque['80g'] || 0) : 0;
         if (el('estoque-150g')) el('estoque-150g').textContent = isDict ? (dados.estoque['150g'] || 0) : (typeof dados.estoque === 'number' ? dados.estoque : 0);
         if (el('estoque-500g')) el('estoque-500g').textContent = isDict ? (dados.estoque['500g'] || 0) : 0;
+        if (el('estoque-1kg')) el('estoque-1kg').textContent = isDict ? (dados.estoque['1kg'] || 0) : 0;
 
         var vendas = dados.vendas || [];
         if (el('vendas-hoje')) el('vendas-hoje').textContent = vendas.length;
@@ -260,7 +266,7 @@
                 var ordenadas = vendas.slice().reverse();
                 var totalV = 0, qtdTotal = 0, fatTotal = 0;
                 var emojiPag = {'pix':'\uD83D\uDCB3 PIX','dinheiro':'\uD83D\uDCB5 Dinheiro','cartao':'\uD83D\uDCB3 Cart\u00E3o'};
-                var tamEmoji = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g'};
+                var tamEmoji = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g','1kg':'\uD83C\uDF6E 1kg'};
                 ordenadas.forEach(function(venda) {
                     totalV++; qtdTotal += (venda.quantidade||0); fatTotal += (venda.valor_total||0);
                     var tr = document.createElement('tr');

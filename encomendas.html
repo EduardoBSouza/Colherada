@@ -129,6 +129,7 @@
                             <option value="80g">🍮 Pequeno (80g)</option>
                             <option value="150g" selected>🍮 Médio (150g)</option>
                             <option value="500g">🍮 Grande (500g)</option>
+                            <option value="1kg">🍮 Família (1kg)</option>
                         </select>
                     </div>
                     
@@ -224,7 +225,7 @@
     carregarDados = async function() {
         var dados = null;
         try { dados = await carregarDadosPDV(); } catch(e) {
-            dados = {estoque: {'80g':0,'150g':0,'500g':0}, vendas:[], encomendas:[]};
+            dados = {estoque: {'80g':0,'150g':0,'500g':0,'1kg':0}, vendas:[], encomendas:[]};
         }
         dadosEncomendas = dados;
 
@@ -250,7 +251,7 @@
             } else {
                 listaTodas.innerHTML = '';
                 var ordenadas = pendentes.slice().sort(function(a,b){ return new Date(a.data)-new Date(b.data); });
-                var tamEmoji = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g'};
+                var tamEmoji = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g','1kg':'\uD83C\uDF6E 1kg'};
                 var fmt = typeof formatarData === 'function' ? formatarData : function(d){ return d; };
                 ordenadas.forEach(function(enc) {
                     var div = document.createElement('div');
@@ -272,7 +273,7 @@
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma encomenda concluída ainda</td></tr>';
             } else {
                 tbody.innerHTML = '';
-                var tamEmoji2 = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g'};
+                var tamEmoji2 = {'80g':'\uD83C\uDF6E 80g','150g':'\uD83C\uDF6E 150g','500g':'\uD83C\uDF6E 500g','1kg':'\uD83C\uDF6E 1kg'};
                 var fmt2 = typeof formatarData === 'function' ? formatarData : function(d){ return d; };
                 concluidasOrdenadas.forEach(function(enc) {
                     var tr = document.createElement('tr');
