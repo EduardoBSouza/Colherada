@@ -99,7 +99,7 @@ def carregar_dados():
         # Modo local com JSON
         if os.path.exists(DADOS_FILE):
             try:
-                with open(DADOS_FILE, 'r', encoding='utf-8') as f:
+                with open(DADOS_FILE, 'r', encoding='utf-8-sig') as f:
                     return json.load(f)
             except:
                 return inicializar_dados()
