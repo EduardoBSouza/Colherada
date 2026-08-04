@@ -9,7 +9,7 @@ from flask import Flask, jsonify, request, send_from_directory, session
 from flask_cors import CORS
 import secrets
 from datetime import datetime
-from database import carregar_dados, salvar_dados, init_database
+from database import carregar_dados, salvar_dados, init_database, inicializar_dados
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
@@ -300,6 +300,24 @@ def obter_receita():
         return jsonify(receita)
     except Exception as e:
         return jsonify({'success': False, 'message': 'Erro ao carregar receita.', 'erro': str(e)}), 500
+
+@app.route('/api/resetar_dados', methods=['POST'])
+def resetar_dados():
+    """Apaga todos os dados cadastrados e volta para o estado inicial"""
+    try:
+        if not session.get('autenticado'):
+            return jsonify({'success': False, 'message': 'Não autenticado'}), 401
+
+        dados_limpos = inicializar_dados()
+        salvar_dados(dados_limpos)
+
+        return jsonify({
+            'success': True,
+            'message': 'Todos os dados foram apagados com sucesso!',
+            'dados': dados_limpos
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Erro ao resetar dados.', 'erro': str(e)}), 500
 
 if __name__ == '__main__':
     print("=" * 60)
