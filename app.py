@@ -5,7 +5,7 @@ Colherada - Sistema de Controle de Vendas SIMPLIFICADO
 Servidor com autenticação básica e persistência de dados
 """
 
-from flask import Flask, jsonify, request, send_from_directory, session
+from flask import Flask, jsonify, request, send_from_directory, session, make_response
 from flask_cors import CORS
 import secrets
 from datetime import datetime
@@ -97,7 +97,13 @@ def obter_dados():
         estoque_total = int(estoque) if estoque else 0
     
     dados['estoque_total'] = estoque_total
-    return jsonify(dados)
+    
+    # Desabilitar cache no navegador
+    response = make_response(jsonify(dados))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/api/dados', methods=['POST'])
 def salvar_dados_api():
