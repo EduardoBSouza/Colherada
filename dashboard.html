@@ -7,8 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Dashboard - Colherada</title>
-    <link rel="stylesheet" href="styles/main.css?v=20260805">
-    <link rel="stylesheet" href="styles/dashboard.css?v=20260805">
+    <link rel="stylesheet" href="styles/main.css?v=20260805c">
+    <link rel="stylesheet" href="styles/dashboard.css?v=20260805c">
     <script>
         console.log('🚀 Dashboard.html carregado - iniciando...');
         
@@ -181,86 +181,35 @@
         </section>
     </main>
 
-    <script src="scripts/auth.js?v=20260805"></script>
-    <script src="scripts/api.js?v=20260805"></script>
-    <script src="scripts/sidebar.js?v=20260805"></script>
-    <script src="scripts/dashboard.js?v=20260805"></script>
+    <script src="scripts/auth.js?v=20260805c"></script>
+    <script src="scripts/api.js?v=20260805c"></script>
+    <script src="scripts/sidebar.js?v=20260805c"></script>
+    <script src="scripts/dashboard.js?v=20260805c"></script>
     <script>
-    // OVERRIDE DEFINITIVO COM DEBUG: Substitui atualizarCards do dashboard.js externo
-    console.log('🔧 Definindo override de atualizarCards...');
+    // OVERRIDE SIMPLES: Atualiza cards com debug
+    console.log('🔧 Dashboard.html v20260805c - Definindo overrides...');
     
     atualizarCards = function() {
-        console.log('📦 atualizarCards chamado');
-        console.log('   dadosAtuais:', dadosAtuais);
-        
+        console.log('✅ atualizarCards executado');
         if (!dadosAtuais) {
-            console.warn('⚠️ dadosAtuais é null/undefined, retornando');
+            console.warn('⚠️ dadosAtuais undefined');
             return;
         }
-
-        const estoqueEl = document.getElementById('estoque-valor');
-        const cardEstoque = document.getElementById('card-estoque');
-        const alertaEstoque = cardEstoque ? cardEstoque.querySelector('.card-alert') : null;
-
-        // Calcular estoque total - trata todos os casos possíveis
-        let estoqueTotal = 0;
-        if (typeof dadosAtuais.estoque_total === 'number') {
-            estoqueTotal = dadosAtuais.estoque_total;
-        } else if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object') {
-            estoqueTotal = (parseInt(dadosAtuais.estoque['80g']) || 0) +
-                           (parseInt(dadosAtuais.estoque['150g']) || 0) +
-                           (parseInt(dadosAtuais.estoque['500g']) || 0) +
-                           (parseInt(dadosAtuais.estoque['1kg']) || 0);
-        } else if (typeof dadosAtuais.estoque === 'number') {
-            estoqueTotal = dadosAtuais.estoque;
-        }
-
-        if (estoqueEl) estoqueEl.textContent = estoqueTotal;
-
-        if (alertaEstoque && cardEstoque) {
-            if (estoqueTotal <= 10) {
-                alertaEstoque.style.display = 'flex';
-                cardEstoque.style.borderLeftColor = 'var(--cor-danger)';
-            } else {
-                alertaEstoque.style.display = 'none';
-                cardEstoque.style.borderLeftColor = 'var(--cor-principal)';
-            }
-        }
-
-        var fatEl = document.getElementById('faturamento-valor');
-        var lucroEl = document.getElementById('lucro-valor');
-        var encEl = document.getElementById('encomendas-pendentes');
-
-        console.log('💰 Valores a atualizar:');
-        console.log('   faturamento_bruto:', dadosAtuais.faturamento_bruto);
-        console.log('   lucro_liquido:', dadosAtuais.lucro_liquido);
-        console.log('   fatEl existe:', !!fatEl);
-        console.log('   lucroEl existe:', !!lucroEl);
-        console.log('   formatarMoeda existe:', typeof formatarMoeda);
-
-        if (fatEl && typeof formatarMoeda === 'function') {
-            const valorFormatado = formatarMoeda(dadosAtuais.faturamento_bruto || 0);
-            console.log('   Faturamento formatado:', valorFormatado);
-            fatEl.textContent = valorFormatado;
-        } else {
-            console.error('   ❌ Erro: fatEl não existe ou formatarMoeda não é função');
-        }
-
-        if (lucroEl && typeof formatarMoeda === 'function') {
-            const valorFormatado = formatarMoeda(dadosAtuais.lucro_liquido || 0);
-            console.log('   Lucro formatado:', valorFormatado);
-            lucroEl.textContent = valorFormatado;
-        } else {
-            console.error('   ❌ Erro: lucroEl não existe ou formatarMoeda não é função');
-        }
-
-        if (encEl) {
-            var encomendas = dadosAtuais.encomendas || [];
-            var pendentes = encomendas.filter(function(e) { return e.status === 'pendente'; }).length;
-            encEl.textContent = pendentes;
+        
+        const fatEl = document.getElementById('faturamento-valor');
+        const lucroEl = document.getElementById('lucro-valor');
+        
+        if (fatEl) {
+            const val = formatarMoeda(dadosAtuais.faturamento_bruto || 0);
+            console.log('💰 Atualizando faturamento:', val);
+            fatEl.textContent = val;
         }
         
-        console.log('✅ atualizarCards finalizado');
+        if (lucroEl) {
+            const val = formatarMoeda(dadosAtuais.lucro_liquido || 0);
+            console.log('💵 Atualizando lucro:', val);
+            lucroEl.textContent = val;
+        }
     };
     </script>
 </body>
