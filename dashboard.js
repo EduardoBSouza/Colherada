@@ -17,6 +17,14 @@ async function atualizarDashboard() {
     try {
         dadosAtuais = await carregarDadosPDV();
         
+        // DEBUG: Log dos dados recebidos
+        console.log('✅ Dados carregados:', {
+            faturamento: dadosAtuais.faturamento_bruto,
+            lucro: dadosAtuais.lucro_liquido,
+            encomendas: dadosAtuais.encomendas ? dadosAtuais.encomendas.length : 0,
+            vendas: dadosAtuais.vendas ? dadosAtuais.vendas.length : 0
+        });
+        
         atualizarCards();
         atualizarAlertas();
         atualizarUltimasVendas();
@@ -32,11 +40,14 @@ window.atualizarDashboard = atualizarDashboard;
 
 // Atualizar cards de resumo
 function atualizarCards() {
-    if (!dadosAtuais) return;
+    if (!dadosAtuais) {
+        console.warn('⚠️ dadosAtuais é null/undefined');
+        return;
+    }
     
     const estoqueValor = document.getElementById('estoque-valor');
     const cardEstoque = document.getElementById('card-estoque');
-    const alertaEstoque = cardEstoque.querySelector('.card-alert');
+    const alertaEstoque = cardEstoque ? cardEstoque.querySelector('.card-alert') : null;
     
     // Usar estoque_total calculado pelo backend (sempre é número)
     let estoqueTotal = dadosAtuais.estoque_total;
@@ -47,27 +58,45 @@ function atualizarCards() {
         if (estoque && typeof estoque === 'object') {
             estoqueTotal = (parseInt(estoque['80g']) || 0) +
                            (parseInt(estoque['150g']) || 0) +
-                           (parseInt(estoque['500g']) || 0);
+                           (parseInt(estoque['500g']) || 0) +
+                           (parseInt(estoque['1kg']) || 0);
         } else {
             estoqueTotal = parseInt(estoque) || 0;
         }
     }
     
-    estoqueValor.textContent = estoqueTotal;
+    if (estoqueValor) estoqueValor.textContent = estoqueTotal;
     
-    if (estoqueTotal <= 10) {
+    if (estoqueTotal <= 10 && alertaEstoque && cardEstoque) {
         alertaEstoque.style.display = 'flex';
         cardEstoque.style.borderLeftColor = 'var(--cor-danger)';
-    } else {
+    } else if (alertaEstoque && cardEstoque) {
         alertaEstoque.style.display = 'none';
         cardEstoque.style.borderLeftColor = 'var(--cor-principal)';
     }
     
-    document.getElementById('faturamento-valor').textContent = 
-        formatarMoeda(dadosAtuais.faturamento_bruto || 0);
+    // DEBUG: valores que serão exibidos
+    const fatEl = document.getElementById('faturamento-valor');
+    const lucroEl = document.getElementById('lucro-valor');
     
-    document.getElementById('lucro-valor').textContent = 
-        formatarMoeda(dadosAtuais.lucro_liquido || 0);
+    console.log('📊 Atualizando cards:', {
+        faturamento_bruto: dadosAtuais.faturamento_bruto,
+        lucro_liquido: dadosAtuais.lucro_liquido,
+        fatEl_exists: !!fatEl,
+        lucroEl_exists: !!lucroEl
+    });
+    
+    if (fatEl) {
+        const valorFat = formatarMoeda(dadosAtuais.faturamento_bruto || 0);
+        console.log('💰 Faturamento:', valorFat);
+        fatEl.textContent = valorFat;
+    }
+    
+    if (lucroEl) {
+        const valorLucro = formatarMoeda(dadosAtuais.lucro_liquido || 0);
+        console.log('💵 Lucro:', valorLucro);
+        lucroEl.textContent = valorLucro;
+    }
     
     const encomendas = dadosAtuais.encomendas || [];
     const encomendasPendentes = encomendas.filter(e => e.status === 'pendente').length;
@@ -90,7 +119,8 @@ function atualizarAlertas() {
         // Somar os 3 tamanhos
         estoqueTotal = (parseInt(dadosAtuais.estoque['80g']) || 0) + 
                        (parseInt(dadosAtuais.estoque['150g']) || 0) + 
-                       (parseInt(dadosAtuais.estoque['500g']) || 0);
+                       (parseInt(dadosAtuais.estoque['500g']) || 0) +
+                       (parseInt(dadosAtuais.estoque['1kg']) || 0);
     } else {
         // Estoque como número único
         estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
