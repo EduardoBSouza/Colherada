@@ -110,8 +110,6 @@ function atualizarAlertas() {
             mensagem: `⚠️ Estoque baixo! ${estoqueTotal} pudins disponíveis.`
         });
     }
-        });
-    }
     
     // Alerta de encomendas para hoje
     const hoje = new Date().toISOString().split('T')[0];

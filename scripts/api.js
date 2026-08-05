@@ -9,11 +9,18 @@ const API_URL = window.location.hostname === 'localhost' || window.location.host
 // Fazer requisição GET
 async function apiGet(endpoint) {
     try {
-        const response = await fetch(`${API_URL}${endpoint}`, {
+        // Adicionar timestamp para forçar busca nova (sem cache)
+        const separator = endpoint.includes('?') ? '&' : '?';
+        const urlComTimestamp = `${API_URL}${endpoint}${separator}t=${Date.now()}`;
+        
+        const response = await fetch(urlComTimestamp, {
             method: 'GET',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
             }
         });
         
