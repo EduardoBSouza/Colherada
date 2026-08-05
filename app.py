@@ -246,6 +246,51 @@ def concluir_encomenda():
     except Exception as e:
         return jsonify({'success': False, 'message': 'Erro ao concluir encomenda.', 'erro': str(e)}), 500
 
+@app.route('/api/obter_encomenda/<int:id>', methods=['GET'])
+def obter_encomenda(id):
+    """Obtém uma encomenda específica"""
+    try:
+        dados = carregar_dados()
+        
+        for enc in dados['encomendas']:
+            if enc.get('id') == id:
+                return jsonify({'success': True, 'encomenda': enc})
+        
+        return jsonify({'success': False, 'message': 'Encomenda não encontrada'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Erro ao obter encomenda.', 'erro': str(e)}), 500
+
+@app.route('/api/editar_encomenda', methods=['POST'])
+def editar_encomenda():
+    """Edita uma encomenda existente"""
+    try:
+        body = request.json
+        encomenda_id = body.get('id')
+        
+        dados = carregar_dados()
+        
+        for enc in dados['encomendas']:
+            if enc.get('id') == encomenda_id:
+                # Atualizar campos editáveis
+                enc['cliente'] = body.get('cliente', enc.get('cliente'))
+                enc['telefone'] = body.get('telefone', enc.get('telefone'))
+                enc['tamanho'] = body.get('tamanho', enc.get('tamanho'))
+                enc['sabor'] = body.get('sabor', enc.get('sabor'))
+                enc['quantidade'] = body.get('quantidade', enc.get('quantidade'))
+                enc['data'] = body.get('data', enc.get('data'))
+                enc['observacoes'] = body.get('observacoes', enc.get('observacoes'))
+                enc['editado_em'] = datetime.now().isoformat()
+                
+                salvar_dados(dados)
+                return jsonify({'success': True, 'message': 'Encomenda atualizada com sucesso!', 'encomenda': enc})
+        
+        return jsonify({'success': False, 'message': 'Encomenda não encontrada'}), 404
+    except Exception as e:
+        print(f'Erro ao editar encomenda: {e}')
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': 'Erro ao editar encomenda.', 'erro': str(e)}), 500
+
 @app.route('/api/cancelar_encomenda', methods=['POST'])
 def cancelar_encomenda():
     """Cancela uma encomenda"""

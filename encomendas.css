@@ -227,6 +227,23 @@
     box-shadow: var(--sombra);
 }
 
+.btn-editar {
+    background: linear-gradient(135deg, var(--cor-warning) 0%, #F57C00 100%);
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transicao);
+    white-space: nowrap;
+}
+
+.btn-editar:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra);
+}
+
 /* Tabela de Histórico */
 .tabela-encomendas {
     font-size: 0.95rem;
