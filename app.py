@@ -374,6 +374,33 @@ def resetar_dados():
     except Exception as e:
         return jsonify({'success': False, 'message': 'Erro ao resetar dados.', 'erro': str(e)}), 500
 
+@app.route('/api/restaurar_financeiro', methods=['POST'])
+def restaurar_financeiro():
+    """Restaura dados financeiros (faturamento e lucro) - USE COM CUIDADO"""
+    try:
+        if not session.get('autenticado'):
+            return jsonify({'success': False, 'message': 'Não autenticado'}), 401
+
+        dados_json = request.json
+        dados_atual = carregar_dados()
+        
+        # Restaurar faturamento e lucro
+        if 'faturamento_bruto' in dados_json:
+            dados_atual['faturamento_bruto'] = dados_json['faturamento_bruto']
+        if 'lucro_liquido' in dados_json:
+            dados_atual['lucro_liquido'] = dados_json['lucro_liquido']
+        
+        salvar_dados(dados_atual)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Dados financeiros restaurados com sucesso!',
+            'faturamento_bruto': dados_atual['faturamento_bruto'],
+            'lucro_liquido': dados_atual['lucro_liquido']
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Erro ao restaurar dados.', 'erro': str(e)}), 500
+
 if __name__ == '__main__':
     print("=" * 60)
     print("🍮 COLHERADA - Sistema de Vendas")
