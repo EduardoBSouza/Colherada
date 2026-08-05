@@ -7,11 +7,14 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Dashboard - Colherada</title>
-    <link rel="stylesheet" href="styles/main.css?v=20260630">
-    <link rel="stylesheet" href="styles/dashboard.css?v=20260630">
+    <link rel="stylesheet" href="styles/main.css?v=20260805">
+    <link rel="stylesheet" href="styles/dashboard.css?v=20260805">
     <script>
+        console.log('🚀 Dashboard.html carregado - iniciando...');
+        
         // SOLUÇÃO DEFINITIVA: Força correção do estoque ANTES de qualquer coisa
         window.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOMContentLoaded disparado');
             // Aguardar 500ms para garantir que tudo carregou
             setTimeout(function() {
                 const estoqueElement = document.getElementById('estoque-valor');
@@ -183,10 +186,17 @@
     <script src="scripts/sidebar.js?v=20260805"></script>
     <script src="scripts/dashboard.js?v=20260805"></script>
     <script>
-    // OVERRIDE DEFINITIVO: Substitui atualizarCards do dashboard.js externo
-    // Este script está embutido no HTML e sempre tem a versão mais recente
+    // OVERRIDE DEFINITIVO COM DEBUG: Substitui atualizarCards do dashboard.js externo
+    console.log('🔧 Definindo override de atualizarCards...');
+    
     atualizarCards = function() {
-        if (!dadosAtuais) return;
+        console.log('📦 atualizarCards chamado');
+        console.log('   dadosAtuais:', dadosAtuais);
+        
+        if (!dadosAtuais) {
+            console.warn('⚠️ dadosAtuais é null/undefined, retornando');
+            return;
+        }
 
         const estoqueEl = document.getElementById('estoque-valor');
         const cardEstoque = document.getElementById('card-estoque');
@@ -195,13 +205,12 @@
         // Calcular estoque total - trata todos os casos possíveis
         let estoqueTotal = 0;
         if (typeof dadosAtuais.estoque_total === 'number') {
-            // Campo já calculado pelo backend (versão nova do app.py)
             estoqueTotal = dadosAtuais.estoque_total;
         } else if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object') {
-            // Objeto com 3 tamanhos - calcular soma
             estoqueTotal = (parseInt(dadosAtuais.estoque['80g']) || 0) +
                            (parseInt(dadosAtuais.estoque['150g']) || 0) +
-                           (parseInt(dadosAtuais.estoque['500g']) || 0);
+                           (parseInt(dadosAtuais.estoque['500g']) || 0) +
+                           (parseInt(dadosAtuais.estoque['1kg']) || 0);
         } else if (typeof dadosAtuais.estoque === 'number') {
             estoqueTotal = dadosAtuais.estoque;
         }
@@ -222,14 +231,36 @@
         var lucroEl = document.getElementById('lucro-valor');
         var encEl = document.getElementById('encomendas-pendentes');
 
-        if (fatEl) fatEl.textContent = formatarMoeda(dadosAtuais.faturamento_bruto || 0);
-        if (lucroEl) lucroEl.textContent = formatarMoeda(dadosAtuais.lucro_liquido || 0);
+        console.log('💰 Valores a atualizar:');
+        console.log('   faturamento_bruto:', dadosAtuais.faturamento_bruto);
+        console.log('   lucro_liquido:', dadosAtuais.lucro_liquido);
+        console.log('   fatEl existe:', !!fatEl);
+        console.log('   lucroEl existe:', !!lucroEl);
+        console.log('   formatarMoeda existe:', typeof formatarMoeda);
+
+        if (fatEl && typeof formatarMoeda === 'function') {
+            const valorFormatado = formatarMoeda(dadosAtuais.faturamento_bruto || 0);
+            console.log('   Faturamento formatado:', valorFormatado);
+            fatEl.textContent = valorFormatado;
+        } else {
+            console.error('   ❌ Erro: fatEl não existe ou formatarMoeda não é função');
+        }
+
+        if (lucroEl && typeof formatarMoeda === 'function') {
+            const valorFormatado = formatarMoeda(dadosAtuais.lucro_liquido || 0);
+            console.log('   Lucro formatado:', valorFormatado);
+            lucroEl.textContent = valorFormatado;
+        } else {
+            console.error('   ❌ Erro: lucroEl não existe ou formatarMoeda não é função');
+        }
 
         if (encEl) {
             var encomendas = dadosAtuais.encomendas || [];
             var pendentes = encomendas.filter(function(e) { return e.status === 'pendente'; }).length;
             encEl.textContent = pendentes;
         }
+        
+        console.log('✅ atualizarCards finalizado');
     };
     </script>
 </body>
