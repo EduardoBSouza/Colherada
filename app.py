@@ -18,6 +18,14 @@ CORS(app, supports_credentials=True)
 # Custo de produção por unidade
 CUSTO_UNITARIO = 7.00
 
+# Tabela de preços por tamanho e sabor
+PRECOS = {
+    '80g': {'Leite Condensado': 10, 'Coco': 10, 'Chocolate': 12, 'Doce de Leite': 12},
+    '150g': {'Leite Condensado': 16, 'Coco': 16, 'Chocolate': 18, 'Doce de Leite': 18},
+    '500g': {'Leite Condensado': 34, 'Coco': 34, 'Chocolate': 40, 'Doce de Leite': 40},
+    '1kg': {'Leite Condensado': 60, 'Coco': 60, 'Chocolate': 70, 'Doce de Leite': 70}
+}
+
 # Credenciais (simplificado - sem banco de dados)
 USUARIO_PADRAO = 'NNK'
 SENHA_PADRAO = 'pudimcolherada'
