@@ -32,11 +32,15 @@ function atualizarStatus() {
         document.getElementById('estoque-80g').textContent = dadosEstoque.estoque['80g'] || 0;
         document.getElementById('estoque-150g').textContent = dadosEstoque.estoque['150g'] || 0;
         document.getElementById('estoque-500g').textContent = dadosEstoque.estoque['500g'] || 0;
+        if (document.getElementById('estoque-1kg')) {
+            document.getElementById('estoque-1kg').textContent = dadosEstoque.estoque['1kg'] || 0;
+        }
         
         // Calcular total
         const total = (dadosEstoque.estoque['80g'] || 0) + 
                       (dadosEstoque.estoque['150g'] || 0) + 
-                      (dadosEstoque.estoque['500g'] || 0);
+                      (dadosEstoque.estoque['500g'] || 0) +
+                      (dadosEstoque.estoque['1kg'] || 0);
         document.getElementById('estoque-atual').textContent = total;
     } else {
         // Compatibilidade com versão antiga
@@ -66,7 +70,8 @@ function atualizarAlertas() {
     } else if (dadosEstoque.estoque && typeof dadosEstoque.estoque === 'object') {
         estoqueTotal = (parseInt(dadosEstoque.estoque['80g']) || 0) +
                        (parseInt(dadosEstoque.estoque['150g']) || 0) +
-                       (parseInt(dadosEstoque.estoque['500g']) || 0);
+                       (parseInt(dadosEstoque.estoque['500g']) || 0) +
+                       (parseInt(dadosEstoque.estoque['1kg']) || 0);
     } else {
         estoqueTotal = parseInt(dadosEstoque.estoque) || 0;
     }
@@ -102,7 +107,8 @@ async function abastecer() {
     const tamanhoNome = {
         '80g': 'Pequeno (80g)',
         '150g': 'Médio (150g)',
-        '500g': 'Grande (500g)'
+        '500g': 'Grande (500g)',
+        '1kg': 'Família (1kg)'
     };
     
     if (!confirm(`Confirma a adição de ${quantidade} pudins ${tamanhoNome[tamanho]} ao estoque?`)) {
@@ -148,7 +154,8 @@ async function remover() {
     const tamanhoNome = {
         '80g': 'Pequeno (80g)',
         '150g': 'Médio (150g)',
-        '500g': 'Grande (500g)'
+        '500g': 'Grande (500g)',
+        '1kg': 'Família (1kg)'
     };
     
     if (!confirm(`Confirma a remoção de ${quantidade} pudins ${tamanhoNome[tamanho]} do estoque?\nMotivo: ${motivo}`)) {
@@ -240,7 +247,8 @@ function atualizarPrevisao() {
     } else if (dadosEstoque.estoque && typeof dadosEstoque.estoque === 'object') {
         estoqueAtualNum = (parseInt(dadosEstoque.estoque['80g']) || 0) +
                           (parseInt(dadosEstoque.estoque['150g']) || 0) +
-                          (parseInt(dadosEstoque.estoque['500g']) || 0);
+                          (parseInt(dadosEstoque.estoque['500g']) || 0) +
+                          (parseInt(dadosEstoque.estoque['1kg']) || 0);
     } else {
         estoqueAtualNum = parseInt(dadosEstoque.estoque) || 0;
     }

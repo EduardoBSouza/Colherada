@@ -15,6 +15,9 @@ ENV/
 *.sqlite3
 dados_pdv.json
 
+# Credenciais / strings de conexão (NUNCA subir para o GitHub)
+config_banco_dados_neon.txt
+
 # IDEs
 .vscode/
 .idea/

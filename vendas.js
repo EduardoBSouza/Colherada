@@ -19,7 +19,7 @@ async function carregarDados() {
         if (!dadosVendas) {
             console.error('Dados não carregados');
             dadosVendas = {
-                estoque: { '80g': 0, '150g': 0, '500g': 0 },
+                estoque: { '80g': 0, '150g': 0, '500g': 0, '1kg': 0 },
                 vendas: [],
                 faturamento_bruto: 0,
                 lucro_liquido: 0
@@ -34,7 +34,7 @@ async function carregarDados() {
         
         // Dados padrão em caso de erro
         dadosVendas = {
-            estoque: { '80g': 0, '150g': 0, '500g': 0 },
+            estoque: { '80g': 0, '150g': 0, '500g': 0, '1kg': 0 },
             vendas: [],
             faturamento_bruto: 0,
             lucro_liquido: 0
@@ -157,6 +157,9 @@ function atualizarResumo() {
         document.getElementById('estoque-80g').textContent = dadosVendas.estoque['80g'] || 0;
         document.getElementById('estoque-150g').textContent = dadosVendas.estoque['150g'] || 0;
         document.getElementById('estoque-500g').textContent = dadosVendas.estoque['500g'] || 0;
+        if (document.getElementById('estoque-1kg')) {
+            document.getElementById('estoque-1kg').textContent = dadosVendas.estoque['1kg'] || 0;
+        }
     } else {
         // Compatibilidade com versão antiga (número único)
         document.getElementById('estoque-80g').textContent = 0;
@@ -208,7 +211,8 @@ function atualizarHistorico() {
         const tamanhoEmoji = {
             '80g': '🍮 80g',
             '150g': '🍮 150g',
-            '500g': '🍮 500g'
+            '500g': '🍮 500g',
+            '1kg': '🍮 1kg'
         };
         
         tr.innerHTML = `

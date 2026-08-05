@@ -140,7 +140,8 @@ function criarCardEncomenda(encomenda) {
     const tamanhoEmoji = {
         '80g': '🍮 80g',
         '150g': '🍮 150g',
-        '500g': '🍮 500g'
+        '500g': '🍮 500g',
+        '1kg': '🍮 1kg'
     };
     const tamanhoTexto = encomenda.tamanho ? tamanhoEmoji[encomenda.tamanho] || encomenda.tamanho : '🍮 150g';
     
@@ -159,6 +160,9 @@ function criarCardEncomenda(encomenda) {
             ${encomenda.observacoes ? `<div class="encomenda-observacoes">💬 ${encomenda.observacoes}</div>` : ''}
         </div>
         <div class="encomenda-acoes">
+            <button class="btn-editar" onclick="abrirModalEditar(${encomenda.id})">
+                ✏️ Editar
+            </button>
             <button class="btn-concluir" onclick="concluir(${encomenda.id})">
                 ✅ Concluir
             </button>
@@ -241,7 +245,8 @@ function atualizarHistorico() {
     const tamanhoEmoji = {
         '80g': '🍮 80g',
         '150g': '🍮 150g',
-        '500g': '🍮 500g'
+        '500g': '🍮 500g',
+        '1kg': '🍮 1kg'
     };
     
     concluidas.forEach(encomenda => {
@@ -288,4 +293,286 @@ function mostrarNotificacao(mensagem, tipo = 'info') {
         notificacao.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => notificacao.remove(), 300);
     }, 3000);
+}
+
+// ============================================
+// FUNÇÕES DE EDIÇÃO DE ENCOMENDAS
+// ============================================
+
+let encomendaEmEdicao = null;
+
+// Abrir modal de edição
+async function abrirModalEditar(id) {
+    try {
+        // Buscar dados da encomenda
+        const response = await fetch(`/api/obter_encomenda/${id}`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        if (!response.ok) throw new Error('Encomenda não encontrada');
+        
+        const resultado = await response.json();
+        if (!resultado.success) throw new Error(resultado.message);
+        
+        encomendaEmEdicao = resultado.encomenda;
+        
+        // Criar e exibir modal
+        const modal = document.createElement('div');
+        modal.id = 'modal-editar';
+        modal.className = 'modal-editar';
+        modal.innerHTML = `
+            <div class="modal-content-editar">
+                <div class="modal-header">
+                    <h2>✏️ Editar Encomenda</h2>
+                    <button class="btn-fechar" onclick="fecharModalEditar()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-cliente">Nome do Cliente *</label>
+                            <input type="text" 
+                                   id="editar-cliente" 
+                                   class="form-input" 
+                                   value="${encomendaEmEdicao.cliente || ''}"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editar-telefone">Telefone</label>
+                            <input type="tel" 
+                                   id="editar-telefone" 
+                                   class="form-input" 
+                                   value="${encomendaEmEdicao.telefone || ''}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-tamanho">Tamanho *</label>
+                            <select id="editar-tamanho" class="form-input" required>
+                                <option value="80g" ${encomendaEmEdicao.tamanho === '80g' ? 'selected' : ''}>🍮 Pequeno (80g)</option>
+                                <option value="150g" ${encomendaEmEdicao.tamanho === '150g' ? 'selected' : ''}>🍮 Médio (150g)</option>
+                                <option value="500g" ${encomendaEmEdicao.tamanho === '500g' ? 'selected' : ''}>🍮 Grande (500g)</option>
+                                <option value="1kg" ${encomendaEmEdicao.tamanho === '1kg' ? 'selected' : ''}>🍮 Família (1kg)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editar-sabor">Sabor *</label>
+                            <select id="editar-sabor" class="form-input" required>
+                                <option value="Leite Condensado" ${encomendaEmEdicao.sabor === 'Leite Condensado' ? 'selected' : ''}>🍮 Leite Condensado</option>
+                                <option value="Coco" ${encomendaEmEdicao.sabor === 'Coco' ? 'selected' : ''}>🥥 Coco</option>
+                                <option value="Chocolate" ${encomendaEmEdicao.sabor === 'Chocolate' ? 'selected' : ''}>🍫 Chocolate</option>
+                                <option value="Doce de Leite" ${encomendaEmEdicao.sabor === 'Doce de Leite' ? 'selected' : ''}>🥛 Doce de Leite</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-quantidade">Quantidade de Pudins *</label>
+                            <input type="number" 
+                                   id="editar-quantidade" 
+                                   class="form-input" 
+                                   min="1" 
+                                   value="${encomendaEmEdicao.quantidade || 1}"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editar-data">Data de Entrega *</label>
+                            <input type="date" 
+                                   id="editar-data" 
+                                   class="form-input"
+                                   value="${encomendaEmEdicao.data || ''}"
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editar-observacoes">Observações</label>
+                        <textarea id="editar-observacoes" 
+                                  class="form-textarea" 
+                                  rows="3"
+                                  placeholder="Anotações adicionais...">${encomendaEmEdicao.observacoes || ''}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="fecharModalEditar()">
+                        ❌ Cancelar
+                    </button>
+                    <button class="btn btn-success" onclick="salvarEdicaoEncomenda()">
+                        ✅ Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Adicionar estilos do modal
+        const style = document.createElement('style');
+        style.id = 'modal-editar-style';
+        style.textContent = `
+            .modal-editar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                animation: fadeIn 0.2s ease;
+            }
+            
+            .modal-content-editar {
+                background: white;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 600px;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                animation: slideUp 0.3s ease;
+            }
+            
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .modal-header h2 {
+                margin: 0;
+                color: #333;
+            }
+            
+            .btn-fechar {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #999;
+                transition: color 0.2s;
+            }
+            
+            .btn-fechar:hover {
+                color: #333;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .modal-footer {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+                padding: 20px;
+                border-top: 1px solid #e0e0e0;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        
+        // Verificar se o estilo já existe
+        if (!document.getElementById('modal-editar-style')) {
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(modal);
+        
+    } catch (error) {
+        console.error('Erro ao abrir modal:', error);
+        mostrarNotificacao('❌ Erro ao carregegar encomenda', 'danger');
+    }
+}
+
+// Fechar modal de edição
+function fecharModalEditar() {
+    const modal = document.getElementById('modal-editar');
+    if (modal) {
+        modal.style.animation = 'slideUp 0.3s ease reverse';
+        setTimeout(() => modal.remove(), 300);
+    }
+    encomendaEmEdicao = null;
+}
+
+// Salvar edição
+async function salvarEdicaoEncomenda() {
+    if (!encomendaEmEdicao) {
+        mostrarNotificacao('❌ Erro: Nenhuma encomenda em edição', 'danger');
+        return;
+    }
+    
+    const cliente = document.getElementById('editar-cliente').value.trim();
+    const telefone = document.getElementById('editar-telefone').value.trim();
+    const tamanho = document.getElementById('editar-tamanho').value;
+    const sabor = document.getElementById('editar-sabor').value;
+    const quantidade = parseInt(document.getElementById('editar-quantidade').value);
+    const data = document.getElementById('editar-data').value;
+    const observacoes = document.getElementById('editar-observacoes').value.trim();
+    
+    // Validações
+    if (!cliente) {
+        mostrarNotificacao('⚠️ Digite o nome do cliente', 'warning');
+        return;
+    }
+    
+    if (!quantidade || quantidade <= 0) {
+        mostrarNotificacao('⚠️ Digite uma quantidade válida', 'warning');
+        return;
+    }
+    
+    if (!data) {
+        mostrarNotificacao('⚠️ Selecione a data de entrega', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/editar_encomenda', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                id: encomendaEmEdicao.id,
+                cliente,
+                telefone,
+                tamanho,
+                sabor,
+                quantidade,
+                data,
+                observacoes
+            })
+        });
+        
+        if (!response.ok) throw new Error('Erro na requisição');
+        
+        const resultado = await response.json();
+        
+        if (resultado.success) {
+            mostrarNotificacao('✅ Encomenda atualizada com sucesso!', 'success');
+            fecharModalEditar();
+            await carregarDados();
+        } else {
+            mostrarNotificacao('❌ ' + resultado.message, 'danger');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar:', error);
+        mostrarNotificacao('❌ Erro ao atualizar encomenda', 'danger');
+    }
 }
