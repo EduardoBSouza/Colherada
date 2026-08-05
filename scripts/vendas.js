@@ -14,11 +14,37 @@ document.addEventListener('DOMContentLoaded', async function() {
 async function carregarDados() {
     try {
         dadosVendas = await carregarDadosPDV();
+        
+        // Verificar se os dados foram carregados corretamente
+        if (!dadosVendas) {
+            console.error('Dados não carregados');
+            dadosVendas = {
+                estoque: { '80g': 0, '150g': 0, '500g': 0, '1kg': 0 },
+                vendas: [],
+                faturamento_bruto: 0,
+                lucro_liquido: 0
+            };
+        }
+        
         atualizarResumo();
         atualizarHistorico();
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
-        mostrarNotificacao('Erro ao carregar dados', 'danger');
+        mostrarNotificacao('Erro ao carregar dados. Tentando novamente...', 'warning');
+        
+        // Dados padrão em caso de erro
+        dadosVendas = {
+            estoque: { '80g': 0, '150g': 0, '500g': 0, '1kg': 0 },
+            vendas: [],
+            faturamento_bruto: 0,
+            lucro_liquido: 0
+        };
+        
+        atualizarResumo();
+        atualizarHistorico();
+        
+        // Tentar recarregar após 2 segundos
+        setTimeout(() => carregarDados(), 2000);
     }
 }
 
@@ -47,6 +73,8 @@ function calcularTotal() {
 async function registrarVendaRapida(pagamento) {
     const quantidade = parseInt(document.getElementById('quantidade-venda').value);
     const valorUnitario = parseFloat(document.getElementById('valor-unitario').value);
+    const tamanho = document.getElementById('tamanho-pudim').value;
+    const sabor = document.getElementById('sabor-pudim').value;
     
     if (!quantidade || quantidade <= 0) {
         mostrarNotificacao('Digite uma quantidade válida', 'warning');
@@ -58,10 +86,16 @@ async function registrarVendaRapida(pagamento) {
         return;
     }
     
-    // Verificar estoque
-    if (dadosVendas && quantidade > dadosVendas.estoque) {
-        if (!confirm(`Estoque insuficiente! Você tem apenas ${dadosVendas.estoque} pudins disponíveis. Deseja continuar mesmo assim?`)) {
-            return;
+    // Verificar estoque do tamanho selecionado
+    if (dadosVendas && dadosVendas.estoque) {
+        const estoqueDisponivel = typeof dadosVendas.estoque === 'object' 
+            ? (dadosVendas.estoque[tamanho] || 0)
+            : dadosVendas.estoque;
+            
+        if (quantidade > estoqueDisponivel) {
+            if (!confirm(`Estoque insuficiente! Você tem apenas ${estoqueDisponivel} pudins de ${tamanho} disponíveis. Deseja continuar mesmo assim?`)) {
+                return;
+            }
         }
     }
     
@@ -69,7 +103,11 @@ async function registrarVendaRapida(pagamento) {
         // Desabilitar botões
         desabilitarBotoesPagamento(true);
         
-        const resultado = await registrarVenda(quantidade, pagamento, valorUnitario);
+        // Mostrar loading no histórico
+        const tbody = document.getElementById('historico-vendas');
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Registrando venda...</td></tr>';
+        
+        const resultado = await registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sabor);
         
         if (resultado.success) {
             mostrarNotificacao('✅ Venda registrada com sucesso!', 'success');
@@ -78,14 +116,18 @@ async function registrarVendaRapida(pagamento) {
             document.getElementById('quantidade-venda').value = 1;
             calcularTotal();
             
-            // Recarregar dados
+            // Recarregar dados e atualizar imediatamente
             await carregarDados();
         } else {
             mostrarNotificacao('❌ Erro ao registrar venda', 'danger');
+            // Tentar recarregar dados mesmo com erro
+            await carregarDados();
         }
     } catch (error) {
         console.error('Erro ao registrar venda:', error);
         mostrarNotificacao('❌ Erro ao registrar venda', 'danger');
+        // Recarregar dados para restaurar o estado
+        await carregarDados();
     } finally {
         desabilitarBotoesPagamento(false);
     }
@@ -110,7 +152,20 @@ function desabilitarBotoesPagamento(desabilitar) {
 function atualizarResumo() {
     if (!dadosVendas) return;
     
-    document.getElementById('estoque-disponivel').textContent = dadosVendas.estoque || 0;
+    // Atualizar estoques por tamanho
+    if (typeof dadosVendas.estoque === 'object') {
+        document.getElementById('estoque-80g').textContent = dadosVendas.estoque['80g'] || 0;
+        document.getElementById('estoque-150g').textContent = dadosVendas.estoque['150g'] || 0;
+        document.getElementById('estoque-500g').textContent = dadosVendas.estoque['500g'] || 0;
+        if (document.getElementById('estoque-1kg')) {
+            document.getElementById('estoque-1kg').textContent = dadosVendas.estoque['1kg'] || 0;
+        }
+    } else {
+        // Compatibilidade com versão antiga (número único)
+        document.getElementById('estoque-80g').textContent = 0;
+        document.getElementById('estoque-150g').textContent = dadosVendas.estoque || 0;
+        document.getElementById('estoque-500g').textContent = 0;
+    }
     
     const vendasHoje = dadosVendas.vendas ? dadosVendas.vendas.length : 0;
     document.getElementById('vendas-hoje').textContent = vendasHoje;
@@ -122,10 +177,12 @@ function atualizarResumo() {
 // Atualizar histórico de vendas
 function atualizarHistorico() {
     const tbody = document.getElementById('historico-vendas');
+    
+    // Limpar conteúdo atual
     tbody.innerHTML = '';
     
     if (!dadosVendas || !dadosVendas.vendas || dadosVendas.vendas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma venda registrada hoje</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhuma venda registrada hoje</td></tr>';
         atualizarResumoHistorico(0, 0, 0);
         return;
     }
@@ -150,8 +207,18 @@ function atualizarHistorico() {
         quantidadeTotal += venda.quantidade;
         faturamentoTotal += venda.valor_total;
         
+        const tamanhoTexto = venda.tamanho || '150g';
+        const tamanhoEmoji = {
+            '80g': '🍮 80g',
+            '150g': '🍮 150g',
+            '500g': '🍮 500g',
+            '1kg': '🍮 1kg'
+        };
+        
         tr.innerHTML = `
             <td>${formatarHora(venda.data_hora)}</td>
+            <td>${tamanhoEmoji[tamanhoTexto] || tamanhoTexto}</td>
+            <td>${venda.sabor || '-'}</td>
             <td><strong>${venda.quantidade}</strong> ${venda.quantidade === 1 ? 'pudim' : 'pudins'}</td>
             <td>${formatarMoeda(venda.valor_unitario || 10)}</td>
             <td>${emojiPagamento[venda.pagamento] || venda.pagamento}</td>

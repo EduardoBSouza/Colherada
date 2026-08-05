@@ -4,7 +4,7 @@
 
 let dadosFinanceiros = null;
 let valorVenda = 10.00;
-let custoUnitario = 4.00;
+let custoUnitario = 7.00;
 
 // Inicializar página
 document.addEventListener('DOMContentLoaded', async function() {
@@ -25,7 +25,18 @@ function carregarConfiguracoes() {
     if (configSalva) {
         const config = JSON.parse(configSalva);
         valorVenda = config.valorVenda || 10.00;
-        custoUnitario = config.custoUnitario || 4.00;
+        custoUnitario = config.custoUnitario || 7.00;
+        
+        // Migração automática: se o custo for 4.00 (valor antigo), atualizar para 7.00
+        if (custoUnitario === 4.00) {
+            custoUnitario = 7.00;
+            // Salvar a configuração atualizada
+            const novaConfig = {
+                valorVenda: valorVenda,
+                custoUnitario: custoUnitario
+            };
+            localStorage.setItem('config_financeira', JSON.stringify(novaConfig));
+        }
         
         document.getElementById('valor-venda').value = valorVenda.toFixed(2);
         document.getElementById('custo-unitario').value = custoUnitario.toFixed(2);
@@ -49,7 +60,7 @@ function calcularMargemPadrao() {
 // Salvar configurações
 function salvarConfiguracoes() {
     valorVenda = parseFloat(document.getElementById('valor-venda').value) || 10.00;
-    custoUnitario = parseFloat(document.getElementById('custo-unitario').value) || 4.00;
+    custoUnitario = parseFloat(document.getElementById('custo-unitario').value) || 7.00;
     
     const config = {
         valorVenda: valorVenda,

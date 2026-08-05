@@ -27,16 +27,33 @@ async function carregarDados() {
 function atualizarStatus() {
     if (!dadosEstoque) return;
     
-    document.getElementById('estoque-atual').textContent = dadosEstoque.estoque || 0;
+    // Atualizar estoques por tamanho
+    if (typeof dadosEstoque.estoque === 'object') {
+        document.getElementById('estoque-80g').textContent = dadosEstoque.estoque['80g'] || 0;
+        document.getElementById('estoque-150g').textContent = dadosEstoque.estoque['150g'] || 0;
+        document.getElementById('estoque-500g').textContent = dadosEstoque.estoque['500g'] || 0;
+        if (document.getElementById('estoque-1kg')) {
+            document.getElementById('estoque-1kg').textContent = dadosEstoque.estoque['1kg'] || 0;
+        }
+        
+        // Calcular total
+        const total = (dadosEstoque.estoque['80g'] || 0) + 
+                      (dadosEstoque.estoque['150g'] || 0) + 
+                      (dadosEstoque.estoque['500g'] || 0) +
+                      (dadosEstoque.estoque['1kg'] || 0);
+        document.getElementById('estoque-atual').textContent = total;
+    } else {
+        // Compatibilidade com versão antiga
+        document.getElementById('estoque-80g').textContent = 0;
+        document.getElementById('estoque-150g').textContent = dadosEstoque.estoque || 0;
+        document.getElementById('estoque-500g').textContent = 0;
+        document.getElementById('estoque-atual').textContent = dadosEstoque.estoque || 0;
+    }
     
     // Calcular vendidos hoje
     const vendasHoje = dadosEstoque.vendas || [];
     const vendidosHoje = vendasHoje.reduce((total, venda) => total + venda.quantidade, 0);
     document.getElementById('vendidos-hoje').textContent = vendidosHoje;
-    
-    // Calcular produzidos hoje (entradas do dia)
-    // Por enquanto, mostrar 0, mas você pode implementar lógica de produção
-    document.getElementById('produzidos-hoje').textContent = 0;
 }
 
 // Atualizar alertas
@@ -46,22 +63,33 @@ function atualizarAlertas() {
     
     if (!dadosEstoque) return;
     
-    const estoque = dadosEstoque.estoque || 0;
+    // Calcular total corretamente independente do formato
+    let estoqueTotal = 0;
+    if (typeof dadosEstoque.estoque_total === 'number') {
+        estoqueTotal = dadosEstoque.estoque_total;
+    } else if (dadosEstoque.estoque && typeof dadosEstoque.estoque === 'object') {
+        estoqueTotal = (parseInt(dadosEstoque.estoque['80g']) || 0) +
+                       (parseInt(dadosEstoque.estoque['150g']) || 0) +
+                       (parseInt(dadosEstoque.estoque['500g']) || 0) +
+                       (parseInt(dadosEstoque.estoque['1kg']) || 0);
+    } else {
+        estoqueTotal = parseInt(dadosEstoque.estoque) || 0;
+    }
     
-    if (estoque <= 5) {
+    if (estoqueTotal <= 5) {
         const alerta = document.createElement('div');
         alerta.className = 'alerta alerta-danger';
-        alerta.innerHTML = '🚨 <strong>ESTOQUE CRÍTICO!</strong> Apenas ' + estoque + ' pudins disponíveis. Produza mais urgentemente!';
+        alerta.innerHTML = '🚨 <strong>ESTOQUE CRÍTICO!</strong> Apenas ' + estoqueTotal + ' pudins disponíveis. Produza mais urgentemente!';
         container.appendChild(alerta);
-    } else if (estoque <= 10) {
+    } else if (estoqueTotal <= 10) {
         const alerta = document.createElement('div');
         alerta.className = 'alerta alerta-warning';
-        alerta.innerHTML = '⚠️ <strong>Estoque baixo!</strong> Você tem ' + estoque + ' pudins. Considere produzir mais.';
+        alerta.innerHTML = '⚠️ <strong>Estoque baixo!</strong> Você tem ' + estoqueTotal + ' pudins. Considere produzir mais.';
         container.appendChild(alerta);
-    } else if (estoque >= 50) {
+    } else if (estoqueTotal >= 50) {
         const alerta = document.createElement('div');
         alerta.className = 'alerta alerta-info';
-        alerta.innerHTML = '✅ Estoque saudável! Você tem ' + estoque + ' pudins disponíveis.';
+        alerta.innerHTML = '✅ Estoque saudável! Você tem ' + estoqueTotal + ' pudins disponíveis.';
         container.appendChild(alerta);
     }
 }
@@ -69,18 +97,26 @@ function atualizarAlertas() {
 // Abastecer estoque
 async function abastecer() {
     const quantidade = parseInt(document.getElementById('quantidade-abastecer').value);
+    const tamanho = document.getElementById('tamanho-abastecer').value;
     
     if (!quantidade || quantidade <= 0) {
         mostrarNotificacao('Digite uma quantidade válida', 'warning');
         return;
     }
     
-    if (!confirm(`Confirma a adição de ${quantidade} pudins ao estoque?`)) {
+    const tamanhoNome = {
+        '80g': 'Pequeno (80g)',
+        '150g': 'Médio (150g)',
+        '500g': 'Grande (500g)',
+        '1kg': 'Família (1kg)'
+    };
+    
+    if (!confirm(`Confirma a adição de ${quantidade} pudins ${tamanhoNome[tamanho]} ao estoque?`)) {
         return;
     }
     
     try {
-        const resultado = await abastecerEstoque(quantidade);
+        const resultado = await abastecerEstoque(quantidade, tamanho);
         
         if (resultado.success) {
             mostrarNotificacao('✅ Estoque abastecido com sucesso!', 'success');
@@ -98,6 +134,7 @@ async function abastecer() {
 // Remover do estoque
 async function remover() {
     const quantidade = parseInt(document.getElementById('quantidade-remover').value);
+    const tamanho = document.getElementById('tamanho-remover').value;
     const motivo = document.getElementById('motivo-remocao').value;
     
     if (!quantidade || quantidade <= 0) {
@@ -105,17 +142,28 @@ async function remover() {
         return;
     }
     
-    if (dadosEstoque && quantidade > dadosEstoque.estoque) {
-        mostrarNotificacao('Quantidade maior que o estoque disponível!', 'danger');
-        return;
+    // Verificar estoque disponível do tamanho específico
+    if (dadosEstoque && typeof dadosEstoque.estoque === 'object') {
+        const estoqueDisponivel = dadosEstoque.estoque[tamanho] || 0;
+        if (quantidade > estoqueDisponivel) {
+            mostrarNotificacao(`Quantidade maior que o estoque disponível! Você tem apenas ${estoqueDisponivel} pudins de ${tamanho}.`, 'danger');
+            return;
+        }
     }
     
-    if (!confirm(`Confirma a remoção de ${quantidade} pudins do estoque?\nMotivo: ${motivo}`)) {
+    const tamanhoNome = {
+        '80g': 'Pequeno (80g)',
+        '150g': 'Médio (150g)',
+        '500g': 'Grande (500g)',
+        '1kg': 'Família (1kg)'
+    };
+    
+    if (!confirm(`Confirma a remoção de ${quantidade} pudins ${tamanhoNome[tamanho]} do estoque?\nMotivo: ${motivo}`)) {
         return;
     }
     
     try {
-        const resultado = await removerEstoque(quantidade);
+        const resultado = await removerEstoque(quantidade, tamanho);
         
         if (resultado.success) {
             mostrarNotificacao('✅ Estoque atualizado!', 'success');
@@ -193,8 +241,18 @@ function atualizarPrevisao() {
     
     // Calcular sugestão de produção
     // (média diária * 2 dias) + encomendas - estoque atual
-    const estoqueAtual = dadosEstoque.estoque || 0;
-    const sugestao = Math.max(0, (mediaVendas * 2) + totalEncomendas - estoqueAtual);
+    let estoqueAtualNum = 0;
+    if (typeof dadosEstoque.estoque_total === 'number') {
+        estoqueAtualNum = dadosEstoque.estoque_total;
+    } else if (dadosEstoque.estoque && typeof dadosEstoque.estoque === 'object') {
+        estoqueAtualNum = (parseInt(dadosEstoque.estoque['80g']) || 0) +
+                          (parseInt(dadosEstoque.estoque['150g']) || 0) +
+                          (parseInt(dadosEstoque.estoque['500g']) || 0) +
+                          (parseInt(dadosEstoque.estoque['1kg']) || 0);
+    } else {
+        estoqueAtualNum = parseInt(dadosEstoque.estoque) || 0;
+    }
+    const sugestao = Math.max(0, (mediaVendas * 2) + totalEncomendas - estoqueAtualNum);
     
     document.getElementById('sugestao-producao').textContent = sugestao;
     

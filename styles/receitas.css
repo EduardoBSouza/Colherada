@@ -2,6 +2,30 @@
    ESTILOS DA PÁGINA DE RECEITAS
 ============================================ */
 
+/* Seletor de receitas */
+#select-receita {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cor-principal);
+    border: 2px solid var(--cor-dourado);
+    border-radius: 8px;
+    background: var(--cor-card);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#select-receita:hover {
+    border-color: var(--cor-hover);
+    box-shadow: 0 2px 8px rgba(251, 192, 45, 0.2);
+}
+
+#select-receita:focus {
+    outline: none;
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.2);
+}
+
 /* Editor de Receita */
 .editor-receita {
     display: flex;
@@ -222,4 +246,73 @@
     .calculadora {
         padding: 20px;
     }
+}
+
+/* Campos editáveis da receita base */
+.input-base-readonly {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    text-align: center;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.input-base-readonly:focus {
+    outline: none;
+    border-color: var(--cor-dourado);
+    background: var(--cor-fundo);
+}
+
+.input-base-editable {
+    width: 60px;
+    padding: 5px;
+    border: 2px solid var(--cor-dourado);
+    background: #FFF8E1;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    text-align: center;
+    border-radius: 4px;
+    animation: pulse 0.5s ease;
+}
+
+.input-base-editable:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.2);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Campos editáveis das dicas */
+.dica-texto-readonly {
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.dica-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 2px solid var(--cor-dourado);
+    background: #FFF8E1;
+    color: var(--cor-texto);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.dica-textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.2);
 }

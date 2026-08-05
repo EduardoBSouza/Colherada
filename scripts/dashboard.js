@@ -27,18 +27,36 @@ async function atualizarDashboard() {
     }
 }
 
+// Expor globalmente para uso no HTML
+window.atualizarDashboard = atualizarDashboard;
+
 // Atualizar cards de resumo
 function atualizarCards() {
     if (!dadosAtuais) return;
     
-    // Estoque
     const estoqueValor = document.getElementById('estoque-valor');
     const cardEstoque = document.getElementById('card-estoque');
     const alertaEstoque = cardEstoque.querySelector('.card-alert');
     
-    estoqueValor.textContent = dadosAtuais.estoque || 0;
+    // Usar estoque_total calculado pelo backend (sempre é número)
+    let estoqueTotal = dadosAtuais.estoque_total;
     
-    if (dadosAtuais.estoque <= 10) {
+    // Fallback: calcular no frontend se necessário
+    if (estoqueTotal === undefined || estoqueTotal === null) {
+        const estoque = dadosAtuais.estoque;
+        if (estoque && typeof estoque === 'object') {
+            estoqueTotal = (parseInt(estoque['80g']) || 0) +
+                           (parseInt(estoque['150g']) || 0) +
+                           (parseInt(estoque['500g']) || 0) +
+                           (parseInt(estoque['1kg']) || 0);
+        } else {
+            estoqueTotal = parseInt(estoque) || 0;
+        }
+    }
+    
+    estoqueValor.textContent = estoqueTotal;
+    
+    if (estoqueTotal <= 10) {
         alertaEstoque.style.display = 'flex';
         cardEstoque.style.borderLeftColor = 'var(--cor-danger)';
     } else {
@@ -46,15 +64,12 @@ function atualizarCards() {
         cardEstoque.style.borderLeftColor = 'var(--cor-principal)';
     }
     
-    // Faturamento
     document.getElementById('faturamento-valor').textContent = 
         formatarMoeda(dadosAtuais.faturamento_bruto || 0);
     
-    // Lucro
     document.getElementById('lucro-valor').textContent = 
         formatarMoeda(dadosAtuais.lucro_liquido || 0);
     
-    // Encomendas pendentes
     const encomendas = dadosAtuais.encomendas || [];
     const encomendasPendentes = encomendas.filter(e => e.status === 'pendente').length;
     document.getElementById('encomendas-pendentes').textContent = encomendasPendentes;
@@ -69,16 +84,32 @@ function atualizarAlertas() {
     
     const alertas = [];
     
+    // Calcular estoque total sempre como número
+    let estoqueTotal = 0;
+    
+    if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object') {
+        // Somar os 3 tamanhos
+        estoqueTotal = (parseInt(dadosAtuais.estoque['80g']) || 0) + 
+                       (parseInt(dadosAtuais.estoque['150g']) || 0) + 
+                       (parseInt(dadosAtuais.estoque['500g']) || 0) +
+                       (parseInt(dadosAtuais.estoque['1kg']) || 0);
+    } else {
+        // Estoque como número único
+        estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
+    }
+    
     // Alerta de estoque crítico
-    if (dadosAtuais.estoque <= 10) {
+    if (estoqueTotal <= 10) {
         alertas.push({
             tipo: 'danger',
-            mensagem: `⚠️ Estoque crítico! Apenas ${dadosAtuais.estoque} pudins disponíveis.`
+            mensagem: `⚠️ Estoque crítico! Apenas ${estoqueTotal} pudins disponíveis.`
         });
-    } else if (dadosAtuais.estoque <= 20) {
+    } else if (estoqueTotal <= 20) {
         alertas.push({
             tipo: 'warning',
-            mensagem: `⚠️ Estoque baixo! ${dadosAtuais.estoque} pudins disponíveis.`
+            mensagem: `⚠️ Estoque baixo! ${estoqueTotal} pudins disponíveis.`
+        });
+    }
         });
     }
     
