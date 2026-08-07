@@ -153,9 +153,35 @@
             <div class="secao-header">
                 <h2>📈 Evolução do Faturamento e Lucro</h2>
             </div>
+            <div class="filtro-periodo-grafico">
+                <button class="btn-periodo-crescimento" data-meses="3">Últimos 3 meses</button>
+                <button class="btn-periodo-crescimento" data-meses="6">Últimos 6 meses</button>
+                <button class="btn-periodo-crescimento" data-meses="12">Últimos 12 meses</button>
+                <button class="btn-periodo-crescimento active" data-meses="todos">Todo o período</button>
+            </div>
             <div class="chart-container">
                 <canvas id="grafico-crescimento"></canvas>
             </div>
+        </section>
+
+        <!-- Comparador de Períodos Específicos -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>⚖️ Comparar Períodos Específicos</h2>
+            </div>
+            <div class="comparador-meses">
+                <div class="comparador-campo">
+                    <label for="select-mes-a">Período A</label>
+                    <select id="select-mes-a"></select>
+                </div>
+                <span class="comparador-vs">vs</span>
+                <div class="comparador-campo">
+                    <label for="select-mes-b">Período B</label>
+                    <select id="select-mes-b"></select>
+                </div>
+                <button id="btn-comparar-periodos" class="btn-comparar">Comparar</button>
+            </div>
+            <div id="resultado-comparacao" class="resultado-comparacao"></div>
         </section>
 
         <!-- Comparativo Mensal -->

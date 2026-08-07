@@ -80,6 +80,110 @@
     width: 100%;
 }
 
+.filtro-periodo-grafico {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.btn-periodo-crescimento {
+    padding: 10px 18px;
+    background: var(--cor-card);
+    border: 2px solid var(--cor-borda);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--cor-texto);
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.btn-periodo-crescimento:hover {
+    background: var(--cor-fundo);
+    border-color: var(--cor-principal);
+}
+
+.btn-periodo-crescimento.active {
+    background: var(--cor-principal);
+    color: white;
+    border-color: var(--cor-principal);
+}
+
+/* Comparador de períodos específicos */
+.comparador-meses {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.comparador-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.comparador-campo label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cor-texto-claro);
+}
+
+.comparador-campo select {
+    padding: 10px 14px;
+    border: 2px solid var(--cor-borda);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--cor-texto);
+    background: var(--cor-card);
+    min-width: 160px;
+}
+
+.comparador-vs {
+    font-weight: 700;
+    color: var(--cor-texto-claro);
+    padding-bottom: 10px;
+}
+
+.btn-comparar {
+    padding: 10px 24px;
+    background: var(--cor-principal);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.btn-comparar:hover {
+    background: var(--cor-secundaria);
+}
+
+.tabela-comparacao {
+    width: 100%;
+    font-size: 0.95rem;
+}
+
+.tabela-comparacao th,
+.tabela-comparacao td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela-comparacao .kpi-positivo {
+    color: var(--cor-success);
+    font-weight: 600;
+}
+
+.tabela-comparacao .kpi-negativo {
+    color: var(--cor-danger);
+    font-weight: 600;
+}
+
 /* Tabela comparativa */
 .tabela-crescimento {
     font-size: 0.95rem;
@@ -161,5 +265,15 @@
 @media (max-width: 480px) {
     .kpi-grid {
         grid-template-columns: 1fr;
+    }
+
+    .comparador-meses {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .comparador-campo select {
+        min-width: 0;
+        width: 100%;
     }
 }

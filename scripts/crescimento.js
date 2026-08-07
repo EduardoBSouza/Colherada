@@ -6,6 +6,7 @@ const CUSTO_UNITARIO_CRESCIMENTO = 7.00;
 const MESES_ABREV = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 let graficoCrescimento = null;
+let todosMeses = [];
 
 document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const vendas = dados.vendas || [];
 
         const meses = agruparVendasPorMes(vendas);
+        todosMeses = meses;
 
         if (meses.length === 0) {
             mostrarSemDados();
@@ -24,10 +26,102 @@ document.addEventListener('DOMContentLoaded', async function() {
         atualizarTabela(meses);
         atualizarRecorde(meses);
         atualizarSaborEmAlta(meses);
+        configurarFiltroPeriodoGrafico();
+        configurarComparadorPeriodos(meses);
     } catch (error) {
         console.error('Erro ao carregar visão de crescimento:', error);
     }
 });
+
+// Configura os botões de período rápido que filtram o gráfico e a tabela
+function configurarFiltroPeriodoGrafico() {
+    const botoes = document.querySelectorAll('.btn-periodo-crescimento');
+    botoes.forEach(botao => {
+        botao.addEventListener('click', () => {
+            botoes.forEach(b => b.classList.remove('active'));
+            botao.classList.add('active');
+
+            const qtdMeses = botao.dataset.meses;
+            const mesesFiltrados = qtdMeses === 'todos'
+                ? todosMeses
+                : todosMeses.slice(-Number(qtdMeses));
+
+            atualizarGrafico(mesesFiltrados);
+            atualizarTabela(mesesFiltrados);
+        });
+    });
+}
+
+// Preenche os seletores e liga o botão de comparação de períodos específicos
+function configurarComparadorPeriodos(meses) {
+    const selectA = document.getElementById('select-mes-a');
+    const selectB = document.getElementById('select-mes-b');
+    const botaoComparar = document.getElementById('btn-comparar-periodos');
+
+    const opcoes = meses.map((mes, indice) => `<option value="${indice}">${nomeMes(mes)}</option>`).join('');
+    selectA.innerHTML = opcoes;
+    selectB.innerHTML = opcoes;
+
+    // Por padrão compara o mês mais recente com o anterior
+    selectA.value = meses.length > 1 ? meses.length - 2 : 0;
+    selectB.value = meses.length - 1;
+
+    botaoComparar.addEventListener('click', () => {
+        const mesA = todosMeses[Number(selectA.value)];
+        const mesB = todosMeses[Number(selectB.value)];
+        renderizarComparacaoPeriodos(mesA, mesB);
+    });
+
+    renderizarComparacaoPeriodos(todosMeses[Number(selectA.value)], todosMeses[Number(selectB.value)]);
+}
+
+// Monta o card de comparação entre dois meses quaisquer (não precisam ser consecutivos)
+function renderizarComparacaoPeriodos(mesA, mesB) {
+    const container = document.getElementById('resultado-comparacao');
+    if (!mesA || !mesB) {
+        container.innerHTML = '<p class="mensagem-vazio">Selecione dois períodos para comparar</p>';
+        return;
+    }
+
+    if (mesA.chave === mesB.chave) {
+        container.innerHTML = '<p class="mensagem-vazio">Escolha dois períodos diferentes</p>';
+        return;
+    }
+
+    const metricas = [
+        ['💰 Faturamento', mesA.faturamento, mesB.faturamento, formatarMoeda],
+        ['📈 Lucro', mesA.lucro, mesB.lucro, formatarMoeda],
+        ['📦 Pudins Vendidos', mesA.quantidade, mesB.quantidade, valor => valor],
+        ['💵 Ticket Médio', mesA.ticketMedio, mesB.ticketMedio, formatarMoeda],
+        ['👥 Clientes Atendidos', mesA.totalClientes, mesB.totalClientes, valor => valor]
+    ];
+
+    const linhas = metricas.map(([rotulo, valorA, valorB, formatar]) => {
+        const variacao = calcularVariacao(valorB, valorA);
+        return `
+            <tr>
+                <td>${rotulo}</td>
+                <td>${formatar(valorA)}</td>
+                <td>${formatar(valorB)}</td>
+                <td class="${variacao.classe}">${variacao.texto.replace(' vs mês anterior', '')}</td>
+            </tr>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        <table class="tabela-comparacao">
+            <thead>
+                <tr>
+                    <th>Indicador</th>
+                    <th>${nomeMes(mesA)}</th>
+                    <th>${nomeMes(mesB)}</th>
+                    <th>Variação</th>
+                </tr>
+            </thead>
+            <tbody>${linhas}</tbody>
+        </table>
+    `;
+}
 
 // Agrupa as vendas em blocos mensais ordenados cronologicamente
 function agruparVendasPorMes(vendas) {
