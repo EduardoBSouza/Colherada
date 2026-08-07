@@ -1,0 +1,165 @@
+/* ============================================
+   ESTILOS DA PÁGINA DE CRESCIMENTO
+============================================ */
+
+.periodo-atual {
+    padding: 8px 16px;
+    background: var(--cor-dourado);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* KPIs */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+.kpi-card {
+    background: linear-gradient(135deg, var(--cor-fundo) 0%, var(--cor-card) 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--sombra-card);
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    transition: var(--transicao);
+    border-left: 4px solid var(--cor-principal);
+}
+
+.kpi-card:hover {
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-3px);
+}
+
+.kpi-icon {
+    font-size: 2.2rem;
+    line-height: 1;
+}
+
+.kpi-info {
+    flex: 1;
+}
+
+.kpi-info h3 {
+    font-size: 0.85rem;
+    color: var(--cor-texto-claro);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.kpi-valor {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--cor-principal);
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.kpi-variacao {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cor-texto-claro);
+}
+
+.kpi-variacao.kpi-positivo {
+    color: var(--cor-success);
+}
+
+.kpi-variacao.kpi-negativo {
+    color: var(--cor-danger);
+}
+
+/* Gráfico */
+.chart-container {
+    position: relative;
+    height: 320px;
+    width: 100%;
+}
+
+/* Tabela comparativa */
+.tabela-crescimento {
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.tabela-crescimento td {
+    padding: 12px;
+}
+
+.tabela-crescimento .kpi-positivo {
+    color: var(--cor-success);
+    font-weight: 600;
+}
+
+.tabela-crescimento .kpi-negativo {
+    color: var(--cor-danger);
+    font-weight: 600;
+}
+
+/* Destaques (recorde / sabor em alta) */
+.destaques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.recorde-info {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+    border-radius: 12px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 3px solid var(--cor-dourado);
+}
+
+.recorde-info .melhor-dia-icon {
+    font-size: 3rem;
+}
+
+.recorde-info .melhor-dia-info h3 {
+    font-size: 1.4rem;
+    color: var(--cor-principal);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.recorde-info .melhor-dia-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: var(--cor-texto);
+}
+
+.recorde-info .melhor-dia-stats .destaque {
+    color: var(--cor-dourado);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .destaques-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recorde-info {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}

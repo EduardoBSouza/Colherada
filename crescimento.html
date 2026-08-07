@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crescimento - Colherada</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/crescimento.css">
+</head>
+<body>
+    <!-- Sidebar de Navegação -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>🍮 Colherada</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <span class="icon">📊</span>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="vendas.html">
+                    <span class="icon">💳</span>
+                    <span class="text">Vendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="estoque.html">
+                    <span class="icon">📦</span>
+                    <span class="text">Estoque</span>
+                </a>
+            </li>
+            <li>
+                <a href="encomendas.html">
+                    <span class="icon">📝</span>
+                    <span class="text">Encomendas</span>
+                </a>
+            </li>
+            <li>
+                <a href="financeiro.html">
+                    <span class="icon">💰</span>
+                    <span class="text">Financeiro</span>
+                </a>
+            </li>
+            <li>
+                <a href="receitas.html">
+                    <span class="icon">📖</span>
+                    <span class="text">Receitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="relatorios.html">
+                    <span class="icon">📈</span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="crescimento.html">
+                    <span class="icon">🚀</span>
+                    <span class="text">Crescimento</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span class="text">Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content">
+        <header class="page-header">
+            <h1>🚀 Visão Executiva de Crescimento</h1>
+            <p class="page-subtitle">Como a Colherada está evoluindo, mês a mês</p>
+        </header>
+
+        <!-- KPIs de Crescimento -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📊 Indicadores do Mês Atual</h2>
+                <span class="periodo-atual" id="mes-atual-texto">--</span>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-info">
+                        <h3>Faturamento do Mês</h3>
+                        <p class="kpi-valor" id="kpi-faturamento">R$ 0,00</p>
+                        <span class="kpi-variacao" id="kpi-faturamento-variacao">-</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">📈</div>
+                    <div class="kpi-info">
+                        <h3>Lucro do Mês</h3>
+                        <p class="kpi-valor" id="kpi-lucro">R$ 0,00</p>
+                        <span class="kpi-variacao" id="kpi-lucro-variacao">-</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">📦</div>
+                    <div class="kpi-info">
+                        <h3>Pudins Vendidos</h3>
+                        <p class="kpi-valor" id="kpi-quantidade">0</p>
+                        <span class="kpi-variacao" id="kpi-quantidade-variacao">-</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">💵</div>
+                    <div class="kpi-info">
+                        <h3>Ticket Médio</h3>
+                        <p class="kpi-valor" id="kpi-ticket">R$ 0,00</p>
+                        <span class="kpi-variacao" id="kpi-ticket-variacao">-</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">👥</div>
+                    <div class="kpi-info">
+                        <h3>Clientes Atendidos</h3>
+                        <p class="kpi-valor" id="kpi-clientes">0</p>
+                        <span class="kpi-variacao" id="kpi-clientes-variacao">-</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">🚀</div>
+                    <div class="kpi-info">
+                        <h3>Crescimento Médio Mensal</h3>
+                        <p class="kpi-valor" id="kpi-crescimento-medio">0%</p>
+                        <span class="kpi-variacao" id="kpi-crescimento-medio-info">desde o início</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gráfico de Evolução -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📈 Evolução do Faturamento e Lucro</h2>
+            </div>
+            <div class="chart-container">
+                <canvas id="grafico-crescimento"></canvas>
+            </div>
+        </section>
+
+        <!-- Comparativo Mensal -->
+        <section class="secao-card">
+            <div class="secao-header">
+                <h2>📋 Comparativo Mês a Mês</h2>
+            </div>
+            <div class="tabela-wrapper">
+                <table class="tabela-crescimento">
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>Faturamento</th>
+                            <th>Lucro</th>
+                            <th>Pudins</th>
+                            <th>Ticket Médio</th>
+                            <th>Crescimento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-meses">
+                        <tr>
+                            <td colspan="6" class="text-center">Carregando dados...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Destaques -->
+        <div class="destaques-grid">
+            <section class="secao-card">
+                <div class="secao-header">
+                    <h2>🏆 Recorde Histórico</h2>
+                </div>
+                <div class="recorde-info" id="recorde-mes">
+                    <p class="mensagem-vazio">Sem dados suficientes</p>
+                </div>
+            </section>
+
+            <section class="secao-card">
+                <div class="secao-header">
+                    <h2>🔥 Sabor em Alta</h2>
+                </div>
+                <div class="recorde-info" id="sabor-em-alta">
+                    <p class="mensagem-vazio">Sem dados suficientes</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="scripts/auth.js?v=20260806"></script>
+    <script src="scripts/api.js?v=20260806"></script>
+    <script src="scripts/sidebar.js?v=20260806"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="scripts/crescimento.js?v=20260806"></script>
+</body>
+</html>
