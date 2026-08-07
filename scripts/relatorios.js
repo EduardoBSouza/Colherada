@@ -4,6 +4,8 @@
 
 let dadosRelatorio = null;
 let periodoAtual = 'mes';
+let vendasFiltradasAtual = [];
+let periodoTextoAtual = 'Este Mês';
 
 // Inicializar página
 document.addEventListener('DOMContentLoaded', async function() {
@@ -21,12 +23,13 @@ function configurarDatas() {
 }
 
 // Selecionar período rápido
-async function selecionarPeriodo(periodo) {
+async function selecionarPeriodo(periodo, elemento) {
     periodoAtual = periodo;
     
-    // Atualizar botões ativos
+    // Atualizar botões ativos (sem depender do evento global, funciona também na carga inicial)
     document.querySelectorAll('.btn-periodo').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    const botaoAtivo = elemento || document.querySelector(`.btn-periodo[data-periodo="${periodo}"]`);
+    if (botaoAtivo) botaoAtivo.classList.add('active');
     
     // Calcular datas
     const hoje = new Date();
@@ -57,6 +60,7 @@ async function selecionarPeriodo(periodo) {
             break;
     }
     
+    periodoTextoAtual = textoPerido;
     document.getElementById('periodo-texto').textContent = textoPerido;
     
     // Atualizar campos de data
@@ -77,7 +81,8 @@ async function gerarRelatorioCustom() {
         return;
     }
     
-    document.getElementById('periodo-texto').textContent = 'Período Personalizado';
+    periodoTextoAtual = 'Período Personalizado';
+    document.getElementById('periodo-texto').textContent = periodoTextoAtual;
     await gerarRelatorio(dataInicio, dataFim);
 }
 
@@ -88,6 +93,7 @@ async function gerarRelatorio(dataInicio, dataFim) {
         
         // Filtrar vendas do período
         const vendas = filtrarVendasPeriodo(dadosRelatorio.vendas || [], dataInicio, dataFim);
+        vendasFiltradasAtual = vendas;
         
         atualizarResumoGeral(vendas);
         atualizarGrafico(vendas, dataInicio, dataFim);
@@ -266,14 +272,90 @@ function atualizarDetalhamento(vendas) {
 
 // Exportar PDF
 function exportarPDF() {
-    mostrarNotificacao('Funcionalidade de exportação PDF em desenvolvimento', 'info');
-    // Implementar exportação PDF
+    if (vendasFiltradasAtual.length === 0) {
+        mostrarNotificacao('Não há vendas no período para exportar', 'warning');
+        return;
+    }
+
+    if (typeof window.jspdf === 'undefined') {
+        mostrarNotificacao('Erro ao carregar biblioteca de PDF', 'danger');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text('🍮 Colherada - Relatório de Vendas', 14, 18);
+    doc.setFontSize(11);
+    doc.text(`Período: ${periodoTextoAtual}`, 14, 26);
+
+    const faturamento = document.getElementById('resumo-faturamento').textContent;
+    const lucro = document.getElementById('resumo-lucro').textContent;
+    const quantidade = document.getElementById('resumo-quantidade').textContent;
+    const totalVendas = document.getElementById('resumo-vendas').textContent;
+    doc.text(`Faturamento: ${faturamento}   Lucro: ${lucro}   Pudins vendidos: ${quantidade}   Total de vendas: ${totalVendas}`, 14, 33);
+
+    const emojiPagamento = { pix: 'PIX', dinheiro: 'Dinheiro', cartao: 'Cartão' };
+    const linhas = vendasFiltradasAtual
+        .slice()
+        .sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora))
+        .map(v => [
+            formatarData(v.data_hora),
+            formatarHora(v.data_hora),
+            String(v.quantidade),
+            formatarMoeda(v.valor_unitario || 0),
+            emojiPagamento[v.pagamento] || v.pagamento || '-',
+            formatarMoeda(v.valor_total || 0)
+        ]);
+
+    doc.autoTable({
+        startY: 40,
+        head: [['Data', 'Horário', 'Quantidade', 'Valor Unit.', 'Pagamento', 'Total']],
+        body: linhas,
+        headStyles: { fillColor: [139, 69, 19] }
+    });
+
+    doc.save(`relatorio-colherada-${new Date().toISOString().split('T')[0]}.pdf`);
+    mostrarNotificacao('✅ PDF exportado com sucesso!', 'success');
 }
 
 // Exportar Excel
 function exportarExcel() {
-    mostrarNotificacao('Funcionalidade de exportação Excel em desenvolvimento', 'info');
-    // Implementar exportação Excel
+    if (vendasFiltradasAtual.length === 0) {
+        mostrarNotificacao('Não há vendas no período para exportar', 'warning');
+        return;
+    }
+
+    if (typeof XLSX === 'undefined') {
+        mostrarNotificacao('Erro ao carregar biblioteca de Excel', 'danger');
+        return;
+    }
+
+    const emojiPagamento = { pix: 'PIX', dinheiro: 'Dinheiro', cartao: 'Cartão' };
+    const linhas = vendasFiltradasAtual
+        .slice()
+        .sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora))
+        .map(v => ({
+            'Data': formatarData(v.data_hora),
+            'Horário': formatarHora(v.data_hora),
+            'Cliente': v.cliente || '-',
+            'Tamanho': v.tamanho || '-',
+            'Sabor': v.sabor || '-',
+            'Quantidade': v.quantidade,
+            'Valor Unit.': v.valor_unitario || 0,
+            'Pagamento': emojiPagamento[v.pagamento] || v.pagamento || '-',
+            'Total': v.valor_total || 0
+        }));
+
+    const planilha = XLSX.utils.json_to_sheet(linhas);
+    planilha['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 20 }, { wch: 10 }, { wch: 15 }, { wch: 10 }, { wch: 12 }, { wch: 14 }, { wch: 12 }];
+
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, 'Vendas');
+
+    XLSX.writeFile(livro, `relatorio-colherada-${new Date().toISOString().split('T')[0]}.xlsx`);
+    mostrarNotificacao('✅ Excel exportado com sucesso!', 'success');
 }
 
 // Imprimir relatório

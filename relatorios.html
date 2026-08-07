@@ -86,10 +86,10 @@
             
             <div class="periodo-selector">
                 <div class="periodo-rapido">
-                    <button class="btn-periodo" onclick="selecionarPeriodo('hoje')">Hoje</button>
-                    <button class="btn-periodo" onclick="selecionarPeriodo('semana')">Esta Semana</button>
-                    <button class="btn-periodo active" onclick="selecionarPeriodo('mes')">Este Mês</button>
-                    <button class="btn-periodo" onclick="selecionarPeriodo('ano')">Este Ano</button>
+                    <button class="btn-periodo" data-periodo="hoje" onclick="selecionarPeriodo('hoje', this)">Hoje</button>
+                    <button class="btn-periodo" data-periodo="semana" onclick="selecionarPeriodo('semana', this)">Esta Semana</button>
+                    <button class="btn-periodo active" data-periodo="mes" onclick="selecionarPeriodo('mes', this)">Este Mês</button>
+                    <button class="btn-periodo" data-periodo="ano" onclick="selecionarPeriodo('ano', this)">Este Ano</button>
                 </div>
                 
                 <div class="periodo-custom">
@@ -285,6 +285,9 @@
     <script src="scripts/auth.js?v=20260630"></script>
     <script src="scripts/api.js?v=20260630"></script>
     <script src="scripts/sidebar.js?v=20260630"></script>
-    <script src="scripts/relatorios.js?v=20260630"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="scripts/relatorios.js?v=20260806"></script>
 </body>
 </html>
