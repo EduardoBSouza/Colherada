@@ -182,7 +182,7 @@ function atualizarHistorico() {
     tbody.innerHTML = '';
     
     if (!dadosVendas || !dadosVendas.vendas || dadosVendas.vendas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhuma venda registrada hoje</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhuma venda registrada hoje</td></tr>';
         atualizarResumoHistorico(0, 0, 0);
         return;
     }
@@ -200,7 +200,10 @@ function atualizarHistorico() {
         'cartao': '💳 Cartão'
     };
     
-    vendas.forEach(venda => {
+    vendas.forEach((venda, indexRevertido) => {
+        // Calcular o índice original (invertido)
+        const indexOriginal = dadosVendas.vendas.length - 1 - indexRevertido;
+        
         const tr = document.createElement('tr');
         
         totalVendas++;
@@ -223,6 +226,11 @@ function atualizarHistorico() {
             <td>${formatarMoeda(venda.valor_unitario || 10)}</td>
             <td>${emojiPagamento[venda.pagamento] || venda.pagamento}</td>
             <td><strong>${formatarMoeda(venda.valor_total)}</strong></td>
+            <td>
+                <button class="btn-table btn-edit" onclick="abrirModalEdicao(${indexOriginal})">
+                    ✏️ Editar
+                </button>
+            </td>
         `;
         
         tbody.appendChild(tr);
@@ -293,3 +301,141 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ============================================
+// FUNÇÕES DE EDIÇÃO DE VENDA
+// ============================================
+
+let vendaEmEdicao = null;
+
+// Abrir modal de edição
+function abrirModalEdicao(index) {
+    vendaEmEdicao = index;
+    const venda = dadosVendas.vendas[index];
+    
+    if (!venda) {
+        mostrarNotificacao('Venda não encontrada', 'danger');
+        return;
+    }
+    
+    // Preencher os campos do modal
+    document.getElementById('edit-tamanho').value = venda.tamanho || '150g';
+    document.getElementById('edit-sabor').value = venda.sabor || 'Leite Condensado';
+    document.getElementById('edit-quantidade').value = venda.quantidade || 1;
+    document.getElementById('edit-valor-unitario').value = venda.valor_unitario || 10;
+    document.getElementById('edit-pagamento').value = venda.pagamento || 'pix';
+    
+    // Calcular total
+    calcularTotalEdicao();
+    
+    // Abrir modal
+    document.getElementById('modal-editar-venda').style.display = 'flex';
+    
+    // Adicionar evento para calcular total ao alterar quantidade ou valor
+    document.getElementById('edit-quantidade').addEventListener('input', calcularTotalEdicao);
+    document.getElementById('edit-valor-unitario').addEventListener('input', calcularTotalEdicao);
+}
+
+// Fechar modal de edição
+function fecharModalEdicao() {
+    document.getElementById('modal-editar-venda').style.display = 'none';
+    vendaEmEdicao = null;
+}
+
+// Calcular total na edição
+function calcularTotalEdicao() {
+    const quantidade = parseInt(document.getElementById('edit-quantidade').value) || 0;
+    const valorUnitario = parseFloat(document.getElementById('edit-valor-unitario').value) || 0;
+    const total = quantidade * valorUnitario;
+    
+    document.getElementById('edit-total').value = total.toFixed(2);
+}
+
+// Salvar edição de venda
+async function salvarEdicaoVenda() {
+    if (vendaEmEdicao === null) return;
+    
+    const quantidade = parseInt(document.getElementById('edit-quantidade').value);
+    const tamanho = document.getElementById('edit-tamanho').value;
+    const sabor = document.getElementById('edit-sabor').value;
+    const valorUnitario = parseFloat(document.getElementById('edit-valor-unitario').value);
+    const valorTotal = parseFloat(document.getElementById('edit-total').value);
+    const pagamento = document.getElementById('edit-pagamento').value;
+    
+    if (!quantidade || quantidade <= 0) {
+        mostrarNotificacao('Digite uma quantidade válida', 'warning');
+        return;
+    }
+    
+    if (!valorUnitario || valorUnitario <= 0) {
+        mostrarNotificacao('Digite um valor unitário válido', 'warning');
+        return;
+    }
+    
+    try {
+        // Chamar API para editar a venda
+        const resultado = await apiPost('/api/editar_venda', {
+            index: vendaEmEdicao,
+            quantidade: quantidade,
+            tamanho: tamanho,
+            sabor: sabor,
+            valor_unitario: valorUnitario,
+            valor_total: valorTotal,
+            pagamento: pagamento
+        });
+        
+        if (resultado.success) {
+            mostrarNotificacao('✅ Venda atualizada com sucesso!', 'success');
+            fecharModalEdicao();
+            
+            // Recarregar dados
+            await carregarDados();
+        } else {
+            mostrarNotificacao('❌ Erro ao atualizar venda', 'danger');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar edição:', error);
+        mostrarNotificacao('❌ Erro ao atualizar venda', 'danger');
+    }
+}
+
+// Remover venda
+async function removerVenda() {
+    if (vendaEmEdicao === null) return;
+    
+    if (!confirm('Tem certeza que deseja remover esta venda?')) {
+        return;
+    }
+    
+    try {
+        // Chamar API para remover a venda
+        const resultado = await apiPost('/api/remover_venda', {
+            index: vendaEmEdicao
+        });
+        
+        if (resultado.success) {
+            mostrarNotificacao('✅ Venda removida com sucesso!', 'success');
+            fecharModalEdicao();
+            
+            // Recarregar dados
+            await carregarDados();
+        } else {
+            mostrarNotificacao('❌ Erro ao remover venda', 'danger');
+        }
+    } catch (error) {
+        console.error('Erro ao remover venda:', error);
+        mostrarNotificacao('❌ Erro ao remover venda', 'danger');
+    }
+}
+
+// Fechar modal ao clicar fora dele
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modal-editar-venda');
+    if (modal) {
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                fecharModalEdicao();
+            }
+        });
+    }
+});

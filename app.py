@@ -166,6 +166,137 @@ def registrar_venda():
     except Exception as e:
         return jsonify({'success': False, 'message': 'Erro ao registrar venda.', 'erro': str(e)}), 500
 
+@app.route('/api/editar_venda', methods=['POST'])
+def editar_venda():
+    """Edita uma venda existente"""
+    try:
+        body = request.json
+        venda_index = body.get('index')
+        
+        if venda_index is None:
+            return jsonify({'success': False, 'message': 'Índice da venda não fornecido'}), 400
+        
+        dados = carregar_dados()
+        
+        if venda_index < 0 or venda_index >= len(dados['vendas']):
+            return jsonify({'success': False, 'message': 'Venda não encontrada'}), 404
+        
+        # Obter a venda antiga para calcular a diferença
+        venda_antiga = dados['vendas'][venda_index]
+        
+        # Obter valores da venda nova
+        quantidade_nova = body.get('quantidade', venda_antiga.get('quantidade', 0))
+        tamanho_novo = body.get('tamanho', venda_antiga.get('tamanho', '150g'))
+        sabor_novo = body.get('sabor', venda_antiga.get('sabor', ''))
+        valor_unitario_novo = body.get('valor_unitario', venda_antiga.get('valor_unitario', 0))
+        valor_total_novo = body.get('valor_total', quantidade_nova * valor_unitario_novo)
+        pagamento_novo = body.get('pagamento', venda_antiga.get('pagamento', ''))
+        
+        # Garantir que estoque é um dict
+        if not isinstance(dados['estoque'], dict):
+            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0, '1kg': 0}
+        
+        # Calcular diferenças para ajustar estoque
+        quantidade_diff = quantidade_nova - venda_antiga.get('quantidade', 0)
+        tamanho_antigo = venda_antiga.get('tamanho', '150g')
+        
+        # Se o tamanho mudou, devolver a quantidade antiga e descontar a nova
+        if tamanho_novo != tamanho_antigo:
+            if tamanho_antigo in dados['estoque']:
+                dados['estoque'][tamanho_antigo] += venda_antiga.get('quantidade', 0)
+            if tamanho_novo in dados['estoque']:
+                dados['estoque'][tamanho_novo] -= quantidade_nova
+        else:
+            # Se o tamanho não mudou, apenas ajustar a quantidade
+            if tamanho_novo in dados['estoque']:
+                dados['estoque'][tamanho_novo] -= quantidade_diff
+        
+        # Calcular diferenças financeiras
+        valor_total_antigo = venda_antiga.get('valor_total', 0)
+        valor_diff = valor_total_novo - valor_total_antigo
+        
+        # Atualizar faturamento bruto
+        dados['faturamento_bruto'] += valor_diff
+        
+        # Recalcular lucro líquido
+        custo_total_antigo = venda_antiga.get('quantidade', 0) * CUSTO_UNITARIO
+        lucro_antigo = valor_total_antigo - custo_total_antigo
+        
+        custo_total_novo = quantidade_nova * CUSTO_UNITARIO
+        lucro_novo = valor_total_novo - custo_total_novo
+        
+        lucro_diff = lucro_novo - lucro_antigo
+        dados['lucro_liquido'] += lucro_diff
+        
+        # Atualizar a venda
+        dados['vendas'][venda_index] = {
+            'quantidade': quantidade_nova,
+            'tamanho': tamanho_novo,
+            'sabor': sabor_novo,
+            'valor_unitario': valor_unitario_novo,
+            'valor_total': valor_total_novo,
+            'pagamento': pagamento_novo,
+            'data_hora': venda_antiga.get('data_hora'),
+            'timestamp': venda_antiga.get('timestamp'),
+            'editado_em': datetime.now().isoformat()
+        }
+        
+        salvar_dados(dados)
+        return jsonify({'success': True, 'message': 'Venda atualizada com sucesso!', 'dados': dados})
+    except Exception as e:
+        print(f'Erro ao editar venda: {e}')
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': 'Erro ao editar venda.', 'erro': str(e)}), 500
+
+@app.route('/api/remover_venda', methods=['POST'])
+def remover_venda():
+    """Remove uma venda existente"""
+    try:
+        body = request.json
+        venda_index = body.get('index')
+        
+        if venda_index is None:
+            return jsonify({'success': False, 'message': 'Índice da venda não fornecido'}), 400
+        
+        dados = carregar_dados()
+        
+        if venda_index < 0 or venda_index >= len(dados['vendas']):
+            return jsonify({'success': False, 'message': 'Venda não encontrada'}), 404
+        
+        # Obter a venda a ser removida
+        venda = dados['vendas'][venda_index]
+        
+        # Garantir que estoque é um dict
+        if not isinstance(dados['estoque'], dict):
+            dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0, '1kg': 0}
+        
+        # Devolver quantidade ao estoque
+        tamanho = venda.get('tamanho', '150g')
+        quantidade = venda.get('quantidade', 0)
+        if tamanho in dados['estoque']:
+            dados['estoque'][tamanho] += quantidade
+        
+        # Subtrair do faturamento bruto
+        valor_total = venda.get('valor_total', 0)
+        dados['faturamento_bruto'] -= valor_total
+        
+        # Recalcular lucro líquido
+        custo_total = quantidade * CUSTO_UNITARIO
+        lucro_venda = valor_total - custo_total
+        dados['lucro_liquido'] -= lucro_venda
+        
+        # Remover a venda
+        dados['vendas'].pop(venda_index)
+        
+        salvar_dados(dados)
+        return jsonify({'success': True, 'message': 'Venda removida com sucesso!', 'dados': dados})
+    except Exception as e:
+        print(f'Erro ao remover venda: {e}')
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': 'Erro ao remover venda.', 'erro': str(e)}), 500
+
 @app.route('/api/abastecer', methods=['POST'])
 def abastecer_estoque():
     """Abastece o estoque"""
