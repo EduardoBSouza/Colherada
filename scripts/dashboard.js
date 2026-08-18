@@ -3,6 +3,8 @@
 // ============================================
 
 let dadosAtuais = null;
+let mesSelecionado = ''; // Vazio = todos os meses
+let dadosFiltrados = null; // Dados filtrados por mês
 
 // Inicializar dashboard
 document.addEventListener('DOMContentLoaded', async function() {
@@ -12,10 +14,82 @@ document.addEventListener('DOMContentLoaded', async function() {
     setInterval(atualizarDashboard, 30000);
 });
 
+// Função para extrair mês de uma data (formato: "2026-06-24" ou "2026-06-24 00:00:00")
+function extrairMes(dataString) {
+    if (!dataString) return '';
+    // Pega os primeiros 7 caracteres (yyyy-mm)
+    return dataString.substring(0, 7).substring(5, 7); // Extrai o mês
+}
+
+// Função para filtrar dados por mês
+function filtrarDadosPorMes() {
+    if (!dadosAtuais) {
+        dadosFiltrados = null;
+        return;
+    }
+    
+    // Se nenhum mês foi selecionado, usar todos os dados
+    if (!mesSelecionado) {
+        dadosFiltrados = JSON.parse(JSON.stringify(dadosAtuais));
+        return;
+    }
+    
+    // Copiar estrutura dos dados
+    dadosFiltrados = JSON.parse(JSON.stringify(dadosAtuais));
+    
+    // Filtrar vendas por mês
+    if (dadosFiltrados.vendas && Array.isArray(dadosFiltrados.vendas)) {
+        dadosFiltrados.vendas = dadosFiltrados.vendas.filter(venda => {
+            const mesVenda = extrairMes(venda.data_hora);
+            return mesVenda === mesSelecionado;
+        });
+    }
+    
+    // Filtrar encomendas por mês
+    if (dadosFiltrados.encomendas && Array.isArray(dadosFiltrados.encomendas)) {
+        dadosFiltrados.encomendas = dadosFiltrados.encomendas.filter(encomenda => {
+            const mesEncomenda = extrairMes(encomenda.data);
+            return mesEncomenda === mesSelecionado;
+        });
+    }
+    
+    // Recalcular faturamento e lucro para o mês selecionado
+    if (dadosFiltrados.vendas && dadosFiltrados.vendas.length > 0) {
+        const faturamentoBruto = dadosFiltrados.vendas.reduce((total, venda) => {
+            return total + (venda.valor_total || 0);
+        }, 0);
+        dadosFiltrados.faturamento_bruto = parseFloat(faturamentoBruto.toFixed(2));
+        
+        // Calcular lucro (assumindo que é faturamento - (quantidade * custo unitário))
+        const custTotal = dadosFiltrados.vendas.reduce((total, venda) => {
+            return total + (venda.quantidade * 7.00); // Custo unitário é 7.00
+        }, 0);
+        dadosFiltrados.lucro_liquido = parseFloat((faturamentoBruto - custTotal).toFixed(2));
+    } else {
+        dadosFiltrados.faturamento_bruto = 0;
+        dadosFiltrados.lucro_liquido = 0;
+    }
+}
+
+// Função chamada quando o usuário muda o mês
+window.alterarMes = function() {
+    const select = document.getElementById('filtro-mes');
+    mesSelecionado = select.value;
+    
+    filtrarDadosPorMes();
+    
+    // Atualizar o dashboard com os dados filtrados
+    atualizarCards();
+    atualizarAlertas();
+    atualizarUltimasVendas();
+    atualizarEncomendasUrgentes();
+}
+
 // Atualizar todos os dados do dashboard
 async function atualizarDashboard() {
     try {
         dadosAtuais = await carregarDadosPDV();
+        filtrarDadosPorMes(); // Aplicar filtro atual
         
         atualizarCards();
         atualizarAlertas();
@@ -32,18 +106,19 @@ window.atualizarDashboard = atualizarDashboard;
 
 // Atualizar cards de resumo
 function atualizarCards() {
-    if (!dadosAtuais) return;
+    const dados = dadosFiltrados || dadosAtuais;
+    if (!dados) return;
     
     const estoqueValor = document.getElementById('estoque-valor');
     const cardEstoque = document.getElementById('card-estoque');
     const alertaEstoque = cardEstoque.querySelector('.card-alert');
     
     // Usar estoque_total calculado pelo backend (sempre é número)
-    let estoqueTotal = dadosAtuais.estoque_total;
+    let estoqueTotal = dados.estoque_total;
     
     // Fallback: calcular no frontend se necessário
     if (estoqueTotal === undefined || estoqueTotal === null) {
-        const estoque = dadosAtuais.estoque;
+        const estoque = dados.estoque;
         if (estoque && typeof estoque === 'object') {
             estoqueTotal = (parseInt(estoque['80g']) || 0) +
                            (parseInt(estoque['150g']) || 0) +
@@ -65,12 +140,12 @@ function atualizarCards() {
     }
     
     document.getElementById('faturamento-valor').textContent = 
-        formatarMoeda(dadosAtuais.faturamento_bruto || 0);
+        formatarMoeda(dados.faturamento_bruto || 0);
     
     document.getElementById('lucro-valor').textContent = 
-        formatarMoeda(dadosAtuais.lucro_liquido || 0);
+        formatarMoeda(dados.lucro_liquido || 0);
     
-    const encomendas = dadosAtuais.encomendas || [];
+    const encomendas = dados.encomendas || [];
     const encomendasPendentes = encomendas.filter(e => e.status === 'pendente').length;
     document.getElementById('encomendas-pendentes').textContent = encomendasPendentes;
 }
@@ -80,22 +155,23 @@ function atualizarAlertas() {
     const container = document.getElementById('alertas-container');
     container.innerHTML = '';
     
-    if (!dadosAtuais) return;
+    const dados = dadosFiltrados || dadosAtuais;
+    if (!dados) return;
     
     const alertas = [];
     
     // Calcular estoque total sempre como número
     let estoqueTotal = 0;
     
-    if (dadosAtuais.estoque && typeof dadosAtuais.estoque === 'object') {
+    if (dados.estoque && typeof dados.estoque === 'object') {
         // Somar os 3 tamanhos
-        estoqueTotal = (parseInt(dadosAtuais.estoque['80g']) || 0) + 
-                       (parseInt(dadosAtuais.estoque['150g']) || 0) + 
-                       (parseInt(dadosAtuais.estoque['500g']) || 0) +
-                       (parseInt(dadosAtuais.estoque['1kg']) || 0);
+        estoqueTotal = (parseInt(dados.estoque['80g']) || 0) + 
+                       (parseInt(dados.estoque['150g']) || 0) + 
+                       (parseInt(dados.estoque['500g']) || 0) +
+                       (parseInt(dados.estoque['1kg']) || 0);
     } else {
         // Estoque como número único
-        estoqueTotal = parseInt(dadosAtuais.estoque) || 0;
+        estoqueTotal = parseInt(dados.estoque) || 0;
     }
     
     // Alerta de estoque crítico
@@ -111,17 +187,19 @@ function atualizarAlertas() {
         });
     }
     
-    // Alerta de encomendas para hoje
-    const hoje = new Date().toISOString().split('T')[0];
-    const encomendasHoje = (dadosAtuais.encomendas || []).filter(e => 
-        e.data === hoje && e.status === 'pendente'
-    );
-    
-    if (encomendasHoje.length > 0) {
-        alertas.push({
-            tipo: 'info',
-            mensagem: `📝 Você tem ${encomendasHoje.length} encomenda(s) para entregar hoje!`
-        });
+    // Alerta de encomendas para hoje (somente quando não há filtro de mês)
+    if (!mesSelecionado) {
+        const hoje = new Date().toISOString().split('T')[0];
+        const encomendasHoje = (dados.encomendas || []).filter(e => 
+            e.data === hoje && e.status === 'pendente'
+        );
+        
+        if (encomendasHoje.length > 0) {
+            alertas.push({
+                tipo: 'info',
+                mensagem: `📝 Você tem ${encomendasHoje.length} encomenda(s) para entregar hoje!`
+            });
+        }
     }
     
     // Renderizar alertas
@@ -138,13 +216,15 @@ function atualizarUltimasVendas() {
     const tbody = document.querySelector('#ultimas-vendas tbody');
     tbody.innerHTML = '';
     
-    if (!dadosAtuais || !dadosAtuais.vendas || dadosAtuais.vendas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhuma venda registrada hoje</td></tr>';
+    const dados = dadosFiltrados || dadosAtuais;
+    if (!dados || !dados.vendas || dados.vendas.length === 0) {
+        const mensagem = mesSelecionado ? 'Nenhuma venda registrada neste mês' : 'Nenhuma venda registrada hoje';
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center">${mensagem}</td></tr>`;
         return;
     }
     
     // Pegar últimas 5 vendas
-    const ultimasVendas = dadosAtuais.vendas.slice(-5).reverse();
+    const ultimasVendas = dados.vendas.slice(-5).reverse();
     
     ultimasVendas.forEach(venda => {
         const tr = document.createElement('tr');
@@ -166,37 +246,46 @@ function atualizarUltimasVendas() {
     });
 }
 
-// Atualizar encomendas urgentes (próximas 3 dias)
+// Atualizar encomendas urgentes (próximas 3 dias ou do mês selecionado)
 function atualizarEncomendasUrgentes() {
     const container = document.getElementById('encomendas-urgentes-lista');
     container.innerHTML = '';
     
-    if (!dadosAtuais || !dadosAtuais.encomendas) {
+    const dados = dadosFiltrados || dadosAtuais;
+    if (!dados || !dados.encomendas) {
         container.innerHTML = '<p class="mensagem-vazio">Nenhuma encomenda urgente</p>';
         return;
     }
     
-    // Filtrar encomendas urgentes (próximos 3 dias)
-    const hoje = new Date();
-    const tresDias = new Date();
-    tresDias.setDate(hoje.getDate() + 3);
+    let encomendasFiltradas;
     
-    const encomendasUrgentes = dadosAtuais.encomendas.filter(e => {
-        if (e.status !== 'pendente') return false;
+    if (mesSelecionado) {
+        // Se há filtro de mês, mostrar todas as encomendas do mês que estão pendentes
+        encomendasFiltradas = dados.encomendas.filter(e => e.status === 'pendente');
+    } else {
+        // Se não há filtro, mostrar encomendas urgentes (próximos 3 dias)
+        const hoje = new Date();
+        const tresDias = new Date();
+        tresDias.setDate(hoje.getDate() + 3);
         
-        const dataEncomenda = new Date(e.data);
-        return dataEncomenda >= hoje && dataEncomenda <= tresDias;
-    });
+        encomendasFiltradas = dados.encomendas.filter(e => {
+            if (e.status !== 'pendente') return false;
+            
+            const dataEncomenda = new Date(e.data);
+            return dataEncomenda >= hoje && dataEncomenda <= tresDias;
+        });
+    }
     
-    if (encomendasUrgentes.length === 0) {
+    if (encomendasFiltradas.length === 0) {
         container.innerHTML = '<p class="mensagem-vazio">Nenhuma encomenda urgente</p>';
         return;
     }
     
     // Ordenar por data
-    encomendasUrgentes.sort((a, b) => new Date(a.data) - new Date(b.data));
+    encomendasFiltradas.sort((a, b) => new Date(a.data) - new Date(b.data));
     
-    encomendasUrgentes.forEach(encomenda => {
+    const hoje = new Date();
+    encomendasFiltradas.forEach(encomenda => {
         const div = document.createElement('div');
         div.className = 'encomenda-urgente';
         
@@ -211,7 +300,7 @@ function atualizarEncomendasUrgentes() {
                 </div>
                 ${encomenda.telefone ? `<div class="encomenda-urgente-data">📞 ${encomenda.telefone}</div>` : ''}
             </div>
-            ${isHoje ? '<span class="badge-urgente">HOJE</span>' : ''}
+            ${isHoje && !mesSelecionado ? '<span class="badge-urgente">HOJE</span>' : ''}
         `;
         
         container.appendChild(div);

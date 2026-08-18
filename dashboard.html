@@ -103,8 +103,30 @@
     <!-- Conteúdo Principal -->
     <main id="main-content">
         <header class="page-header">
-            <h1>📊 Dashboard</h1>
-            <p class="page-subtitle">Visão geral do dia</p>
+            <div class="header-top">
+                <div>
+                    <h1>📊 Dashboard</h1>
+                    <p class="page-subtitle">Visão geral do dia</p>
+                </div>
+                <div class="mes-selector">
+                    <label for="filtro-mes">Filtrar por mês:</label>
+                    <select id="filtro-mes" onchange="alterarMes()">
+                        <option value="">Todos os meses</option>
+                        <option value="01">Janeiro</option>
+                        <option value="02">Fevereiro</option>
+                        <option value="03">Março</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Maio</option>
+                        <option value="06">Junho</option>
+                        <option value="07">Julho</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                </div>
+            </div>
         </header>
 
         <!-- Cards de Resumo -->
