@@ -56,10 +56,10 @@ function configurarEventos() {
     quantidadeInput.addEventListener('input', calcularTotal);
     valorUnitarioInput.addEventListener('input', calcularTotal);
     
-    // Define a data de hoje como padrao no campo de data da venda
+    // Define a data de hoje (local) como padrao no campo de data da venda
     const dataVendaInput = document.getElementById('data-venda');
     if (dataVendaInput && !dataVendaInput.value) {
-        dataVendaInput.value = new Date().toISOString().split('T')[0];
+        dataVendaInput.value = obterDataLocalISO();
     }
     
     // Calcular total inicial
@@ -316,9 +316,17 @@ document.head.appendChild(style);
 
 let vendaEmEdicao = null;
 
+// Retorna a data local (nao UTC) no formato YYYY-MM-DD
+function obterDataLocalISO(data = new Date()) {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+}
+
 // Extrai a parte YYYY-MM-DD de uma data_hora para preencher o input type="date"
 function extrairDataISO(dataHora) {
-    if (!dataHora) return new Date().toISOString().split('T')[0];
+    if (!dataHora) return obterDataLocalISO();
     const parteData = dataHora.split(' ')[0].split('T')[0];
     return parteData;
 }
