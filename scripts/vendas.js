@@ -56,6 +56,12 @@ function configurarEventos() {
     quantidadeInput.addEventListener('input', calcularTotal);
     valorUnitarioInput.addEventListener('input', calcularTotal);
     
+    // Define a data de hoje como padrao no campo de data da venda
+    const dataVendaInput = document.getElementById('data-venda');
+    if (dataVendaInput && !dataVendaInput.value) {
+        dataVendaInput.value = new Date().toISOString().split('T')[0];
+    }
+    
     // Calcular total inicial
     calcularTotal();
 }
@@ -75,6 +81,7 @@ async function registrarVendaRapida(pagamento) {
     const valorUnitario = parseFloat(document.getElementById('valor-unitario').value);
     const tamanho = document.getElementById('tamanho-pudim').value;
     const sabor = document.getElementById('sabor-pudim').value;
+    const dataVenda = document.getElementById('data-venda').value;
     
     if (!quantidade || quantidade <= 0) {
         mostrarNotificacao('Digite uma quantidade válida', 'warning');
@@ -107,7 +114,7 @@ async function registrarVendaRapida(pagamento) {
         const tbody = document.getElementById('historico-vendas');
         tbody.innerHTML = '<tr><td colspan="7" class="text-center">Registrando venda...</td></tr>';
         
-        const resultado = await registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sabor);
+        const resultado = await registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sabor, dataVenda);
         
         if (resultado.success) {
             mostrarNotificacao('✅ Venda registrada com sucesso!', 'success');
@@ -182,7 +189,7 @@ function atualizarHistorico() {
     tbody.innerHTML = '';
     
     if (!dadosVendas || !dadosVendas.vendas || dadosVendas.vendas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhuma venda registrada hoje</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">Nenhuma venda registrada hoje</td></tr>';
         atualizarResumoHistorico(0, 0, 0);
         return;
     }
@@ -219,6 +226,7 @@ function atualizarHistorico() {
         };
         
         tr.innerHTML = `
+            <td>${formatarData(venda.data_hora)}</td>
             <td>${formatarHora(venda.data_hora)}</td>
             <td>${tamanhoEmoji[tamanhoTexto] || tamanhoTexto}</td>
             <td>${venda.sabor || '-'}</td>
@@ -308,6 +316,13 @@ document.head.appendChild(style);
 
 let vendaEmEdicao = null;
 
+// Extrai a parte YYYY-MM-DD de uma data_hora para preencher o input type="date"
+function extrairDataISO(dataHora) {
+    if (!dataHora) return new Date().toISOString().split('T')[0];
+    const parteData = dataHora.split(' ')[0].split('T')[0];
+    return parteData;
+}
+
 // Abrir modal de edição
 function abrirModalEdicao(index) {
     vendaEmEdicao = index;
@@ -319,6 +334,7 @@ function abrirModalEdicao(index) {
     }
     
     // Preencher os campos do modal
+    document.getElementById('edit-data').value = extrairDataISO(venda.data_hora);
     document.getElementById('edit-tamanho').value = venda.tamanho || '150g';
     document.getElementById('edit-sabor').value = venda.sabor || 'Leite Condensado';
     document.getElementById('edit-quantidade').value = venda.quantidade || 1;
@@ -361,6 +377,7 @@ async function salvarEdicaoVenda() {
     const valorUnitario = parseFloat(document.getElementById('edit-valor-unitario').value);
     const valorTotal = parseFloat(document.getElementById('edit-total').value);
     const pagamento = document.getElementById('edit-pagamento').value;
+    const dataVenda = document.getElementById('edit-data').value;
     
     if (!quantidade || quantidade <= 0) {
         mostrarNotificacao('Digite uma quantidade válida', 'warning');
@@ -381,7 +398,8 @@ async function salvarEdicaoVenda() {
             sabor: sabor,
             valor_unitario: valorUnitario,
             valor_total: valorTotal,
-            pagamento: pagamento
+            pagamento: pagamento,
+            data_venda: dataVenda || null
         });
         
         if (resultado.success) {

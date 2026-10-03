@@ -121,6 +121,13 @@
             <div class="form-venda">
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="data-venda">Data da Venda</label>
+                        <input type="date" 
+                               id="data-venda" 
+                               class="form-input">
+                    </div>
+
+                    <div class="form-group">
                         <label for="tamanho-pudim">Tamanho do Pudim</label>
                         <select id="tamanho-pudim" class="form-input">
                             <option value="80g">🍮 Pequeno (80g)</option>
@@ -199,6 +206,7 @@
                 <table class="tabela-vendas">
                     <thead>
                         <tr>
+                            <th>Data</th>
                             <th>Horário</th>
                             <th>Tamanho</th>
                             <th>Sabor</th>
@@ -211,7 +219,7 @@
                     </thead>
                     <tbody id="historico-vendas">
                         <tr>
-                            <td colspan="8" class="text-center">Carregando vendas...</td>
+                            <td colspan="9" class="text-center">Carregando vendas...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -244,6 +252,13 @@
                 <div class="modal-body">
                     <form id="form-editar-venda">
                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-data">Data da Venda</label>
+                                <input type="date" 
+                                       id="edit-data" 
+                                       class="form-input">
+                            </div>
+
                             <div class="form-group">
                                 <label for="edit-tamanho">Tamanho do Pudim</label>
                                 <select id="edit-tamanho" class="form-input">
@@ -326,10 +341,10 @@
         </div>
     </main>
 
-    <script src="scripts/auth.js?v=20260630"></script>
-    <script src="scripts/api.js?v=20260630"></script>
-    <script src="scripts/sidebar.js?v=20260630"></script>
-    <script src="scripts/vendas.js?v=20260630"></script>
+    <script src="scripts/auth.js?v=20261002"></script>
+    <script src="scripts/api.js?v=20261002"></script>
+    <script src="scripts/sidebar.js?v=20261002"></script>
+    <script src="scripts/vendas.js?v=20261002"></script>
     <script>
     // Fix: garante que carregarDados funciona com estoque como dict
     // e usa a função atualizarHistorico() do vendas.js que já tem suporte para edição

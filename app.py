@@ -129,10 +129,18 @@ def registrar_venda():
         valor_unitario = venda.get('valor_unitario', 0)
         valor_total = venda.get('valor_total', quantidade * valor_unitario)
         pagamento = venda.get('pagamento', '')
+        data_venda = venda.get('data_venda')  # formato YYYY-MM-DD, opcional
         
         # Garantir que estoque é um dict
         if not isinstance(dados['estoque'], dict):
             dados['estoque'] = {'80g': 0, '150g': dados.get('estoque', 0), '500g': 0, '1kg': 0}
+        
+        agora = datetime.now()
+        if data_venda:
+            # Usa a data escolhida pelo usuário, mantendo a hora atual
+            data_hora = f"{data_venda} {agora.strftime('%H:%M:%S')}"
+        else:
+            data_hora = agora.strftime('%Y-%m-%d %H:%M:%S')
         
         # Criar objeto de venda completo
         venda_completa = {
@@ -142,8 +150,8 @@ def registrar_venda():
             'valor_unitario': valor_unitario,
             'valor_total': valor_total,
             'pagamento': pagamento,
-            'data_hora': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'timestamp': datetime.now().isoformat()
+            'data_hora': data_hora,
+            'timestamp': agora.isoformat()
         }
         
         # Adicionar venda ao histórico
@@ -191,6 +199,7 @@ def editar_venda():
         valor_unitario_novo = body.get('valor_unitario', venda_antiga.get('valor_unitario', 0))
         valor_total_novo = body.get('valor_total', quantidade_nova * valor_unitario_novo)
         pagamento_novo = body.get('pagamento', venda_antiga.get('pagamento', ''))
+        data_venda_nova = body.get('data_venda')  # formato YYYY-MM-DD, opcional
         
         # Garantir que estoque é um dict
         if not isinstance(dados['estoque'], dict):
@@ -228,6 +237,14 @@ def editar_venda():
         lucro_diff = lucro_novo - lucro_antigo
         dados['lucro_liquido'] += lucro_diff
         
+        # Se uma nova data foi informada, mantém a hora original e troca apenas o dia
+        data_hora_nova = venda_antiga.get('data_hora')
+        if data_venda_nova:
+            hora_antiga = '00:00:00'
+            if data_hora_nova and ' ' in data_hora_nova:
+                hora_antiga = data_hora_nova.split(' ', 1)[1]
+            data_hora_nova = f"{data_venda_nova} {hora_antiga}"
+        
         # Atualizar a venda
         dados['vendas'][venda_index] = {
             'quantidade': quantidade_nova,
@@ -236,7 +253,7 @@ def editar_venda():
             'valor_unitario': valor_unitario_novo,
             'valor_total': valor_total_novo,
             'pagamento': pagamento_novo,
-            'data_hora': venda_antiga.get('data_hora'),
+            'data_hora': data_hora_nova,
             'timestamp': venda_antiga.get('timestamp'),
             'editado_em': datetime.now().isoformat()
         }

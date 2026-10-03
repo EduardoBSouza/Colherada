@@ -77,7 +77,7 @@ async function carregarDadosPDV() {
 }
 
 // Registrar venda
-async function registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sabor) {
+async function registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sabor, dataVenda) {
     try {
         const qtd = parseInt(quantidade);
         const valorUnit = parseFloat(valorUnitario);
@@ -90,7 +90,8 @@ async function registrarVenda(quantidade, pagamento, valorUnitario, tamanho, sab
             valor_total: total,
             total: total,
             tamanho: tamanho || '150g',
-            sabor: sabor || 'Leite Condensado'
+            sabor: sabor || 'Leite Condensado',
+            data_venda: dataVenda || null
         });
         return resultado;
     } catch (error) {

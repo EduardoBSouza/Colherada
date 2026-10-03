@@ -219,7 +219,7 @@ function atualizarUltimasVendas() {
     const dados = dadosFiltrados || dadosAtuais;
     if (!dados || !dados.vendas || dados.vendas.length === 0) {
         const mensagem = mesSelecionado ? 'Nenhuma venda registrada neste mês' : 'Nenhuma venda registrada hoje';
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center">${mensagem}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center">${mensagem}</td></tr>`;
         return;
     }
     
@@ -236,6 +236,7 @@ function atualizarUltimasVendas() {
         };
         
         tr.innerHTML = `
+            <td>${formatarData(venda.data_hora)}</td>
             <td>${formatarHora(venda.data_hora)}</td>
             <td>${venda.quantidade} ${venda.quantidade === 1 ? 'pudim' : 'pudins'}</td>
             <td>${emojiPagamento[venda.pagamento] || venda.pagamento}</td>
